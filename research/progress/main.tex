@@ -6,6 +6,7 @@
 \usepackage{tikz}
 \usepackage{verbatim}
 \usepackage{dirtytalk}
+\usepackage{calc}
 
 \usetikzlibrary{calc}
 
@@ -14,6 +15,7 @@
 \date{\vspace{-5ex}}
 
 \let\vec\mathbf
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 
 \begin{document}
 
@@ -50,43 +52,48 @@ produces the initial output $\textcolor{blue}{i} \in \textbf{y}$. Our goal is $\
 
 
 
+\begin{figure}[h]
 
-\begin{tikzpicture}
+    \begin{tikzpicture}
 
-\draw[thick, <->]
-    (0, 5.5) node(y2line)[above] {$y_2$}
-    |- (10, 0) node(y1line)[right] {$y_1$};
+        \draw[thick, <->]
+            (0, 5.5) node(y2line)[above] {$y_2$}
+            |- (10, 0) node(y1line)[right] {$y_1$};
 
-\coordinate (i) at (2, 3);
-\coordinate (g) at (9, 3);
-\coordinate (frac_progress) at ($(i)!2cm!(g)$);
-\coordinate (frac_line_a) at (frac_progress |- y2line);
-\coordinate (frac_line_b) at (frac_progress |- y1line);
+        \coordinate (i) at (2, 3);
+        \coordinate (g) at (9, 3);
+        \coordinate (frac_progress) at ($(i)!2cm!(g)$);
+        \coordinate (frac_line_a) at (frac_progress |- y2line);
+        \coordinate (frac_line_b) at (frac_progress |- y1line);
 
-\coordinate (dw_1) at ($(i)+(45:2cm)$);
-\coordinate (dw_2) at ($(i)+(-20:2cm)$);
-\coordinate (dw_3) at ($(i)+(-60:-2cm)$);
-\coordinate (dw_3_actual) at ($(i)+(-60:2cm)$);
+        \coordinate (dw_1) at ($(i)+(45:2cm)$);
+        \coordinate (dw_2) at ($(i)+(-20:2cm)$);
+        \coordinate (dw_3) at ($(i)+(-60:-2cm)$);
+        \coordinate (dw_3_actual) at ($(i)+(-60:2cm)$);
 
-\draw[->] (i) -- (dw_1) node[above left] {$\frac{\delta \vec{y}}{\delta w_1}$};
-\draw[->] (i) -- (dw_2) node[below] {$\frac{\delta \vec{y}}{\delta w_2}$};
-\draw[->] (i) -- (dw_3) node[above] {$\frac{\delta \vec{y}}{\delta w_3}$};
-\draw[->, cyan] (i) -- (frac_progress);
+        \draw[->] (i) -- (dw_1) node[above left] {$\frac{\delta \vec{y}}{\delta w_1}$};
+        \draw[->] (i) -- (dw_2) node[below] {$\frac{\delta \vec{y}}{\delta w_2}$};
+        \draw[->] (i) -- (dw_3) node[above] {$\frac{\delta \vec{y}}{\delta w_3}$};
+        \draw[->, cyan] (i) -- (frac_progress);
 
-\draw[dotted, cyan] (frac_line_a) -- (frac_line_b);
-\draw[dotted] (dw_1 |- y2line) -- (dw_1 |- y1line);
-\draw[dotted] (dw_2 |- y2line) -- (dw_2 |- y1line);
-\draw[dotted] (dw_3_actual |- y2line) -- (dw_3_actual |- y1line);
+        \draw[dotted, cyan] (frac_line_a) -- (frac_line_b);
+        \draw[dotted] (dw_1 |- y2line) -- (dw_1 |- y1line);
+        \draw[dotted] (dw_2 |- y2line) -- (dw_2 |- y1line);
+        \draw[dotted] (dw_3_actual |- y2line) -- (dw_3_actual |- y1line);
 
-\draw[dashed] (i) -- (dw_1) -- (g);
-\draw[dashed] (i) -- (dw_2) -- (g);
-\draw[dashed] (i) -- (dw_3_actual) -- (g);
-\draw[->, dashed, cyan] (i) -- (g);
+        \draw[dashed] (i) -- (dw_1) -- (g);
+        \draw[dashed] (i) -- (dw_2) -- (g);
+        \draw[dashed] (i) -- (dw_3_actual) -- (g);
+        \draw[->, dashed, cyan] (i) -- (g);
 
-\fill[blue] (i) circle (2pt) node[left] {$i$};
-\fill[red] (g) circle (2pt) node[right] {$g$};
+        \fill[blue] (i) circle (2pt) node[left] {$i$};
+        \fill[red] (g) circle (2pt) node[right] {$g$};
 
-\end{tikzpicture}
+    \end{tikzpicture}
+
+    \caption{Diagram of the output space.}
+
+\end{figure}
 
 
 
@@ -119,19 +126,22 @@ To do
 
 Consider the neural network below. Note that it does not have an activation function.
 
-\begin{center}
-    \begin{tikzpicture}
-        [
-            neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
-        ]
-        
-        \node [neuron] (x)  at (0,0) {$x$};
-        \node [neuron] (y1) at (4,1) {$y_1$};
-        \node [neuron] (y2) at (4,-1) {$y_2$};
-        \draw[->] (x) -- (y1) node[midway, above, sloped] {$w_1 + w_2$};
-        \draw[->] (x) -- (y2) node[midway, below, sloped] {$w_1 - w_2$};
-    \end{tikzpicture}
-\end{center}
+\begin{figure}[h]
+    \begin{center}
+        \begin{tikzpicture}
+            [
+                neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+            ]
+            
+            \node [neuron] (x)  at (0,0) {$x$};
+            \node [neuron] (y1) at (4,1) {$y_1$};
+            \node [neuron] (y2) at (4,-1) {$y_2$};
+            \draw[->] (x) -- (y1) node[midway, above, sloped] {$w_1 + w_2$};
+            \draw[->] (x) -- (y2) node[midway, below, sloped] {$w_1 - w_2$};
+        \end{tikzpicture}
+    \end{center}
+    \caption{The neural network.}
+\end{figure}
 
 Here we have
 \begin{equation*}
@@ -168,28 +178,32 @@ This leads to the current position $\vec{p} = \begin{bmatrix} 4 \\ 2 \end{bmatri
 Say we want to achieve $\frac{1}{6}$ fractional progress, so we aim to achieve the point $\vec{q}$ at the intersection of the fractional progress line with the goal line in the diagram below. 
 
 
-\begin{tikzpicture}
-    
-    \draw[help lines, color=gray!30, dashed] (0, 5.9) grid (10.9, 0);
-    \draw[thick, ->] (0, 0) -- (11, 0) node[above] {$y_1$};
-    \draw[thick, ->] (0, 0) -- (0, 6) node[above] {$y_2$};
-    
-    \coordinate (p) at (4, 2);
-    \coordinate (g) at (10, 2);
-    \coordinate (dw_1) at (1, 1);
-    \coordinate (dw_2) at (1, -1);
-    \coordinate (q) at (5, 2);
-    
-    \fill[blue] (p) circle (2pt) node[left] {$\vec{p}$};
-    \fill[red] (g) circle (2pt) node[right] {$\vec{g}$};
-    \fill (q) circle (2pt) node[above right] {$\vec{q}$};
-    
-    \draw[->] (p) -- +(dw_1) node[above left] {$\frac{\delta \vec{y}}{\delta w_1}$};
-    \draw[->] (p) -- +(dw_2) node[below left] {$\frac{\delta \vec{y}}{\delta w_2}$};
-    \draw[thick, dotted] (5, 0) -- (5, 6) node[above] {$\frac{1}{6}$ fractional progress};
-    \draw[->, dashed] (p) -- (g) node[midway, above] {goal line};
+\begin{figure}[h]
+    \begin{tikzpicture}
+        
+        \draw[help lines, color=gray!30, dashed] (0, 5.9) grid (10.9, 0);
+        \draw[thick, ->] (0, 0) -- (11, 0) node[right] {$y_1$};
+        \draw[thick, ->] (0, 0) -- (0, 6) node[above] {$y_2$};
+        
+        \coordinate (p) at (4, 2);
+        \coordinate (g) at (10, 2);
+        \coordinate (dw_1) at (1, 1);
+        \coordinate (dw_2) at (1, -1);
+        \coordinate (q) at (5, 2);
+        
+        \fill[blue] (p) circle (2pt) node[left] {$\vec{p}$};
+        \fill[red] (g) circle (2pt) node[right] {$\vec{g}$};
+        \fill (q) circle (2pt) node[above right] {$\vec{q}$};
+        
+        \draw[->] (p) -- +(dw_1) node[above left] {$\frac{\delta \vec{y}}{\delta w_1}$};
+        \draw[->] (p) -- +(dw_2) node[below left] {$\frac{\delta \vec{y}}{\delta w_2}$};
+        \draw[thick, dotted] (5, 0) -- (5, 6) node[above] {$\frac{1}{6}$ fractional progress};
+        \draw[->, dashed] (p) -- (g) node[midway, above] {goal line};
 
-\end{tikzpicture}
+    \end{tikzpicture}
+
+    \caption{Diagram of the weights' partial derivatives in output space along with the sub-goal.}
+\end{figure}
 
 Now we need to find out by how much we need to update $\vec{w}$. In other words, we need to find $\vec{a} \in \mathbb{R}^2$ so that after
 \begin{equation}
@@ -303,19 +317,22 @@ Furthermore, this network is so simple that the partial derivatives of the weigh
 \subsubsection{When gradients are dependent on other weights}
 Consider the neural network below. It uses the ReLU activation function.
 
-\begin{center}
-    \begin{tikzpicture}
-        [
-            neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
-        ]
-        
-        \node [neuron] (x)  at (0,0) {$x$};
-        \node [neuron] (y1) at (4,1) {$y_1$};
-        \node [neuron] (y2) at (4,-1) {$y_2$};
-        \draw[->] (x) -- (y1) node[midway, above, sloped] {$w_1 + w_2 + w_1 w_2$};
-        \draw[->] (x) -- (y2) node[midway, below, sloped] {$w_1 - w_2 + w_1 w_2$};
-    \end{tikzpicture}
-\end{center}
+\begin{figure}[h]
+    \begin{center}
+        \begin{tikzpicture}
+            [
+                neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+            ]
+            
+            \node [neuron] (x)  at (0,0) {$x$};
+            \node [neuron] (y1) at (4,1) {$y_1$};
+            \node [neuron] (y2) at (4,-1) {$y_2$};
+            \draw[->] (x) -- (y1) node[midway, above, sloped] {$w_1 + w_2 + w_1 w_2$};
+            \draw[->] (x) -- (y2) node[midway, below, sloped] {$w_1 - w_2 + w_1 w_2$};
+        \end{tikzpicture}
+    \end{center}
+    \caption{The neural network.}
+\end{figure}
 
 Here we have
 \begin{equation*}
@@ -344,28 +361,33 @@ and the initial weight configuration be
 $\vec{w} = \begin{bmatrix} 1 \\ 1 \end{bmatrix}$.
 This leads to the current position $\vec{p} = \begin{bmatrix} 3 \\ 1 \end{bmatrix}$ in output space.
 
-\begin{tikzpicture}
-    
-    \draw[help lines, color=gray!30, dashed] (0, 5.9) grid (10.9, 0);
-    \draw[thick, ->] (0, 0) -- (11, 0) node[above] {$y_1$};
-    \draw[thick, ->] (0, 0) -- (0, 6) node[above] {$y_2$};
-    
-    \coordinate (p) at (3, 1);
-    \coordinate (g) at (9, 1);
-    \coordinate (dw_1) at (2, 2);
-    \coordinate (dw_2) at (2, 0);
-    \coordinate (q) at (5, 1);
-    
-    \fill[blue] (p) circle (2pt) node[left] {$\vec{p}$};
-    \fill[red] (g) circle (2pt) node[right] {$\vec{g}$};
-    \fill (q) circle (2pt) node[below right] {$\vec{q}$};
-    
-    \draw[->] (p) -- +(dw_1) node[midway, above left] {$\frac{\delta \vec{y}}{\delta w_1}$};
-    \draw[->] (p) -- +(dw_2) node[midway, below] {$\frac{\delta \vec{y}}{\delta w_2}$};
-    \draw[thick, dotted] (5, 0) -- (5, 6) node[above] {$\frac{1}{6}$ fractional progress};
-    \draw[->, dashed] (p) -- (g) node[midway, above] {goal line};
 
-\end{tikzpicture}
+\begin{figure}[h]
+    \begin{tikzpicture}
+        
+        \draw[help lines, color=gray!30, dashed] (0, 5.9) grid (10.9, 0);
+        \draw[thick, ->] (0, 0) -- (11, 0) node[right] {$y_1$};
+        \draw[thick, ->] (0, 0) -- (0, 6) node[above] {$y_2$};
+        
+        \coordinate (p) at (3, 1);
+        \coordinate (g) at (9, 1);
+        \coordinate (dw_1) at (2, 2);
+        \coordinate (dw_2) at (2, 0);
+        \coordinate (q) at (5, 1);
+        
+        \fill[blue] (p) circle (2pt) node[left] {$\vec{p}$};
+        \fill[red] (g) circle (2pt) node[right] {$\vec{g}$};
+        \fill (q) circle (2pt) node[below right] {$\vec{q}$};
+        
+        \draw[->] (p) -- +(dw_1) node[midway, above left] {$\frac{\delta \vec{y}}{\delta w_1}$};
+        \draw[->] (p) -- +(dw_2) node[midway, below] {$\frac{\delta \vec{y}}{\delta w_2}$};
+        \draw[thick, dotted] (5, 0) -- (5, 6) node[above] {$\frac{1}{6}$ fractional progress};
+        \draw[->, dashed] (p) -- (g) node[midway, above] {goal line};
+
+    \end{tikzpicture}
+
+    \caption{Diagram of the weights' partial derivatives in output space along with the sub-goal.}
+\end{figure}
 
 Just looking at the diagram, one could guess to update the weights as follows to achieve $\vec{q}$:
 \begin{equation*}
@@ -391,11 +413,115 @@ Using $\Vec{w} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$, we calculate the new out
 \end{equation*}
 which is \textit{not} our sub-goal $\vec{p}$! The reason for this is that unlike the previous network, the partial derivative $\frac{\partial \vec{y}}{\partial w_1}$ is dependent on the value of $w_2$ and vice-versa.
 
+\paragraph{Remarks:}
+When the partial derivatives are functions of each other (i.e. depend on each other), we can't use simple linear algebra in order to find the combination of the weights to achieve a specific subgoal. 
+This makes intuitive sense, because if it were possible, we could simply choose the goal as our subgoal and expect to use linear algebra to find the optimum weight configuration which would eliminate the need for training neural networks.
 
 \subsubsection{A problem with an unrealizable goal line, but realizable goal}
-Did not find a good example yet
+Did not find a good example yet.
 
 
+\section{Week 5}
+
+\subsection{Research}
+
+\paragraph{Radial basis function}
+A radial basis function is a real-valued function $f$ that satisfies the property $f(\vec{x}) = f(\norm{\vec{x}})$. 
+RBFs are used as a kernel in SVMs. 
+They are infinitely differentiable.
+
+Two commonly used RBFs are the Gaussian function
+$$ f(x) = e^{-x^2} $$
+and the bump function
+$$ f(x) = 
+\begin{cases}
+    e^{-\frac{1}{1-x^2}} & \text{for $-1<x<1$} \\
+    0 & \text{otherwise}.
+\end{cases}
+$$
+
+\subsection{Experimentation}
+
+\subsubsection{Replicating the simple neural network with the shallow excitation gradient}
+Consider the very simple neural network below. 
+\begin{figure}[h]
+    \begin{center}
+        \begin{tikzpicture}
+            [
+                neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+            ]
+            
+            \node [neuron] (x1)  at (0,2) {$x_1$};
+            \node [neuron] (x2) at (0,0) {$x_2$};
+            \node [neuron] (y) at (4,1) {$y$};
+            \draw[->] (x1) -- (y) node[midway, above, sloped] {$w_1$};
+            \draw[->] (x2) -- (y) node[midway, below, sloped] {$w_2$};
+        \end{tikzpicture}
+    \end{center}
+    \caption{The neural network.}
+\end{figure}
+
+The output neuron's excitation is given by 
+\begin{equation*}
+    y(\vec{x}; \vec{w}, b) = \vec{w} \vec{x} + b.
+\end{equation*}
+
+Consider the two points in input space
+$\vec{a} = 
+\begin{bmatrix}
+    0.6 \\ 0.4
+\end{bmatrix}$
+and
+$\vec{b} = 
+\begin{bmatrix}
+    1 \\ 0.4
+\end{bmatrix}$
+with the targets $y(\vec{a}) = 0.2$ and $y(\vec{b}) = 0.8$.
+
+The current weight configuration should be such that the hyperplane in output space of the 0.5 excitation line should be given by $x_1=0.5$.
+Furthermore, the current activations should be $y(\vec{a}) = 0.51$ and $y(\vec{b}) = 0.55$ such that we get the configuration outlined in Fig. \ref{week5:initial}.
+\begin{figure}[h]
+
+    \begin{tikzpicture}[x=10cm,y=10cm]
+        
+        \draw[help lines, color=gray!30, dashed] (0, .6) grid (1.1, 0);
+        \draw[thick, ->] (0, 0) -- (1.1, 0) node[right] {$x_1$};
+        \draw[thick, ->] (0, 0) -- (0, .6) node[above] {$x_2$};
+        \foreach \x in {0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 }
+     		\draw (\x,1pt) -- (\x,-3pt)
+            node[anchor=north] {\x};
+        \foreach \y in {0.1, 0.2, 0.3, 0.4, 0.5 }
+            \draw (1pt,\y) -- (-3pt,\y)
+           node[anchor=east] {\y};
+        \draw (0, 0) node[below left] {0};
+        
+        \draw (0.5, 0) -- (.5, .6) node[above] {hyperplane of $y=0.5$ activation};
+        
+        \coordinate (a) at (.6, .4);
+        \coordinate (b) at (1, .4);
+        
+        \fill (a) circle (2pt) node[above] {$y(\vec{a})=0.51$};
+        \fill (b) circle (2pt) node[above] {$y(\vec{b})=0.55$};
+
+        \draw[->] (.5, .55) -- (.55, .55);
+    \end{tikzpicture}
+
+    \caption{The initial configuration with the hyperplane. The arrow is pointing in the direction of increasing activation.}
+    \label{week5:initial}
+\end{figure}
+
+After some experimentation, it was established that this configuration can be achieved using
+$\vec{w} = \begin{bmatrix}
+    0.1 \\ 0.0005
+\end{bmatrix}$
+and $b = 0.45$ thus leading to the function
+\begin{equation*}
+    y(\vec{x}) = 0.1 x_1 + 0.0005 x_2 + 0.45.
+\end{equation*}
+
+\paragraph{Remarks:}
+To get a gradient this shallow, it was necessary to introduce a third parameter $b$. 
+We need to investigate whether we can call it a \say{non-trainable variable}, so we effectively only have two weights.
 
 \bibliographystyle{apalike}
 \bibliography{bibliography}
