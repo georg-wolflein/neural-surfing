@@ -1,14 +1,18 @@
 \documentclass{article}
+\usepackage[a4paper, margin=3cm]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{xcolor}
-\usepackage{tikz}
 \usepackage{verbatim}
 \usepackage{dirtytalk}
 \usepackage{calc}
+% \usepackage{tikz}
+\usepackage{pgfplots}
 
+\pgfplotsset{compat=newest}
 \usetikzlibrary{calc}
+\usepgfplotslibrary{fillbetween}
 
 \title{CS4099}
 \author{\vspace{-5ex}}
@@ -17,6 +21,7 @@
 \let\vec\mathbf
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 
+\pgfdeclarelayer{pre main}
 \begin{document}
 
 \maketitle
@@ -120,7 +125,7 @@ Instead of using a global learning rate (as in SGD), Adam \say{computes individu
 \paragraph{The stripe problem in literature}
 To do
 
-\subsection{Experimentation}
+\subsection{Investigation}
 
 \subsubsection{A problem that always achieves a point on the goal line (gradient of weights are at right angle)}
 
@@ -175,10 +180,11 @@ and the initial weight configuration be
 $\vec{w} = \begin{bmatrix} 3 \\ 1 \end{bmatrix}$.
 This leads to the current position $\vec{p} = \begin{bmatrix} 4 \\ 2 \end{bmatrix}$ in output space.
 
-Say we want to achieve $\frac{1}{6}$ fractional progress, so we aim to achieve the point $\vec{q}$ at the intersection of the fractional progress line with the goal line in the diagram below. 
+Say we want to achieve $\frac{1}{6}$ fractional progress, so we aim to achieve the point $\vec{q}$ at the intersection of the fractional progress line with the goal line in the diagram of Fig. \ref{fig:week3fractionlprogress}. 
 
 
 \begin{figure}[h]
+    \centering
     \begin{tikzpicture}
         
         \draw[help lines, color=gray!30, dashed] (0, 5.9) grid (10.9, 0);
@@ -203,6 +209,7 @@ Say we want to achieve $\frac{1}{6}$ fractional progress, so we aim to achieve t
     \end{tikzpicture}
 
     \caption{Diagram of the weights' partial derivatives in output space along with the sub-goal.}
+    \label{fig:week3fractionlprogress}
 \end{figure}
 
 Now we need to find out by how much we need to update $\vec{w}$. In other words, we need to find $\vec{a} \in \mathbb{R}^2$ so that after
@@ -440,7 +447,7 @@ $$ f(x) =
 \end{cases}
 $$
 
-\subsection{Experimentation}
+\subsection{Investigation}
 
 \subsubsection{Replicating the simple neural network with the shallow excitation gradient}
 Consider the very simple neural network below. 
@@ -481,6 +488,8 @@ with the targets $y(\vec{a}) = 0.2$ and $y(\vec{b}) = 0.8$.
 The current weight configuration should be such that the hyperplane in output space of the 0.5 excitation line should be given by $x_1=0.5$.
 Furthermore, the current activations should be $y(\vec{a}) = 0.51$ and $y(\vec{b}) = 0.55$ such that we get the configuration outlined in Fig. \ref{week5:initial}.
 \begin{figure}[h]
+    
+    \centering
 
     \begin{tikzpicture}[x=10cm,y=10cm]
         
@@ -522,6 +531,217 @@ and $b = 0.45$ thus leading to the function
 \paragraph{Remarks:}
 To get a gradient this shallow, it was necessary to introduce a third parameter $b$. 
 We need to investigate whether we can call it a \say{non-trainable variable}, so we effectively only have two weights.
+
+\section{Week 6}
+
+\subsection{Research}
+
+\subsection{Investigation}
+
+\subsubsection{The hyperplanes of radial basis activation functions}
+Consider the radial basis function
+\begin{equation}
+    \label{eq:week5:rbf}
+    \phi(x) = e^{-x^2}
+\end{equation}
+with the graph pictured in Fig. \ref{fig:week6:rbf:plot}.
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[scale=1.5]
+        \draw[help lines, color=gray!30, dashed] (-3, 0) grid (3, 2);
+        \draw[thick, <->] (-3.2, 0) -- (3.2, 0) node[right] {$x$};
+        \draw[thick, ->] (0, 0) -- (0, 2.2) node[above] {$\phi(x)$};
+        \draw[domain=-3:3,smooth,variable=\x,blue] plot ({\x},{exp(-\x*\x)});
+
+        \foreach \x in {-3,...,3}
+            \draw (\x,1pt) -- (\x,-3pt)
+            node[anchor=north] {\x};
+        \foreach \y in {1, ..., 2}
+            \draw (1pt,\y) -- (-3pt,\y)
+            node[anchor=east] {\y};
+    \end{tikzpicture}
+    \caption{Plot of the radial basis activation function.}
+    \label{fig:week6:rbf:plot}
+\end{figure}
+
+To examine the hyperplanes corresponding to this activation function, consider the very simple neural network given in Fig. \ref{fig:week6:rbf:neuralnet}. 
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        [
+            neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+        ]
+        
+        \node [neuron] (x1)  at (0,2) {$x_1$};
+        \node [neuron] (x2) at (0,0) {$x_2$};
+        \node [neuron] (y) at (4,1) {$y$};
+        \draw[->] (x1) -- (y) node[midway, above, sloped] {$w_1$};
+        \draw[->] (x2) -- (y) node[midway, below, sloped] {$w_2$};
+    \end{tikzpicture}
+    \caption{The neural network.}
+    \label{fig:week6:rbf:neuralnet}
+\end{figure}
+
+For simplicity we, set $w_1=w_2=1$. 
+The output neuron's activation is then given by 
+\begin{equation*}
+    y(\vec{x}) = \phi(x_1 + x_2).
+\end{equation*}
+
+To find the equations of the hyperplanes, we set the output to 0.5, so
+\begin{align*}
+    \frac{1}{2} &= \phi(x_1 + x_2) \\
+    &= e^{-(x_1 + x_2)^2} \\
+    -\ln \frac{1}{2} &= (x_1 + x_2)^2 \\
+    \pm\sqrt{-\ln \frac{1}{2}} &= x_1 + x_2 \\
+    x_2 &= -x_1 \pm\sqrt{-\ln \frac{1}{2}}
+\end{align*}
+which means that there are two lines. They are graphed in Fig. \ref{fig:week6:rbf:hyperplanes}.
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width=.35\textwidth,
+            % axis lines=center,
+            xlabel={$x_1$},
+            ylabel={$x_2$},
+            ymin=-3, ymax=3,
+            xmin=-3, xmax=3,
+            grid,
+            samples=2,
+            xtick={-3,...,3},
+            ytick={-3,...,3}
+        ]
+            \addplot[name path=A] {-x + sqrt(-ln(0.5))};
+            \addplot[name path=B] {-x - sqrt(-ln(0.5))};
+            \addplot[black,opacity=0.2] fill between[of=A and B];
+        \end{axis}
+    \end{tikzpicture}
+    \hspace{.05\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width=.35\textwidth,
+            ymin=-3, ymax=3,
+            xmin=-3, xmax=3,
+            zmin=0, zmax=1,
+            xlabel={$x_1$},
+            ylabel={$x_2$},
+            zlabel={$\phi(x_1+x_2)$},
+            samples=25,
+            xtick={-3,0,3},
+            ytick={-3,0,3},
+            ztick={0, 1},
+            extra z ticks={0.5}
+        ]
+            % \addplot3[
+            %     name path=A,
+            %     samples=2,
+            %     mark=none
+            % ] ({x}, {-x - sqrt(-ln(0.5))}, {0.5});
+            % \addplot3[
+            %     name path=B,
+            %     samples=2,
+            %     mark=none
+            % ] ({x}, {-x + sqrt(-ln(0.5))}, {0.5});
+            % \addplot3[black,opacity=0.4] fill between[of=A and B];
+            \addplot3 [
+                mesh,
+                domain=-3:3,
+                y domain=-3:3,
+            ] {exp(-(x+y)^2)};
+            \addplot3[
+                surf,
+                fill=black,
+                opacity=0.2,
+                domain=-3:3,
+                y domain=-3:3,
+                samples=2
+            ] {.5};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Plot of hyperplanes in input space of the radial basis activation function.}
+    \label{fig:week6:rbf:hyperplanes}
+\end{figure}
+
+\paragraph{Remarks:}
+Notice that the radial basis function given in (\ref{eq:week5:rbf}) is differentiable and hence a suitable activation function for neural networks.
+This means that if we use this activation function, we do not require hidden units in order to create a stripe configuration.
+
+\subsubsection{The stripe problem without hidden units}
+From the findings of the previous section, it follows that we could create the stripe problem with the neural network architecture from Fig. \ref{fig:week6:rbf:neuralnet} and the hyperplanes that are a result of the radial basis activation function.
+Fig. \ref{fig:week6:rbf:hyperplanes} shows the hyperplanes for the initial weight configuration $w_1=w_2=1$.
+
+We require four sample points to produce the problem, and they must be arranged in a way where the mean squared error is required to temporarily increase before it decreases.
+The initial and possible goal configuration are shown in Fig. \ref{fig:week6:stripe:initialconfig}.
+
+The depicted goal configuration can be achieved when $w_1=-1$ and $w_2=1$ which means that only $w_1$ needs to change, but in doing so, some points will be misclassified. 
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width=.35\textwidth,
+            title={Initial configuration},
+            xlabel={$x_1$},
+            ylabel={$x_2$},
+            ymin=-3, ymax=3,
+            xmin=-3, xmax=3,
+            grid,
+            samples=2,
+            xtick={-3,...,3},
+            ytick={-3,...,3}
+        ]
+            \addplot[name path=A] {-x + sqrt(-ln(0.5))};
+            \addplot[name path=B] {-x - sqrt(-ln(0.5))};
+            \addplot[black,opacity=0.2] fill between[of=A and B];
+
+            \addplot [only marks] table {
+                0 0
+                2 2
+            };
+            \addplot [only marks, mark=o] table {
+                0 2
+                2 0
+            };
+        \end{axis}
+    \end{tikzpicture}
+    \vspace{.05\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width=.35\textwidth,
+            title={Possible goal configuration},
+            xlabel={$x_1$},
+            ylabel={$x_2$},
+            ymin=-3, ymax=3,
+            xmin=-3, xmax=3,
+            grid,
+            samples=2,
+            xtick={-3,...,3},
+            ytick={-3,...,3}
+        ]
+            \addplot[name path=A] {x + sqrt(-ln(0.5))};
+            \addplot[name path=B] {x - sqrt(-ln(0.5))};
+            \addplot[black,opacity=0.2] fill between[of=A and B];
+
+            \addplot [only marks] table {
+                0 0
+                2 2
+            };
+            \addplot [only marks, mark=o] table {
+                0 2
+                2 0
+            };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Initial and possible goal configuration for the stripe problem.}
+    \label{fig:week6:stripe:initialconfig}
+\end{figure}
 
 \bibliographystyle{apalike}
 \bibliography{bibliography}
