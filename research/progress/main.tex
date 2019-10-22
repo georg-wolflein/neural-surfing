@@ -9,10 +9,26 @@
 \usepackage{calc}
 % \usepackage{tikz}
 \usepackage{pgfplots}
+\usepackage{titlesec}
+\usepackage{wrapfig}
+\usepackage{fancyhdr}
+
+\titleclass{\section}{top}
+\newcommand\sectionbreak{\clearpage}
+
+\fancypagestyle{plain}{
+    \fancyhf{}
+    \lhead{ CS4099 Notes }
+    \rhead{ Georg Wölflein }
+    \cfoot{ -\ \thepage\ - }
+}
+\pagestyle{plain}
+
 
 \pgfplotsset{compat=newest}
 \usetikzlibrary{calc}
-\usepgfplotslibrary{fillbetween}
+\usepgfplotslibrary{external, fillbetween}
+\tikzexternalize[prefix=figures/]
 
 \title{CS4099}
 \author{\vspace{-5ex}}
@@ -24,7 +40,7 @@
 \pgfdeclarelayer{pre main}
 \begin{document}
 
-\maketitle
+%\maketitle
 
 \section{Week 2}
 
@@ -125,9 +141,7 @@ Instead of using a global learning rate (as in SGD), Adam \say{computes individu
 \paragraph{The stripe problem in literature}
 To do
 
-\subsection{Investigation}
-
-\subsubsection{A problem that always achieves a point on the goal line (gradient of weights are at right angle)}
+\subsection{A problem that always achieves a point on the goal line (gradient of weights are at right angle)}
 
 Consider the neural network below. Note that it does not have an activation function.
 
@@ -321,7 +335,7 @@ Are there any drawbacks for choosing a particular $\vec{a}$ over another, if the
 
 Furthermore, this network is so simple that the partial derivatives of the weights with respect to the output space aren't dependent on the weights themselves. However, in a \say{real} neural network, the gradients will influence each other because they depend on the weights. What happens in that case? (This question is examined in the next section.)
 
-\subsubsection{When gradients are dependent on other weights}
+\subsection{When gradients are dependent on other weights}
 Consider the neural network below. It uses the ReLU activation function.
 
 \begin{figure}[h]
@@ -424,7 +438,7 @@ which is \textit{not} our sub-goal $\vec{p}$! The reason for this is that unlike
 When the partial derivatives are functions of each other (i.e. depend on each other), we can't use simple linear algebra in order to find the combination of the weights to achieve a specific subgoal. 
 This makes intuitive sense, because if it were possible, we could simply choose the goal as our subgoal and expect to use linear algebra to find the optimum weight configuration which would eliminate the need for training neural networks.
 
-\subsubsection{A problem with an unrealizable goal line, but realizable goal}
+\subsection{A problem with an unrealizable goal line, but realizable goal}
 Did not find a good example yet.
 
 
@@ -447,9 +461,8 @@ $$ f(x) =
 \end{cases}
 $$
 
-\subsection{Investigation}
-
-\subsubsection{Replicating the simple neural network with the shallow excitation gradient}
+\subsection{Replicating the simple neural network with the shallow excitation gradient}
+\label{sec:week5:shallownet}
 Consider the very simple neural network below. 
 \begin{figure}[h]
     \begin{center}
@@ -466,6 +479,7 @@ Consider the very simple neural network below.
         \end{tikzpicture}
     \end{center}
     \caption{The neural network.}
+    \label{fig:week5:shallownet}
 \end{figure}
 
 The output neuron's excitation is given by 
@@ -534,11 +548,7 @@ We need to investigate whether we can call it a \say{non-trainable variable}, so
 
 \section{Week 6}
 
-\subsection{Research}
-
-\subsection{Investigation}
-
-\subsubsection{The hyperplanes of radial basis activation functions}
+\subsection{The hyperplanes of radial basis activation functions}
 Consider the radial basis function
 \begin{equation}
     \label{eq:week5:rbf}
@@ -583,7 +593,7 @@ To examine the hyperplanes corresponding to this activation function, consider t
     \label{fig:week6:rbf:neuralnet}
 \end{figure}
 
-For simplicity we, set $w_1=w_2=1$. 
+For simplicity, we set $w_1=w_2=1$. 
 The output neuron's activation is then given by 
 \begin{equation*}
     y(\vec{x}) = \phi(x_1 + x_2).
@@ -653,7 +663,7 @@ which means that there are two lines. They are graphed in Fig. \ref{fig:week6:rb
                 domain=-3:3,
                 y domain=-3:3,
             ] {exp(-(x+y)^2)};
-            \addplot3[
+            \addplot3 [
                 surf,
                 fill=black,
                 opacity=0.2,
@@ -671,14 +681,14 @@ which means that there are two lines. They are graphed in Fig. \ref{fig:week6:rb
 Notice that the radial basis function given in (\ref{eq:week5:rbf}) is differentiable and hence a suitable activation function for neural networks.
 This means that if we use this activation function, we do not require hidden units in order to create a stripe configuration.
 
-\subsubsection{The stripe problem without hidden units}
+\subsection{The stripe problem without hidden units}
 From the findings of the previous section, it follows that we could create the stripe problem with the neural network architecture from Fig. \ref{fig:week6:rbf:neuralnet} and the hyperplanes that are a result of the radial basis activation function.
 Fig. \ref{fig:week6:rbf:hyperplanes} shows the hyperplanes for the initial weight configuration $w_1=w_2=1$.
 
 We require four sample points to produce the problem, and they must be arranged in a way where the mean squared error is required to temporarily increase before it decreases.
 The initial and possible goal configuration are shown in Fig. \ref{fig:week6:stripe:initialconfig}.
 
-The depicted goal configuration can be achieved when $w_1=-1$ and $w_2=1$ which means that only $w_1$ needs to change, but in doing so, some points will be misclassified. 
+The depicted goal configuration can be achieved when either $w_1$ or $w_2$ changes to $-1$ whilst the other weight remains at $1$. In gradually changing the weight, some points will necessarily be misclassified. 
 
 \begin{figure}[h]
     \centering
@@ -742,6 +752,70 @@ The depicted goal configuration can be achieved when $w_1=-1$ and $w_2=1$ which 
     \caption{Initial and possible goal configuration for the stripe problem.}
     \label{fig:week6:stripe:initialconfig}
 \end{figure}
+
+This becomes evident when graphing the error-weight surface, as shown in Fig. \ref{fig:week6:stripe:errorsurface}. 
+There is no path from the initial configuration to the global minimum with a strictly decreasing error; the error must temporarily be increased (by overcoming a hill) until reaching the global minimum trough.
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width=.8\textwidth,
+            ymin=-3, ymax=3,
+            xmin=-3, xmax=3,
+            zmin=0, zmax=2,
+            xlabel={$w_1$},
+            ylabel={$w_2$},
+            zlabel={mean squared error},
+            samples=50,
+            xtick={-3,0,3},
+            ytick={-3,0,3},
+            ztick={0, 1, 2},
+            view={30}{75}
+        ]
+            \addplot3 [
+                mesh,
+                domain=-3:3,
+                y domain=-3:3
+            ] {(exp(-4*x^2))^2 + (exp(-4*y^2))^2 + (1 - exp(-(2*x + 2*y)^2))^2};
+            \node[label={360:{initial configuration}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{The error-weight surface associated with the stripe problem.}
+    \label{fig:week6:stripe:errorsurface}
+\end{figure}
+
+\begin{wrapfigure}{R}{0.55\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            title = {Training accuracy},
+            xlabel = {training step},
+            ylabel = {loss},
+            yticklabel style={/pgf/number format/.cd,fixed,precision=5}
+            ]
+            \addplot[blue] table {../data/week6_stripe_loss.dat};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Progress of training accuracy.}
+    \label{week6:stripe:trainingaccuracy}
+\end{wrapfigure}
+
+\paragraph{Training using gradient descent}
+To test the above findings, this simple neural network was trained using the \texttt{keras} framework. 
+As expected, the Stochastic Gradient Descent (SGD) optimizer did not achieve any noticable progress.
+After 20,000 iterations, the weights were at $w_1=w_2=1.105$, i.e. they did not move to a configuration where $w_1=-w_2$ which would constitute the global minimum. 
+
+Fig. \ref{week6:stripe:trainingaccuracy} depicts the training accuracy across the 20,000 iterations.
+The only progress that was achieved was in the order of $10^{-3}$, and that was not in the direction of the global minimum.
+Furthermore, the graph seems to converge to a value around $0.25$.
+
+This means that we have found a simple example where SGD suffers the local minimum problem.
+
+\subsection{Training the neural network with the shallow excitation gradient}
+Let's come back to the neural network from Sec. \ref{sec:week5:shallownet} given in Fig. \ref{fig:week5:shallownet}.
 
 \bibliographystyle{apalike}
 \bibliography{bibliography}

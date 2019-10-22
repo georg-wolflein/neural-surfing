@@ -1,5 +1,6 @@
 __*.tex
 main.pdf
+figures/
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
