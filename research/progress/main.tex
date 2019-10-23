@@ -3,7 +3,6 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amssymb}
-\usepackage{xcolor}
 \usepackage{verbatim}
 \usepackage{dirtytalk}
 \usepackage{calc}
@@ -12,6 +11,7 @@
 \usepackage{titlesec}
 \usepackage{wrapfig}
 \usepackage{fancyhdr}
+\usepackage{xcolor}
 
 \titleclass{\section}{top}
 \newcommand\sectionbreak{\clearpage}
@@ -26,9 +26,12 @@
 
 
 \pgfplotsset{compat=newest}
+\pgfplotsset{every axis plot post/.append style={mark=none}}
 \usetikzlibrary{calc}
 \usepgfplotslibrary{external, fillbetween}
 \tikzexternalize[prefix=figures/]
+
+\definecolor{darkcyan}{rgb}{0.0, 0.55, 0.55}
 
 \title{CS4099}
 \author{\vspace{-5ex}}
@@ -782,7 +785,7 @@ There is no path from the initial configuration to the global minimum with a str
             \node[label={360:{initial configuration}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
         \end{axis}
     \end{tikzpicture}
-    \caption{The error-weight surface associated with the stripe problem.}
+    \caption{The error-weight surface of the stripe problem.}
     \label{fig:week6:stripe:errorsurface}
 \end{figure}
 
@@ -791,16 +794,16 @@ There is no path from the initial configuration to the global minimum with a str
         \begin{axis}[
             scale only axis,
             width = 0.4\textwidth,
-            title = {Training accuracy},
+            title = {Training progress},
             xlabel = {training step},
             ylabel = {loss},
             yticklabel style={/pgf/number format/.cd,fixed,precision=5}
             ]
-            \addplot[blue] table {../data/week6_stripe_loss.dat};
+            \addplot table {../data/week6_stripe_loss.dat};
         \end{axis}
     \end{tikzpicture}
-    \caption{Progress of training accuracy.}
-    \label{week6:stripe:trainingaccuracy}
+    \caption{Loss over time during training.}
+    \label{fig:week6:stripe:trainingloss}
 \end{wrapfigure}
 
 \paragraph{Training using gradient descent}
@@ -808,14 +811,140 @@ To test the above findings, this simple neural network was trained using the \te
 As expected, the Stochastic Gradient Descent (SGD) optimizer did not achieve any noticable progress.
 After 20,000 iterations, the weights were at $w_1=w_2=1.105$, i.e. they did not move to a configuration where $w_1=-w_2$ which would constitute the global minimum. 
 
-Fig. \ref{week6:stripe:trainingaccuracy} depicts the training accuracy across the 20,000 iterations.
+Fig. \ref{fig:week6:stripe:trainingloss} depicts the training accuracy across the 20,000 iterations.
 The only progress that was achieved was in the order of $10^{-3}$, and that was not in the direction of the global minimum.
 Furthermore, the graph seems to converge to a value around $0.25$.
 
 This means that we have found a simple example where SGD suffers the local minimum problem.
 
+\clearpage
 \subsection{Training the neural network with the shallow excitation gradient}
+
+\begin{wraptable}{R}{0.55\textwidth}
+    \begin{tabular}{c|c|c}
+        point in input space & initial value & target value \\
+        \hline
+        $\vec{a} = \begin{bmatrix}
+            0.6 \\ 0.4
+        \end{bmatrix}$
+        &  0.51 & 0.2 \\
+        $\vec{b} = \begin{bmatrix}
+            0.6 \\ 1.0
+        \end{bmatrix}$
+        &  0.55 & 0.8
+    \end{tabular}
+    \caption{Initial and target values for $\vec{a}$ and $\vec{b}$.}
+    \label{table:week6:shallownet:aandb}
+\end{wraptable}
 Let's come back to the neural network from Sec. \ref{sec:week5:shallownet} given in Fig. \ref{fig:week5:shallownet}.
+Recall the two points in input space $\vec{a}$ and $\vec{b}$ with initial and target values given in Table \ref{table:week6:shallownet:aandb}.
+
+In order to test the behaviour of gradient descent, we will give point $\vec{b}$ a weighting four times higher than $\vec{a}$ by simply duplicating $\vec{b}$ four times in the training set which is then given by $\left\{ \vec{a}, \vec{b}, \vec{b}, \vec{b}, \vec{b}\right\}$.
+
+The neural network was trained for 5,000 steps using \texttt{keras} and without an activation function.
+Fig. \ref{fig:week6:shallownet:trainingloss} shows the training progress over time. 
+It can be seen that the gradient descent optimizer initially reduces the loss quite quickly (hence the steep slope), but around step 100, the slope becomes much more shallow.
+The reason for this is that until this step, the network prioritized getting a better prediction result for $\vec{b}$, but the initial rapid improvements to the four points at $\vec{b}$ caused significant deteriorations in the predictions for point $\vec{a}$.
+Fig. \ref{fig:week6:shallownet:predictions} illustrates this point, as the prediction for $\vec{a}$ first moves away from the target (it increases from 0.51, instead of decreasing to the target 0.2) before performing a sharp turn around iteration 100 after which it decreased until eventually meeting 0.2.
+
+Finally, Fig. \ref{fig:week6:shallownet:weights} shows how the weights $w_1$ and $w_2$ were updated during the training process. It can clearly be seen that SGD does not choose the optimal way of updating weights which would be a straight line from the initial weight configuration to the final configuration.
+
+\begin{figure}[h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            title = {Training progress},
+            xlabel = {training step},
+            ylabel = {loss},
+            yticklabel style={/pgf/number format/.cd,fixed},
+            scaled y ticks=false,
+            ymin=0, ymax=.08
+            ]
+            \addplot table {../data/week6_shallow_network_loss.dat};
+        \end{axis}
+    \end{tikzpicture}
+    \vspace{.05\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            title = {Initial training progress (first 1,000 steps)},
+            xlabel = {training step},
+            ylabel = {loss},
+            yticklabel style={/pgf/number format/.cd,fixed},
+            scaled y ticks=false,
+            ymin=0, ymax=.08, xmax=1000
+            ]
+            \addplot table {../data/week6_shallow_network_loss_1000.dat};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Loss over time during training. Notice the abrupt change in gradient which can be seen in more detail on the right.}
+    \label{fig:week6:shallownet:trainingloss}
+\end{figure}
+
+\begin{figure}[h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            title = {Predictions for $\vec{a}$ and $\vec{b}$ over time},
+            xlabel = {training step},
+            ylabel = {prediction ($y$)},
+            legend entries = {$y(\vec{a})$, $y(\vec{b})$},
+            legend style = {at={(.97,.5)}, anchor=east}
+            ]
+            \addplot table {../data/week6_shallow_network_predictions_a.dat};
+            \addplot table {../data/week6_shallow_network_predictions_b.dat};
+        \end{axis}
+    \end{tikzpicture}
+    \vspace{.05\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            title = {Predictions in relation to each other},
+            xlabel = {$y(\vec{a})$},
+            ylabel = {$y(\vec{b})$}
+            ]
+            \addplot table {../data/week6_shallow_network_predictions.dat};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Changes in the predictions of $\vec{a}$ and $\vec{b}$ during the training process.}
+    \label{fig:week6:shallownet:predictions}
+\end{figure}
+
+\begin{figure}[h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            title = {Changes in weights during training \\ (first 1,000 steps)},
+            title style={align=center},
+            xlabel = {training step},
+            ylabel = {weight value},
+            legend entries = {$w_1$, $w_2$},
+            legend style = {at={(.97,.5)}, anchor=east}
+            ]
+            \addplot table {../data/week6_shallow_network_weight_0.dat};
+            \addplot table {../data/week6_shallow_network_weight_1.dat};
+        \end{axis}
+    \end{tikzpicture}
+    \vspace{.05\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            title = {Weights in relation to each other},
+            xlabel = {$w_1$},
+            ylabel = {$w_2$}
+            ]
+            \addplot table {../data/week6_shallow_network_weights.dat};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Changes in weights during the training process.}
+    \label{fig:week6:shallownet:weights}
+\end{figure}
 
 \bibliographystyle{apalike}
 \bibliography{bibliography}
