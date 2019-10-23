@@ -841,7 +841,8 @@ Recall the two points in input space $\vec{a}$ and $\vec{b}$ with initial and ta
 
 In order to test the behaviour of gradient descent, we will give point $\vec{b}$ a weighting four times higher than $\vec{a}$ by simply duplicating $\vec{b}$ four times in the training set which is then given by $\left\{ \vec{a}, \vec{b}, \vec{b}, \vec{b}, \vec{b}\right\}$.
 
-The neural network was trained for 5,000 steps using \texttt{keras} and without an activation function.
+The neural network's weights $w_1$ and $w_2$ were trained for 5,000 steps using \texttt{keras}. 
+Note that the bias was kept constant at $b=0.45$, and the network has no activation function.
 Fig. \ref{fig:week6:shallownet:trainingloss} shows the training progress over time. 
 It can be seen that the gradient descent optimizer initially reduces the loss quite quickly (hence the steep slope), but around step 100, the slope becomes much more shallow.
 The reason for this is that until this step, the network prioritized getting a better prediction result for $\vec{b}$, but the initial rapid improvements to the four points at $\vec{b}$ caused significant deteriorations in the predictions for point $\vec{a}$.
