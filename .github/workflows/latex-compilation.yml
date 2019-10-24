@@ -9,6 +9,6 @@ jobs:
       - name: Compile LaTeX document
         uses: xu-cheng/latex-action@master
         with:
-          root_file: research/progress/main.tex
+          root_file: main.tex
           working_directory: research/progress
           args: -pdf -file-line-error -interaction=nonstopmode -shell-escape
