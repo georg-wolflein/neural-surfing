@@ -713,11 +713,15 @@ The depicted goal configuration can be achieved when either $w_1$ or $w_2$ chang
             \addplot[name path=B] {-x - sqrt(-ln(0.5))};
             \addplot[black,opacity=0.2] fill between[of=A and B];
 
-            \addplot [only marks] table {
+            \addplot[only marks, mark=o, mark options={
+                fill=black,draw=black
+            }] table {
                 0 0
                 2 2
             };
-            \addplot [only marks, mark=o] table {
+            \addplot[only marks, mark=o, mark options={
+                fill=white,draw=black
+            }] table {
                 0 2
                 2 0
             };
@@ -742,11 +746,15 @@ The depicted goal configuration can be achieved when either $w_1$ or $w_2$ chang
             \addplot[name path=B] {x - sqrt(-ln(0.5))};
             \addplot[black,opacity=0.2] fill between[of=A and B];
 
-            \addplot [only marks] table {
+            \addplot[only marks, mark=o, mark options={
+                fill=black,draw=black
+            }] table {
                 0 0
                 2 2
             };
-            \addplot [only marks, mark=o] table {
+            \addplot[only marks, mark=o, mark options={
+                fill=white,draw=black
+            }] table {
                 0 2
                 2 0
             };
