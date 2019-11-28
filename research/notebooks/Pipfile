@@ -9,7 +9,7 @@ verify_ssl = true
 tensorflow = "*"
 numpy = "*"
 matplotlib = "*"
-jupyter = "*"
+jupyterlab = "*"
 
 [requires]
 python_version = "3.7"
