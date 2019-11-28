@@ -27,7 +27,7 @@
 
 \pgfplotsset{compat=newest}
 \pgfplotsset{every axis plot post/.append style={mark=none}}
-\usetikzlibrary{calc}
+\usetikzlibrary{calc, patterns}
 \usepgfplotslibrary{external, fillbetween}
 \tikzexternalize[prefix=figures/]
 
@@ -37,7 +37,7 @@
 \author{\vspace{-5ex}}
 \date{\vspace{-5ex}}
 
-\let\vec\mathbf
+\renewcommand\vec{\mathbf}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 
 \pgfdeclarelayer{pre main}
@@ -421,7 +421,7 @@ Just looking at the diagram, one could guess to update the weights as follows to
         1
     \end{bmatrix}.
 \end{equation*}
-Using $\Vec{w} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$, we calculate the new output
+Using $\vec{w} = \begin{bmatrix} 1 \\ 2 \end{bmatrix}$, we calculate the new output
 \begin{equation*}
     \vec{y}(1; \vec{w})
     = 
@@ -554,25 +554,29 @@ We need to investigate whether we can call it a \say{non-trainable variable}, so
 \subsection{The hyperplanes of radial basis activation functions}
 Consider the radial basis function
 \begin{equation}
-    \label{eq:week5:rbf}
+    \label{eq:week6:rbf}
     \phi(x) = e^{-x^2}
 \end{equation}
 with the graph pictured in Fig. \ref{fig:week6:rbf:plot}.
 
 \begin{figure}[h]
     \centering
-    \begin{tikzpicture}[scale=1.5]
-        \draw[help lines, color=gray!30, dashed] (-3, 0) grid (3, 2);
-        \draw[thick, <->] (-3.2, 0) -- (3.2, 0) node[right] {$x$};
-        \draw[thick, ->] (0, 0) -- (0, 2.2) node[above] {$\phi(x)$};
-        \draw[domain=-3:3,smooth,variable=\x,blue] plot ({\x},{exp(-\x*\x)});
-
-        \foreach \x in {-3,...,3}
-            \draw (\x,1pt) -- (\x,-3pt)
-            node[anchor=north] {\x};
-        \foreach \y in {1, ..., 2}
-            \draw (1pt,\y) -- (-3pt,\y)
-            node[anchor=east] {\y};
+    \begin{tikzpicture}
+        \begin{axis}[
+            x=1.5cm,
+            y=1.5cm,
+            axis lines=center,
+            xlabel={$x$}, xlabel style={anchor=west},
+            ylabel={$\phi(x)$}, ylabel style={anchor=south},
+            ymin=0, ymax=2.2,
+            xmin=-3.2, xmax=3.2,
+            grid,
+            samples=100,
+            xtick={-3,...,3},
+            ytick={0, 1, 2}
+        ]
+            \addplot[black] {exp(-x*x)};
+        \end{axis}
     \end{tikzpicture}
     \caption{Plot of the radial basis activation function.}
     \label{fig:week6:rbf:plot}
@@ -681,10 +685,11 @@ which means that there are two lines. They are graphed in Fig. \ref{fig:week6:rb
 \end{figure}
 
 \paragraph{Remarks:}
-Notice that the radial basis function given in (\ref{eq:week5:rbf}) is differentiable and hence a suitable activation function for neural networks.
+Notice that the radial basis function given in (\ref{eq:week6:rbf}) is differentiable and hence a suitable activation function for neural networks.
 This means that if we use this activation function, we do not require hidden units in order to create a stripe configuration.
 
 \subsection{The stripe problem without hidden units}
+\label{sec:week6:stripe}
 From the findings of the previous section, it follows that we could create the stripe problem with the neural network architecture from Fig. \ref{fig:week6:rbf:neuralnet} and the hyperplanes that are a result of the radial basis activation function.
 Fig. \ref{fig:week6:rbf:hyperplanes} shows the hyperplanes for the initial weight configuration $w_1=w_2=1$.
 
@@ -954,6 +959,190 @@ Finally, Fig. \ref{fig:week6:shallownet:weights} shows how the weights $w_1$ and
     \caption{Changes in weights during the training process.}
     \label{fig:week6:shallownet:weights}
 \end{figure}
+
+\section{Week 11}
+\subsection{Defining unrealizable regions}
+An \textit{unrealizable region} is a subspace of the output space that cannot be attained. 
+Consider a neural network architecture expressed as the function $\vec{f}(\vec{x}; \vec{W}_1, \dots, \vec{W}_n)$ that takes the weight configurations $\vec{W}$ for each layer as a parameter.
+Given the sample $\langle \vec{x}, \vec{y}\rangle$ where $\vec{x}$ lies in input space and $\vec{y}$ in output space, we say that $\vec{y}$ is \textit{strongly unrealizable} iff there exists no weight configuration $\vec{W}_1,\dots,\vec{W}_n$ such that $\vec{f}(\vec{x};\vec{W}_1,\dots,\vec{W}_n)=\vec{y}$. 
+
+A point is \textit{weakly unrealizable} for particular training algorithm if that algorithm cannot achieve a weight configuration such that $\vec{f}(\vec{x};\vec{W}_1,\dots,\vec{W}_n)=\vec{y}$.
+
+\subsection{The problem of non-orthogonal weight gradients}
+
+\begin{wrapfigure}{r}{.5\textwidth}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width=.4\textwidth,
+            xmin=0, xmax=10,
+            ymin=0, ymax=10,
+            xlabel = {$y_1$},
+            ylabel = {$y_2$}
+        ]
+            \path[name path=axis] (axis cs:0,0) -- (axis cs:1,0);
+            \addplot[name path=unrealizable, domain=0:10, samples=50] {(-2*x^2 + 20*x - 32)/5};
+            \addplot[
+                pattern=vertical lines,
+                pattern color=black
+            ] fill between[of=unrealizable and axis];
+
+            \coordinate (p) at (3, 2);
+            \draw[->] (p) -- ++(70:1.5cm) node[above] {$\vec{\Delta w_1^+}$};
+            \draw[->] (p) -- ++(100:1.5cm) node[above] {$\vec{\Delta w_2^+}$};
+            \draw[->] (p) -- ++(140:1.5cm) node[above] {$\vec{\Delta w_2^-}$};
+            \draw[->] (p) -- ++(210:1.5cm) node[above] {$\vec{\Delta w_1^-}$};
+            \node[label={180:{$\vec{p}$}}, circle, fill, inner sep=1pt] at (p) {};
+
+            \coordinate (s) at (4, 16/5);
+            \coordinate (g) at (8, 0);
+            \draw[dashed] (p) -- (g);
+            \node[label={90:{$\vec{s}$}}, circle, fill, inner sep=1pt] at (s) {};
+            \node[label={45:{$\vec{g}$}}, circle, fill, inner sep=1pt] at (g) {};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Weight gradients in output space.}
+    \label{fig:week11:orthogonal}
+\end{wrapfigure}
+
+Consider a neural network with two weights $w_1$ and $w_2$, as well as two outputs $y_1$ and $y_2$. 
+Figure \ref{fig:week11:orthogonal} depicts a particular configuration in output space, showing an unrealizable region as well as how changes in the weights will affect the output. 
+Note that in this example, $\vec{\Delta w^+} \neq -\vec{\Delta w^-}$, i.e. changing a weight in the negative direction does \textit{not} result in a change in the opposite direction because the problem is inherently non-linear. 
+
+\textcolor{red}{
+Furthermore, the vector $\vec{\Delta w^+}$ is \textit{not} the same as the partial derivative $\frac{\delta w}{\delta \vec{y}}$. 
+Instead, the value of $\vec{\Delta w^+}$ was obtained by calculating the neural network's output, substituting $w$ for $w+\alpha$ for some small $\alpha$. 
+Similarly, $\vec{\Delta w^-}$ was obtained by calculating the output where $w$ is $w-\alpha$. 
+}
+
+The current configuration produces point $\vec{p}$ in output space. 
+Say we want to achieve the sub-goal $\vec{s}$ in the next step.
+What change in $w_1$ and $w_2$ will get us closest to $\vec{s}$?
+
+\paragraph{Treating the problem as being linear}
+\textcolor{red}{
+If we make the assumption that the problem is locally linear, we find that the best solution would be to not change $w_2$, and slightly increase $w_1$ in the positive direction.
+However, can we make that assumption? 
+If the problem was locally linear, and $\alpha$ was suitably small, shouldn't then $\vec{\Delta w^+}$ and $\vec{\Delta w^-}$ be in opposite directions?
+}
+
+\paragraph{Brute-force all assignments}
+We could calculate the output of the network for all possible assignments of the weights. 
+Every weight $w$ will be tested with the values $w-\alpha$, $w$, and $w+\alpha$. 
+The limitation of this technique is that the time complexity will be $\mathcal{O}(3^n)$ where $n$ is the number of weights, and this calculation has to be carried out at each step. 
+
+\paragraph{Random assignments}
+Instead, we could test a subset of the $3^n$ possible assignments. For example, we could randomly generate assignments (each weight $w$ being either $w-\alpha$, $w$, or $w+\alpha$) until we find one that is \textit{good enough} according to some previously defined stopping condition. 
+
+
+\subsection{Controlling properties of the RBF stripe problem}
+\subsubsection{Width of the basin}
+In order to control the width of the basin, we need to control the thickness of the RBF activation function. 
+We introduce the parameter $\epsilon$ which will affect the width of the RBF function from (\ref{eq:week6:rbf}), now given as
+\begin{equation}
+    \label{eq:week11:rbf_thickness}
+    \phi(x; \epsilon) = e^{-\epsilon x^2}.
+\end{equation}
+Figure \ref{fig:week11:rbf_thickness:plot} depicts a plot of the RBF for $\epsilon=10$, showing clearly that the resulting function has a thinner graph as compared to Figure \ref{fig:week6:rbf:plot} where $\epsilon=1$.
+Furthermore, Figure \ref{fig:week11:stripe:errorsurface:thin} shows that the error-weight surface for the stripe problem given in Section \ref{sec:week6:stripe} has a narrower minimum basin using the thinner RBF as compared to Figure \ref{fig:week6:stripe:errorsurface}.
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            x=1.5cm,
+            y=1.5cm,
+            axis lines=center,
+            xlabel={$x$}, xlabel style={anchor=west},
+            ylabel={$\phi(x)$}, ylabel style={anchor=south},
+            ymin=0, ymax=2.2,
+            xmin=-3.2, xmax=3.2,
+            grid,
+            samples=100,
+            xtick={-3,...,3},
+            ytick={0, 1, 2}
+        ]
+            \addplot[black] {exp(-x*x*10)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Plot of the radial basis activation function with $\epsilon=10$.}
+    \label{fig:week11:rbf_thickness:plot}
+\end{figure}
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width=.8\textwidth,
+            ymin=-3, ymax=3,
+            xmin=-3, xmax=3,
+            zmin=0, zmax=2,
+            xlabel={$w_1$},
+            ylabel={$w_2$},
+            zlabel={mean squared error},
+            samples=50,
+            xtick={-3,0,3},
+            ytick={-3,0,3},
+            ztick={0, 1, 2},
+            view={30}{75}
+        ]
+            \addplot3 [
+                mesh,
+                domain=-3:3,
+                y domain=-3:3
+            ] {(exp(-4*x^2*10))^2 + (exp(-4*y^2*10))^2 + (1 - exp(-(2*x + 2*y)^2*10))^2};
+            \node[label={360:{initial configuration}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{The error-weight surface of the stripe problem with a narrower basin.}
+    \label{fig:week11:stripe:errorsurface:thin}
+\end{figure}
+
+\subsubsection{Guaranteeing a solution with MSE of zero}
+
+For the stripe problem as defined in Section \ref{sec:week6:stripe}, there exists no real-valued weight configuration that leads to a mean squared error of 0. 
+This is because the activation function is always greater than 0. In fact, the range of $\phi$ is the interval $\left(0, 1\right]$.
+
+We will set the training dataset as shown in Table \ref{table:week11:dataset}. 
+Essentially, the data is the same as shown in Figure \ref{fig:week6:stripe:initialconfig}, except that the targets of $0$ have been adapted to slightly higher values.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{c|c|c}
+        input ($\vec{x}$) & target output ($\vec{y}$) & initial output \\
+        \hline
+        $\begin{bmatrix} 0 \\ 0 \end{bmatrix}$
+        & 1 & 1
+        \\
+        $\begin{bmatrix} 2 \\ 2 \end{bmatrix}$
+        & 1 & $\phi\left( 4 \right)$
+        \\
+        $\begin{bmatrix} 0 \\ 2 \end{bmatrix}$
+        & $\phi\left( 2 \right)$ & $\phi\left( 2 \right)$
+        \\
+        $\begin{bmatrix} 2 \\ 0 \end{bmatrix}$
+        & $\phi\left(2 \right)$ & $\phi\left( 2 \right)$
+    \end{tabular}
+    \caption{Initial and target values for $\vec{a}$ and $\vec{b}$.}
+    \label{table:week11:dataset}
+\end{table}
+
+In the initial configuration, $w_1=w_2=1$, so the mean squared error is
+\begin{align*}
+    MSE &= \sum_i{\left(f(\vec{x}_i) - \vec{y}_i\right)^2}
+    \\ &= \left(1 - 1 \right)^2 + \left(e^{-8\epsilon} - 1 \right)^2 + \left(\phi\left( \sqrt{2} \right) - \phi\left( \sqrt{2} \right) \right)^2 + \left(\phi\left( \sqrt{2} \right) - \phi\left( \sqrt{2} \right) \right)^2.
+    \\ &= \left(e^{-8\epsilon} - 1 \right)^2.
+\end{align*}
+
+If we consider the weight configuration $w_1=1$ and $w_2=-1$, we obtain
+\begin{align*}
+    MSE &= \left(f\left( \begin{bmatrix} 0 \\ 0 \end{bmatrix} \right) - 1 \right)^2 + \left(f\left( \begin{bmatrix} 2 \\ 2 \end{bmatrix} \right) - 1 \right)^2 + \left(f\left( \begin{bmatrix} 0 \\ 2 \end{bmatrix} \right) - \phi\left( \sqrt{2} \right) \right)^2 + \left(f\left( \begin{bmatrix} 2 \\ 0 \end{bmatrix} \right) - \phi\left( \sqrt{2} \right) \right)^2
+    \\ &= \left(\phi \left( 0 + 0 \right) - 1 \right)^2 + \left(\phi \left( 2 - 2 \right) - 1 \right)^2 + \left(\phi \left( 0 - 2 \right) - \phi\left( 2 \right) \right)^2 + \left(\phi \left( 2 - 0 \right) - \phi\left( 2 \right) \right)^2
+    \\ &= \left(\phi \left( 0 \right) - 1 \right)^2 + \left(\phi \left( 0 \right) - 1 \right)^2 + \left(\phi \left( - 2 \right) - \phi\left( 2 \right) \right)^2 + \left(\phi \left( 2 \right) - \phi\left( 2 \right) \right)^2.
+\end{align*}
+Noticing that $\phi(0)=1$ and $\phi(x)=\phi(-x)$ for any $x$, we obtain $MSE=0$. 
+In fact, there are only two unique weight configurations that lead to $MSE=0$; these are $\vec{w}=\begin{bmatrix}1\\-1 \end{bmatrix}$ and $\vec{w}=\begin{bmatrix}-1\\ 1 \end{bmatrix}$, so these are the only global minima in the error-weight surface. 
+Incidentally, the solutions do \textit{not} depend on the parameter $\epsilon$ for the activation function $\phi(x)$. 
 
 \bibliographystyle{apalike}
 \bibliography{bibliography}
