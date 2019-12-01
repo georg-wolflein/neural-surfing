@@ -12,6 +12,7 @@
 \usepackage{wrapfig}
 \usepackage{fancyhdr}
 \usepackage{xcolor}
+\usepackage[hidelinks]{hyperref}
 
 \titleclass{\section}{top}
 \newcommand\sectionbreak{\clearpage}
@@ -969,6 +970,7 @@ Given the sample $\langle \vec{x}, \vec{y}\rangle$ where $\vec{x}$ lies in input
 A point is \textit{weakly unrealizable} for particular training algorithm if that algorithm cannot achieve a weight configuration such that $\vec{f}(\vec{x};\vec{W}_1,\dots,\vec{W}_n)=\vec{y}$.
 
 \subsection{The problem of non-orthogonal weight gradients}
+\label{sec:week11:orthogonal}
 
 \begin{wrapfigure}{r}{.5\textwidth}
     \centering
@@ -1002,30 +1004,24 @@ A point is \textit{weakly unrealizable} for particular training algorithm if tha
             \node[label={45:{$\vec{g}$}}, circle, fill, inner sep=1pt] at (g) {};
         \end{axis}
     \end{tikzpicture}
-    \caption{Weight gradients in output space.}
+    \caption{Weight changes in output space.}
     \label{fig:week11:orthogonal}
 \end{wrapfigure}
 
 Consider a neural network with two weights $w_1$ and $w_2$, as well as two outputs $y_1$ and $y_2$. 
-Figure \ref{fig:week11:orthogonal} depicts a particular configuration in output space, showing an unrealizable region as well as how changes in the weights will affect the output. 
+Figure \ref{fig:week11:orthogonal} depicts a particular configuration in output space, showing an unrealizable region as well as how changes in the weights will affect the output\footnote{The diagram displays a made-up scenario that does not correspond to an actual experiment.}. 
 Note that in this example, $\vec{\Delta w^+} \neq -\vec{\Delta w^-}$, i.e. changing a weight in the negative direction does \textit{not} result in a change in the opposite direction because the problem is inherently non-linear. 
 
-\textcolor{red}{
 Furthermore, the vector $\vec{\Delta w^+}$ is \textit{not} the same as the partial derivative $\frac{\delta w}{\delta \vec{y}}$. 
 Instead, the value of $\vec{\Delta w^+}$ was obtained by calculating the neural network's output, substituting $w$ for $w+\alpha$ for some small $\alpha$. 
 Similarly, $\vec{\Delta w^-}$ was obtained by calculating the output where $w$ is $w-\alpha$. 
-}
 
 The current configuration produces point $\vec{p}$ in output space. 
 Say we want to achieve the sub-goal $\vec{s}$ in the next step.
 What change in $w_1$ and $w_2$ will get us closest to $\vec{s}$?
 
 \paragraph{Treating the problem as being linear}
-\textcolor{red}{
-If we make the assumption that the problem is locally linear, we find that the best solution would be to not change $w_2$, and slightly increase $w_1$ in the positive direction.
-However, can we make that assumption? 
-If the problem was locally linear, and $\alpha$ was suitably small, shouldn't then $\vec{\Delta w^+}$ and $\vec{\Delta w^-}$ be in opposite directions?
-}
+How do we define \textit{linear}, and how would we solve this?
 
 \paragraph{Brute-force all assignments}
 We could calculate the output of the network for all possible assignments of the weights. 
@@ -1098,7 +1094,7 @@ Furthermore, Figure \ref{fig:week11:stripe:errorsurface:thin} shows that the err
     \label{fig:week11:stripe:errorsurface:thin}
 \end{figure}
 
-\subsubsection{Guaranteeing a solution with MSE of zero}
+\subsubsection{Guaranteeing a finite number of solutions with MSE of zero}
 
 For the stripe problem as defined in Section \ref{sec:week6:stripe}, there exists no real-valued weight configuration that leads to a mean squared error of 0. 
 This is because the activation function is always greater than 0. In fact, the range of $\phi$ is the interval $\left(0, 1\right]$.
@@ -1142,7 +1138,35 @@ If we consider the weight configuration $w_1=1$ and $w_2=-1$, we obtain
 \end{align*}
 Noticing that $\phi(0)=1$ and $\phi(x)=\phi(-x)$ for any $x$, we obtain $MSE=0$. 
 In fact, there are only two unique weight configurations that lead to $MSE=0$; these are $\vec{w}=\begin{bmatrix}1\\-1 \end{bmatrix}$ and $\vec{w}=\begin{bmatrix}-1\\ 1 \end{bmatrix}$, so these are the only global minima in the error-weight surface. 
-Incidentally, the solutions do \textit{not} depend on the parameter $\epsilon$ for the activation function $\phi(x)$. 
+Incidentally, the solutions do \textit{not} depend on the parameter $\epsilon$ for the activation function $\phi(x)$ provided $\epsilon \neq 0$. 
+
+\paragraph{Remarks:}
+To improve, it might be better to instead use a so-called \textit{non-analytic smooth function} that is similar to the RBF activation function, except that its range includes zero. 
+One example of such a function is the \textit{bump function}\footnote{\url{https://en.wikipedia.org/wiki/Bump_function}}. 
+This will be investigated in the next semester.
+
+\section{Week 12}
+
+\subsection{Assumptions on linearity}
+Using the notation from Section \ref{sec:week11:orthogonal}, we make the following assumptions: 
+\begin{itemize}
+    \item For a given weight $w$, the change that $w+\alpha$ for a small $\alpha$ will elicit in output space, denoted $\vec{\Delta w^+}$, is \textit{linearly independent} of $\vec{\Delta w^-}$ in the local context of $\alpha$. 
+    
+    It follows that $\vec{\Delta w^+}$ and $\vec{\Delta w^-}$ are usually not collinear. 
+    \item Given two weights $w_1$ and $w_2$, we assume that the pairs $\langle \vec{\Delta w_1^+, \Delta w_2^+} \rangle$, $\langle \vec{\Delta w_1^+, \Delta w_2^-} \rangle$, $\langle \vec{\Delta w_1^-, \Delta w_2^+} \rangle$, and $\langle \vec{\Delta w_1^-, \Delta w_2^-} \rangle$ obey the rules of vector sums in the context of $\alpha$.
+
+    \item For our purposes, a linear combination of two vectors $\vec{\Delta w_1}$ and $\vec{\Delta w_2}$ is defined as
+        $$\vec{\mathcal{L}}(\vec{\Delta w_1}, \vec{\Delta w_2}) = c_1 \vec{\Delta w_1} + c_2 \vec{\Delta w_2}$$
+        where $c_1$ and $c_2$ are real-valued scalars \textcolor{red}{that are greater or equal to zero}.
+    \item The weight update corresponding to a linear combination $\vec{\mathcal{L}}(\vec{\Delta w_1^+}, \vec{\Delta w_2^+})$ is $w_1 \leftarrow w_1 + c_1$ and $w_2 \leftarrow w_2 + c_2$. 
+        
+    When considering weight changes in the negative direction, i.e. $\vec{\Delta w_1^-}$, the corresponding weight update will be $w_1 \leftarrow w_1 - c_1$.
+    \item It does not make sense to compute a linear combination of $\vec{\Delta w^+}$ and $\vec{\Delta w^-}$ because this does not correspond to a meaningful weight update. 
+\end{itemize}
+
+
+\subsection{}
+
 
 \bibliographystyle{apalike}
 \bibliography{bibliography}
