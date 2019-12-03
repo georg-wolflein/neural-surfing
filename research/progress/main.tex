@@ -1155,17 +1155,38 @@ Using the notation from Section \ref{sec:week11:orthogonal}, we make the followi
     It follows that $\vec{\Delta w^+}$ and $\vec{\Delta w^-}$ are usually not collinear. 
     \item Given two weights $w_1$ and $w_2$, we assume that the pairs $\langle \vec{\Delta w_1^+, \Delta w_2^+} \rangle$, $\langle \vec{\Delta w_1^+, \Delta w_2^-} \rangle$, $\langle \vec{\Delta w_1^-, \Delta w_2^+} \rangle$, and $\langle \vec{\Delta w_1^-, \Delta w_2^-} \rangle$ obey the rules of vector sums in the context of $\alpha$.
 
-    \item For our purposes, a linear combination of two vectors $\vec{\Delta w_1}$ and $\vec{\Delta w_2}$ is defined as
+    \item For our purposes, a linear combination $\vec{\mathcal{L}}$ of two vectors $\vec{\Delta w_1}$ and $\vec{\Delta w_2}$ is defined as
         $$\vec{\mathcal{L}}(\vec{\Delta w_1}, \vec{\Delta w_2}) = c_1 \vec{\Delta w_1} + c_2 \vec{\Delta w_2}$$
-        where $c_1$ and $c_2$ are real-valued scalars \textcolor{red}{that are greater or equal to zero}.
-    \item The weight update corresponding to a linear combination $\vec{\mathcal{L}}(\vec{\Delta w_1^+}, \vec{\Delta w_2^+})$ is $w_1 \leftarrow w_1 + c_1$ and $w_2 \leftarrow w_2 + c_2$. 
+        where $c_1$ and $c_2$ are real-valued scalars such that \textcolor{red}{$0 \leq c_i \leq 1$ for both $i$}.
+    \item The weight update corresponding to a linear combination $\vec{\mathcal{L}}(\vec{\Delta w_1^+}, \vec{\Delta w_2^+})$ is $w_1 \leftarrow w_1 + c_1 \alpha$ and $w_2 \leftarrow w_2 + c_2 \alpha$. 
         
-    When considering weight changes in the negative direction, i.e. $\vec{\Delta w_1^-}$, the corresponding weight update will be $w_1 \leftarrow w_1 - c_1$.
-    \item It does not make sense to compute a linear combination of $\vec{\Delta w^+}$ and $\vec{\Delta w^-}$ because this does not correspond to a meaningful weight update. 
+    When considering weight changes in the negative direction, i.e. $\vec{\Delta w_1^-}$, the corresponding weight update will be $w_1 \leftarrow w_1 - c_1 \alpha$.
+    
+    Note that the update $w \leftarrow w + c \alpha$ is based on the assumption that the mapping between weight and output space is \textit{linear} in the context of $\alpha$. 
+    This might not be the case and yield inaccurate results, so instead we might need to modify the algorithm to carry out a linear search instead to find what change in $w$ will yield a vector of length $c \norm{\vec{\Delta w}}$.
+    \item It does not make sense to compute a linear combination of $\vec{\Delta w^+}$ and $\vec{\Delta w^-}$ for the same weight $w$ because this does not correspond to a meaningful weight update. 
 \end{itemize}
 
+\paragraph{Question 1}
+I understand how we aim to achieve a subgoal point using orthogonalization (Gram-Schmidt) and vector sums, \textit{but how do we select the subgoal point?}
 
-\subsection{}
+Do we just choose the subgoal to be, for example, one tenth of the way to the goal, i.e. the subgoal is lying on the goal line?
+Then if we deviate from the goal line this is because our local assumptions of linearity aren't 100 percent accurate (but that might not be too bad, as long as we don't deviate too much).
+The deviation from the goal line would then be described as a weakly unrealizable region.
+
+If it is impossible to achieve a point on the goal line (because all gradients point away from it, like in Figure \ref{fig:week11:orthogonal}), we could just go for the weight change that makes the maximum fractional progress, and only change that one weight. 
+Otherwise we could devise some sort of informed search that will yield the weight combination with the maximum fractional progress\footnote{It is important to notice that while the change in weight $\alpha$ is the same for each weight, the vector $\vec{\Delta w}$ in output space might not have the same magnitude as the others. This means that potentially a combination of weights might lead to a better fractional progress than just changing only one weight.}. 
+
+\paragraph{Question 2}
+To clarify, what is the definition of output space?
+\begin{itemize}
+    \item The output space is defined by the activation of the neurons in the output layer, i.e. each dimension of the output space is the activation of a neuron. In this case, how do we deal with multiple training samples?
+    \item The output space is only defined for networks with one output neuron. Each dimension corresponds to the activation of the output neuron for a training sample, so the number of dimensions of the output space is the number of training samples.
+\end{itemize}
+
+%\subsection{Orthogonalization}
+%Let us consider a point $\vec{p}$ in the two-dimensional output space of a neural network with two weights $w_1$ and $w_2$. 
+
 
 
 \bibliographystyle{apalike}
