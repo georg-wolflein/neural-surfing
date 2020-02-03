@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "framework"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+tensorflow = "^2.0.0"
+numpy = "^1.18.1"
+matplotlib = "^3.1.2"
+
+[tool.poetry.dev-dependencies]
+pylint = "^2.4.4"
+autopep8 = "^1.4.4"
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"
