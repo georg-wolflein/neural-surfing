@@ -58,4 +58,4 @@ class ShallowProblem(Problem):
 
     @Problem.metric
     def output(self):
-        return self.model.predict(self.X)
+        return np.squeeze(self.model.predict(self.X))

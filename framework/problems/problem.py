@@ -34,7 +34,8 @@ class Problem(ABC):
         func._metric = func.__name__
         return func
 
-    def evaluate_metrics(self) -> typing.Dict[str, typing.Callable]:
+    def evaluate_metrics(self, metrics: typing.List[str] = None) -> typing.Dict[str, np.ndarray]:
         return {
             k: v() for (k, v) in self._metrics.items()
+            if metrics is None or k in metrics
         }
