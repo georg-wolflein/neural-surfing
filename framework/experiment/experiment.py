@@ -1,7 +1,8 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib import cm
+import matplotlib.patches as mpatches
+import matplotlib.cm as cm
 import typing
 
 from agents.loss_with_goal_line_deviation import LossWithGoalLineDeviation
@@ -20,19 +21,25 @@ class Experiment:
         self.colors = cm.rainbow(np.linspace(0, 1, len(agent_factories)))[
             :, np.newaxis, :]
 
-    def run(self, visualisations: typing.Sequence[Visualisation]):
+    def run(self, visualisations: typing.Sequence[Visualisation], epoch_batches: int = 100, epoch_batch_size: int = 50):
         metrics = set(itertools.chain(*[visualisation.required_metrics
                                         for visualisation in visualisations]))
-        fig = plt.figure()
+        fig: plt.Figure = plt.figure()
+
+        # Add legend
+        fig.legend(handles=[mpatches.Patch(color=color, label=factory.__name__)
+                            for (color, factory) in zip(np.squeeze(self.colors), self.agent_factories)])
+
+        # Create subplots
         axes = [fig.add_subplot(1, len(visualisations), i, **v.subplot_kwargs)
                 for i, v in enumerate(visualisations, 1)]
         for visualisation, ax in zip(visualisations, axes):
-            visualisation.setup(ax, [factory.__name__
-                                     for factory in self.agent_factories], self.colors)
+            visualisation.setup(ax)
 
-        for i in range(100):
+        for _ in range(epoch_batches):
             for agent, color in zip(self.agents, self.colors):
-                history, data = agent.train(epochs=50, metrics=metrics)
+                _, data = agent.train(epochs=epoch_batch_size,
+                                      metrics=metrics)
                 for visualisation, ax in zip(visualisations, axes):
                     visualisation.plot(data, color, ax)
 

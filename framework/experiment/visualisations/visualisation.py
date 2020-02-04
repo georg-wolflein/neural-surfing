@@ -11,7 +11,7 @@ class Visualisation(ABC):
         self.subplot_kwargs = subplot_kwargs
 
     @abstractmethod
-    def setup(self, ax: plt.Axes, labels: typing.List[str], colors):
+    def setup(self, ax: plt.Axes):
         pass
 
     @abstractmethod
