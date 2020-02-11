@@ -4,12 +4,12 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 import matplotlib.cm as cm
 import typing
+import itertools
 
 from agents.loss_with_goal_line_deviation import LossWithGoalLineDeviation
 from agents import Agent
 from problems import Problem
 from .visualisations import Visualisation
-import itertools
 
 
 class Experiment:
