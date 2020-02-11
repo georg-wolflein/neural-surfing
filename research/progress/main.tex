@@ -13,6 +13,9 @@
 \usepackage{fancyhdr}
 \usepackage{xcolor}
 \usepackage[hidelinks]{hyperref}
+\usepackage[inline]{enumitem}
+
+\listfiles
 
 \titleclass{\section}{top}
 \newcommand\sectionbreak{\clearpage}
@@ -26,9 +29,11 @@
 \pagestyle{plain}
 
 
-\pgfplotsset{compat=newest}
+\pgfplotsset{compat=1.16}
 \pgfplotsset{every axis plot post/.append style={mark=none}}
 \usetikzlibrary{calc, patterns}
+\usetikzlibrary{hobby}
+\usetikzlibrary{decorations.markings}
 \usepgfplotslibrary{external, fillbetween}
 \tikzexternalize[prefix=figures/]
 
@@ -1167,7 +1172,10 @@ Using the notation from Section \ref{sec:week11:orthogonal}, we make the followi
     \item It does not make sense to compute a linear combination of $\vec{\Delta w^+}$ and $\vec{\Delta w^-}$ for the same weight $w$ because this does not correspond to a meaningful weight update. 
 \end{itemize}
 
-\paragraph{Question 1}
+\paragraph{Defining output space}
+The output space is only defined for networks with one output neuron. Each dimension corresponds to the activation of the output neuron for a training sample, so the number of dimensions of the output space is the number of training samples.
+
+\paragraph{Question}
 I understand how we aim to achieve a subgoal point using orthogonalization (Gram-Schmidt) and vector sums, \textit{but how do we select the subgoal point?}
 
 Do we just choose the subgoal to be, for example, one tenth of the way to the goal, i.e. the subgoal is lying on the goal line?
@@ -1177,17 +1185,132 @@ The deviation from the goal line would then be described as a weakly unrealizabl
 If it is impossible to achieve a point on the goal line (because all gradients point away from it, like in Figure \ref{fig:week11:orthogonal}), we could just go for the weight change that makes the maximum fractional progress, and only change that one weight. 
 Otherwise we could devise some sort of informed search that will yield the weight combination with the maximum fractional progress\footnote{It is important to notice that while the change in weight $\alpha$ is the same for each weight, the vector $\vec{\Delta w}$ in output space might not have the same magnitude as the others. This means that potentially a combination of weights might lead to a better fractional progress than just changing only one weight.}. 
 
-\paragraph{Question 2}
-To clarify, what is the definition of output space?
+
+
+
+\section{Christmas vacation}
+
+\subsection{Modifying the loss function to include the deviation from the goal line}
+It would be interesting to investigate how a neural network would train with a loss function defined as
+$Loss = MSE + d^2$ where $d$ is the deviation from the goal line. More formally, given 
 \begin{itemize}
-    \item The output space is defined by the activation of the neurons in the output layer, i.e. each dimension of the output space is the activation of a neuron. In this case, how do we deal with multiple training samples?
-    \item The output space is only defined for networks with one output neuron. Each dimension corresponds to the activation of the output neuron for a training sample, so the number of dimensions of the output space is the number of training samples.
+    \item the target output $\vec{y}$,
+    \item the initial actual output $\vec{\hat{y}}_0$ when the training was started, and
+    \item the actual output at the current step $i$, denoted $\vec{\hat{y}}_i$,
+\end{itemize}
+we define $d$ as the shortest distance from the point $\vec{\hat{y}}_i$ in output space to the line going through the points $\vec{\hat{y}}_0$ and $\vec{y}$ (the \textit{goal line} in output space).
+
+\section{Semester 2, week 3}
+
+\subsection{The `cheating' technique}
+\paragraph{Motivation}
+The neural surfer must be able to perform two main tasks: 
+\begin{enumerate*}[label=(\roman*)]
+    \item setting the subgoals and
+    \item achieving the subgoals.
+\end{enumerate*}
+The `cheating' technique pertains to the latter task; it can be used in order to determine whether and to what extent the training regimes are \textit{capable} of realising each subgoal.
+The idea is that splitting the problem into two parts will facilitate an easier debugging process of the approaches in terms of isolating pain points and performance issues.
+
+The technique allows us to analyze the following questions:
+\begin{itemize}
+    \item How well is the approach getting to the subgoals?
+    \item How good is the state the approach ends up in when it achieves the subgoal?
 \end{itemize}
 
-%\subsection{Orthogonalization}
-%Let us consider a point $\vec{p}$ in the two-dimensional output space of a neural network with two weights $w_1$ and $w_2$. 
+\paragraph{Achieving a subgoal}
+One important question that must be answered is what constitutes realising a subgoal. 
+For the purpose of this experiment, we will assume that achieving half of the distance to the subgoal constitutes as `achieving' it. 
+However, it is important to note that for further investigation, it might be worthwhile to look at other values, or even functions that give a specific threshold for each subgoal.
 
+\paragraph{Procedure}
+The steps below explain the methodology of this technique, for $n$ subgoals.
+\begin{enumerate}
+    \item Determine the point in weight space $\vec{w_{n+1}}$ that corresponds to the target in output space (i.e. the global minimum on the error-weight surface). 
+        
+        This can be done either by
+        \begin{enumerate*}[label=(\roman*)]
+            \item analytically finding the global minimum of the error-weight space if the network architecture is simple enough; or
+            \item running gradient descent from many random initial configurations in order to find the global minimum.
+        \end{enumerate*}
+    
+    \item Draw a straight line from the initial weight configuration $\vec{w_0}$ to the target configuration in weight space $\vec{w_{n+1}}$.
+        This is the \textit{goal line}.
+    
+    \item Put $n$ points on the goal line, $\vec{w_1}, \vec{w_2}, \dots, \vec{w_n}$, equidistant between $\vec{w_0}$ and $\vec{w_{n+1}}$. 
+        Determine the corresponding points $\vec{\hat{y}_1}, \vec{\hat{y}_2}, \dots, \vec{\hat{y}_n}$ in output space.
+    \item Let $i=0$. Starting at weight configuration $\vec{w_i}$, perform the particular neural network training technique until achieving a point $\vec{p}$ in output space where $\norm{\vec{p} - \vec{\hat{y}_{i+1}}} \leq \frac{1}{2} \norm{\vec{\hat{y}_i} - \vec{\hat{y}_{i+1}}}$, i.e. at least half of the distance to the next subgoal is achieved.
+    \item Repeat the previous step for $i=1, 2, \dots, n$.
+    \item Perform the particular neural network training technique to achieve a configuration sufficiently close to the goal, $\vec{y}$. 
+\end{enumerate}
 
+\begin{figure}[h!]
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width=.6\textwidth,
+            height=.4\textwidth,
+            xmin=0, xmax=15,
+            ymin=0, ymax=10,
+            xlabel={$y_1$},
+            ylabel={$y_2$},
+            ticks=none,
+            axis x line=bottom,
+            axis y line=left
+        ]
+            \coordinate (initial) at (2, 4);
+            \coordinate (goal) at (13, 8);
+
+            \draw[->,
+                postaction={
+                    decorate,
+                    decoration={
+                        markings,% switch on markings 
+                        mark=% actually add a mark
+                            between positions 0 and 1 step 0.9999/4
+                            with
+                            {
+                                \node[circle,fill,inner sep=1pt](w-\pgfkeysvalueof{/pgf/decoration/mark info/sequence number}){};
+                            }
+                    }
+                }
+            ] (initial) (initial) to[curve through={(5,1) .. (11,6)}] (goal);
+
+            \node[label={180:{$\vec{\hat{y}_0}$}}, circle, fill, inner sep=1pt] at (w-1) {};
+            \node[label={270:{$\vec{\hat{y}_1}$}}, circle, fill, inner sep=1pt] at (w-2) {};
+            \node[label={135:{$\vec{\hat{y}_2}$}}, circle, fill, inner sep=1pt] at (w-3) {};
+            \node[label={180:{$\vec{\hat{y}_3}$}}, circle, fill, inner sep=1pt] at (w-4) {};
+            \node[label={90:{$\vec{\hat{y}_4}$}}, circle, fill, inner sep=1pt] at (w-5) {};
+
+            \draw
+                let
+                    \p1 = ($(w-2) - (w-1)$),
+                    \p2 = ($(w-3) - (w-2)$),
+                    \p3 = ($(w-4) - (w-3)$),
+                    \p4 = ($(w-5) - (w-4)$),
+                    \n1 = {veclen(\x1, \y1)/2},
+                    \n2 = {veclen(\x2, \y2)/2},
+                    \n3 = {veclen(\x3, \y3)/2},
+                    \n4 = {veclen(\x4, \y4)/2}
+                in
+                    (w-2) circle (\n1)
+                    (w-3) circle (\n2)
+                    (w-4) circle (\n3)
+                    (w-5) circle (\n4);
+            
+            \draw[dashed]
+                (w-1) -- (w-2)
+                (w-2) -- (w-3)
+                (w-3) -- (w-4)
+                (w-4) -- (w-5);
+            
+
+        \end{axis}
+    \end{tikzpicture}
+    \caption{The `cheating' technique for $n=3$. The circles around each point indicate the threshold that constitutes `achieving' a particular point. The radius of the circle around point $\vec{\hat{y}_i}$ is $\frac{1}{2} \norm{\vec{\hat{y}_i}-\vec{\hat{y}_{i-1}}}$ for $i=1, \dots, n+1$; hence the circles are not necessarily identical in size.} 
+    \label{fig:s2week3:cheat}
+\end{figure}
 
 \bibliographystyle{apalike}
 \bibliography{bibliography}
