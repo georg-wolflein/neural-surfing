@@ -30,10 +30,11 @@
 
 
 \pgfplotsset{compat=1.16}
-\pgfplotsset{every axis plot post/.append style={mark=none}}
+% \pgfplotsset{every axis plot post/.append style={mark=none}}
 \usetikzlibrary{calc, patterns}
 \usetikzlibrary{hobby}
 \usetikzlibrary{decorations.markings}
+\usetikzlibrary{plotmarks}
 \usepgfplotslibrary{external, fillbetween}
 \tikzexternalize[prefix=figures/]
 
@@ -45,6 +46,11 @@
 
 \renewcommand\vec{\mathbf}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+
+
+\immediate\write18{texcount -inc -incbib -sum main.tex > /tmp/wordcount.tex}
+\newcommand\wordcount{
+\verbatiminput{/tmp/wordcount.tex}}
 
 \pgfdeclarelayer{pre main}
 \begin{document}
@@ -816,9 +822,9 @@ There is no path from the initial configuration to the global minimum with a str
             title = {Training progress},
             xlabel = {training step},
             ylabel = {loss},
-            yticklabel style={/pgf/number format/.cd,fixed,precision=5}
+            yticklabel style = {/pgf/number format/.cd,fixed,precision=5}
             ]
-            \addplot table {../data/week6_stripe_loss.dat};
+            \addplot+[mark=none] table {../data/week6_stripe_loss.dat};
         \end{axis}
     \end{tikzpicture}
     \caption{Loss over time during training.}
@@ -881,7 +887,7 @@ Finally, Fig. \ref{fig:week6:shallownet:weights} shows how the weights $w_1$ and
             scaled y ticks=false,
             ymin=0, ymax=.08
             ]
-            \addplot table {../data/week6_shallow_network_loss.dat};
+            \addplot+[mark=none] table {../data/week6_shallow_network_loss.dat};
         \end{axis}
     \end{tikzpicture}
     \vspace{.05\textwidth}
@@ -896,7 +902,7 @@ Finally, Fig. \ref{fig:week6:shallownet:weights} shows how the weights $w_1$ and
             scaled y ticks=false,
             ymin=0, ymax=.08, xmax=1000
             ]
-            \addplot table {../data/week6_shallow_network_loss_1000.dat};
+            \addplot+[mark=none] table {../data/week6_shallow_network_loss_1000.dat};
         \end{axis}
     \end{tikzpicture}
     \caption{Loss over time during training. Notice the abrupt change in gradient which can be seen in more detail on the right.}
@@ -914,8 +920,8 @@ Finally, Fig. \ref{fig:week6:shallownet:weights} shows how the weights $w_1$ and
             legend entries = {$y(\vec{a})$, $y(\vec{b})$},
             legend style = {at={(.97,.5)}, anchor=east}
             ]
-            \addplot table {../data/week6_shallow_network_predictions_a.dat};
-            \addplot table {../data/week6_shallow_network_predictions_b.dat};
+            \addplot+[mark=none] table {../data/week6_shallow_network_predictions_a.dat};
+            \addplot+[mark=none] table {../data/week6_shallow_network_predictions_b.dat};
         \end{axis}
     \end{tikzpicture}
     \vspace{.05\textwidth}
@@ -927,7 +933,7 @@ Finally, Fig. \ref{fig:week6:shallownet:weights} shows how the weights $w_1$ and
             xlabel = {$y(\vec{a})$},
             ylabel = {$y(\vec{b})$}
             ]
-            \addplot table {../data/week6_shallow_network_predictions.dat};
+            \addplot+[mark=none] table {../data/week6_shallow_network_predictions.dat};
         \end{axis}
     \end{tikzpicture}
     \caption{Changes in the predictions of $\vec{a}$ and $\vec{b}$ during the training process.}
@@ -946,8 +952,8 @@ Finally, Fig. \ref{fig:week6:shallownet:weights} shows how the weights $w_1$ and
             legend entries = {$w_1$, $w_2$},
             legend style = {at={(.97,.5)}, anchor=east}
             ]
-            \addplot table {../data/week6_shallow_network_weight_0.dat};
-            \addplot table {../data/week6_shallow_network_weight_1.dat};
+            \addplot+[mark=none] table {../data/week6_shallow_network_weight_0.dat};
+            \addplot+[mark=none] table {../data/week6_shallow_network_weight_1.dat};
         \end{axis}
     \end{tikzpicture}
     \vspace{.05\textwidth}
@@ -959,7 +965,7 @@ Finally, Fig. \ref{fig:week6:shallownet:weights} shows how the weights $w_1$ and
             xlabel = {$w_1$},
             ylabel = {$w_2$}
             ]
-            \addplot table {../data/week6_shallow_network_weights.dat};
+            \addplot+[mark=none] table {../data/week6_shallow_network_weights.dat};
         \end{axis}
     \end{tikzpicture}
     \caption{Changes in weights during the training process.}
@@ -968,7 +974,7 @@ Finally, Fig. \ref{fig:week6:shallownet:weights} shows how the weights $w_1$ and
 
 \section{Week 11}
 \subsection{Defining unrealizable regions}
-An \textit{unrealizable region} is a subspace of the output space that cannot be attained. 
+An \textit{unrealizable region} is a subspace of the output space that is on the goal path and cannot be attained. 
 Consider a neural network architecture expressed as the function $\vec{f}(\vec{x}; \vec{W}_1, \dots, \vec{W}_n)$ that takes the weight configurations $\vec{W}$ for each layer as a parameter.
 Given the sample $\langle \vec{x}, \vec{y}\rangle$ where $\vec{x}$ lies in input space and $\vec{y}$ in output space, we say that $\vec{y}$ is \textit{strongly unrealizable} iff there exists no weight configuration $\vec{W}_1,\dots,\vec{W}_n$ such that $\vec{f}(\vec{x};\vec{W}_1,\dots,\vec{W}_n)=\vec{y}$. 
 
@@ -1244,6 +1250,8 @@ The steps below explain the methodology of this technique, for $n$ subgoals.
     \item Perform the particular neural network training technique to achieve a configuration sufficiently close to the goal, $\vec{y}$. 
 \end{enumerate}
 
+Note that $\vec{\hat{y}_i}$ refers to the prediction of the output at the $i$th iteration (a vector), whereas $y_i$ refers to the output of the $i$th sample (i.e. $f(\vec{x_i})$) and is a scalar.
+
 \begin{figure}[h!]
     \centering
     \begin{tikzpicture}
@@ -1260,57 +1268,165 @@ The steps below explain the methodology of this technique, for $n$ subgoals.
             axis y line=left
         ]
             \coordinate (initial) at (2, 4);
-            \coordinate (goal) at (13, 8);
+            \coordinate (goal) at (12.5, 7.5);
+            \coordinate (y1) at (4, 1);
+            \coordinate (y2) at (7, 1);
+            \coordinate (y3) at (10, 5);
 
-            \draw[->,
-                postaction={
-                    decorate,
-                    decoration={
-                        markings,% switch on markings 
-                        mark=% actually add a mark
-                            between positions 0 and 1 step 0.9999/4
-                            with
-                            {
-                                \node[circle,fill,inner sep=1pt](w-\pgfkeysvalueof{/pgf/decoration/mark info/sequence number}){};
-                            }
-                    }
-                }
-            ] (initial) (initial) to[curve through={(5,1) .. (11,6)}] (goal);
+            \draw[->] (initial) (initial) to[curve through={(y1) .. (y2) .. (y3)}] (goal);
 
-            \node[label={180:{$\vec{\hat{y}_0}$}}, circle, fill, inner sep=1pt] at (w-1) {};
-            \node[label={270:{$\vec{\hat{y}_1}$}}, circle, fill, inner sep=1pt] at (w-2) {};
-            \node[label={135:{$\vec{\hat{y}_2}$}}, circle, fill, inner sep=1pt] at (w-3) {};
-            \node[label={180:{$\vec{\hat{y}_3}$}}, circle, fill, inner sep=1pt] at (w-4) {};
-            \node[label={90:{$\vec{\hat{y}_4}$}}, circle, fill, inner sep=1pt] at (w-5) {};
+            \node[label={180:{$\vec{\hat{y}_0}$}}, circle, fill, inner sep=1pt] at (initial) {};
+            \node[label={270:{$\vec{\hat{y}_1}$}}, circle, fill, inner sep=1pt] at (y1) {};
+            \node[label={90:{$\vec{\hat{y}_2}$}}, circle, fill, inner sep=1pt] at (y2) {};
+            \node[label={180:{$\vec{\hat{y}_3}$}}, circle, fill, inner sep=1pt] at (y3) {};
+            \node[label={90:{$\vec{\hat{y}_4}$}}, circle, fill, inner sep=1pt] at (goal) {};
 
             \draw
                 let
-                    \p1 = ($(w-2) - (w-1)$),
-                    \p2 = ($(w-3) - (w-2)$),
-                    \p3 = ($(w-4) - (w-3)$),
-                    \p4 = ($(w-5) - (w-4)$),
+                    \p1 = ($(y1) - (initial)$),
+                    \p2 = ($(y2) - (y1)$),
+                    \p3 = ($(y3) - (y2)$),
+                    \p4 = ($(goal) - (y3)$),
                     \n1 = {veclen(\x1, \y1)/2},
                     \n2 = {veclen(\x2, \y2)/2},
                     \n3 = {veclen(\x3, \y3)/2},
                     \n4 = {veclen(\x4, \y4)/2}
                 in
-                    (w-2) circle (\n1)
-                    (w-3) circle (\n2)
-                    (w-4) circle (\n3)
-                    (w-5) circle (\n4);
+                    (y1) circle (\n1)
+                    (y2) circle (\n2)
+                    (y3) circle (\n3)
+                    (goal) circle (\n4);
             
             \draw[dashed]
-                (w-1) -- (w-2)
-                (w-2) -- (w-3)
-                (w-3) -- (w-4)
-                (w-4) -- (w-5);
+                (initial) -- (y1)
+                (y1) -- (y2)
+                (y2) -- (y3)
+                (y3) -- (goal);
             
 
         \end{axis}
     \end{tikzpicture}
-    \caption{The `cheating' technique for $n=3$. The circles around each point indicate the threshold that constitutes `achieving' a particular point. The radius of the circle around point $\vec{\hat{y}_i}$ is $\frac{1}{2} \norm{\vec{\hat{y}_i}-\vec{\hat{y}_{i-1}}}$ for $i=1, \dots, n+1$; hence the circles are not necessarily identical in size.} 
+    \caption{Output space for the `cheating' technique for $n=3$. The circles around each point indicate the threshold that constitutes `achieving' a particular point. The radius of the circle around point $\vec{\hat{y}_i}$ is $\frac{1}{2} \norm{\vec{\hat{y}_i}-\vec{\hat{y}_{i-1}}}$ for $i=1, \dots, n+1$; hence the circles are not necessarily identical in size. While the weight configurations $\vec{w_1}, \dots, \vec{w_{n+1}}$ are equidistant and collinear in weight space, it is important to note that the corresponding points in output space $\vec{y_1}, \dots, \vec{y_{n+1}}$ will usually neither be collinear nor equidistant due to the inherent non-linearity of the network, as depicted in the figure above.}
     \label{fig:s2week3:cheat}
 \end{figure}
+
+\section{Semester 2, week 4}
+
+\subsection{The `cheating' technique applied to the RBF stripe problem}
+\label{sec:sem2_week3_cheating}
+Recall the inputs and target outputs of the RBF stripe problem,\\
+$
+    \vec{X} = 
+    \begin{bmatrix}
+        \vec{x_1} \\
+        \vec{x_2} \\
+        \vec{x_3} \\
+        \vec{x_4}
+    \end{bmatrix} = 
+    \begin{bmatrix}
+        0 & 0 \\
+        2 & 2 \\
+        2 & 0 \\
+        0 & 2
+    \end{bmatrix}
+$
+and
+$
+    \vec{y} = 
+    \begin{bmatrix}
+        y_1 \\
+        y_2 \\
+        y_3 \\
+        y_4
+    \end{bmatrix} = 
+    \begin{bmatrix}
+        1 \\
+        1 \\
+        0 \\
+        0
+    \end{bmatrix}
+$.
+
+Figure \ref{fig:sem2_week4:stripe:weights} shows the target goal line in weight space from the initial configuration
+$\vec{w_0}=
+\begin{bmatrix}
+    1 & 1
+\end{bmatrix}^\top
+$
+to the target
+$\vec{w_9}=
+\begin{bmatrix}
+    1 & -1
+\end{bmatrix}^\top$
+along with the $n=8$ equidistant subgoals on that line.
+The graph on the right shows how the goal line translates to output space. 
+
+An experiment was conducted to train the neural network using SGD with MSE loss according to the `cheating' regime outlined in Section \ref{sec:sem2_week3_cheating}. 
+Repeatedly, the target was set to the next subgoal, and once at least half of the distance towards that subgoal was covered, the target was set to the next subgoal. 
+
+The graphs in Figure \ref{fig:sem2_week4:stripe:weights} show that although the fourth subgoal was achieved, the approach failed to realize the fifth subgoal, and hence the remaining path to the goal.
+Notice that the goal line in weight space keeps the weight $w_1$ at its value of $1$. The training regime realizes the first three subgoals in weight space perfectly, but just shy of achieving the fourth subgoal, $w_2$ is altered such that it can never be reached. 
+
+\paragraph{My guess on why it fails}
+Upon achieving the third subgoal, the agent fails to realize that it simply needs to continue to decrease the value of $w_2$ such that it becomes negative. 
+This is due to the nature of the radial basis activation function. As shown in Figure \ref{fig:week6:rbf:plot}, the RBF outputs its maximum value when the input is zero, and its output decreases as the input increases or decreases. 
+The SGD approach is almost at the maximum of the RBF when enroute to achieving the fourth subgoal, but it does not know that the function would decrease again if it continued further.
+
+\begin{figure}[h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            title = {Weight space},
+            xlabel = {$w_1$},
+            ylabel = {$w_2$},
+            legend entries = {target, actual},
+            legend pos = north west
+            ]
+            \addplot+[mark=x] table {../data/sem2_week3_stripe_target_weights.dat};
+            \addplot+[mark=none] table {../data/sem2_week3_stripe_training_weights.dat};
+            \node[pin=180:start] at (1,1) {};
+            \node[pin=180:goal] at (1,-1) {};
+        \end{axis}
+    \end{tikzpicture}
+    \vspace{.05\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            title = {Output space (for samples 2 and 4)},
+            xlabel = {$y_2$},
+            ylabel = {$y_4$},
+            legend entries = {target, actual},
+            legend pos = north east
+            ]
+            \addplot+[mark=x] table {../data/sem2_week3_stripe_target_outputs.dat};
+            \addplot+[mark=none] table {../data/sem2_week3_stripe_training_outputs.dat};
+            \node[pin=0:start] at (0,0) {};
+            \node[pin=180:goal] at (1,0) {};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Weight and output spaces.}
+    \label{fig:sem2_week4:stripe:weights}
+\end{figure}
+
+\subsection{Tracking with minimal change}
+The main idea underlying this technique is that mutually attracting\footnote{\say{attracting} here means moving towards each other} the actual output and the subgoal will lead to a realizable goal-connecting path in output space. 
+
+\paragraph{Procedure}
+The steps below outline the technique to achieve the next subgoal, $\vec{s}$, in output space. 
+Once $\vec{s}$ is achieved, the steps are repeated for the next subgoal. 
+\begin{enumerate}
+    \item Use SGD with MSE to attempt to achieve $\vec{s}$.
+    \item If, after a certain number of iterations, no significant progress was made, move $\vec{s}$ closer to the current output by $\frac{1}{10}$th of the distance. (Or should we be looking at the angle?)
+    \item Repeat.
+\end{enumerate}
+
+\paragraph{Further investigation}
+Once a transition $t_i$ achieves the subgoal $\vec{s_i}$ in output space, should we re-calculate all subgoals?
+For example, if there are $n=10$ subgoals, should the point in output space that we reached in order to achieve the first subgoal be the new initial position for the heuristic, from which 10 new subgoals are calculated?
+One possible pitfall could be that the agent might go in a loop because it loses knowledge of where it started.   
+
 
 \bibliographystyle{apalike}
 \bibliography{bibliography}
