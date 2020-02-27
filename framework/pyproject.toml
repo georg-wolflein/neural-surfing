@@ -9,6 +9,7 @@ python = "^3.7"
 tensorflow = "^2.0.0"
 numpy = "^1.18.1"
 matplotlib = "^3.1.2"
+bokeh = "^1.4.0"
 
 [tool.poetry.dev-dependencies]
 pylint = "^2.4.4"

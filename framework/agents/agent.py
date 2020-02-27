@@ -16,7 +16,7 @@ class Agent(ABC):
     def compile(self):
         pass
 
-    def train(self, epochs: int, metrics: typing.List[str] = None):
+    def train(self, epochs: int, metrics: typing.List[str] = None, start_epoch: int = 0):
         if not self.compiled:
             self.compile()
             self.compiled = True
@@ -34,8 +34,11 @@ class Agent(ABC):
             for name, value in calculated_metrics.items():
                 data[name][epoch] = value
 
-        history = self.problem.model.fit(self.problem.X, self.problem.y,
-                                         epochs=epochs,
-                                         callbacks=[tf.keras.callbacks.LambdaCallback(on_epoch_end=callback)])
+        self.problem.model.fit(self.problem.X, self.problem.y,
+                               epochs=epochs,
+                               callbacks=[tf.keras.callbacks.LambdaCallback(on_epoch_end=callback)])
 
-        return history, data
+        data["epoch"] = np.arange(
+            start_epoch, start_epoch+epochs)[:, np.newaxis]
+
+        return data

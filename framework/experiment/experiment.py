@@ -5,6 +5,10 @@ import matplotlib.patches as mpatches
 import matplotlib.cm as cm
 import typing
 import itertools
+from bokeh.plotting import curdoc
+from bokeh.layouts import row
+from bokeh.palettes import cividis
+from threading import Thread
 
 from agents.loss_with_goal_line_deviation import LossWithGoalLineDeviation
 from agents import Agent
@@ -24,26 +28,23 @@ class Experiment:
     def run(self, visualisations: typing.Sequence[Visualisation], epoch_batches: int = 100, epoch_batch_size: int = 50):
         metrics = set(itertools.chain(*[visualisation.required_metrics
                                         for visualisation in visualisations]))
-        fig: plt.Figure = plt.figure()
-
-        # Add legend
-        fig.legend(handles=[mpatches.Patch(color=color, label=factory.__name__)
-                            for (color, factory) in zip(np.squeeze(self.colors), self.agent_factories)])
 
         # Create subplots
-        axes = [fig.add_subplot(1, len(visualisations), i, **v.subplot_kwargs)
-                for i, v in enumerate(visualisations, 1)]
-        for visualisation, ax in zip(visualisations, axes):
-            visualisation.setup(ax)
+        palette = cividis(len(self.agents))
+        plots = [visualisation.setup(len(self.agents), palette)
+                 for visualisation in visualisations]
 
-        for _ in range(epoch_batches):
-            for agent, color in zip(self.agents, self.colors):
-                _, data = agent.train(epochs=epoch_batch_size,
-                                      metrics=metrics)
-                for visualisation, ax in zip(visualisations, axes):
-                    visualisation.plot(data, color, ax)
+        doc = curdoc()
+        doc.add_root(row(*plots))
 
-            plt.draw()
-            plt.pause(0.001)
+        def run_blocking():
+            for epoch_batch in range(epoch_batches):
+                agent_data = [agent.train(epochs=epoch_batch_size,
+                                          metrics=metrics,
+                                          start_epoch=epoch_batch*epoch_batch_size)
+                              for agent in self.agents]
+                for visualisation, plot in zip(visualisations, plots):
+                    visualisation.plot(agent_data, plot, doc)
 
-        plt.show()
+        thread = Thread(target=run_blocking)
+        thread.start()

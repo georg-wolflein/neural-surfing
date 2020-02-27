@@ -11,10 +11,10 @@ from experiment.visualisations import Scatter2D, Scatter3D
 
 problem_factory = ShallowProblem
 agent_factories = [LossWithGoalLineDeviation, MSE]
-colors = cm.rainbow(np.linspace(0, 1, len(agent_factories)))[:, np.newaxis, :]
 
 experiment = Experiment(problem_factory, agent_factories)
 experiment.run([
     Scatter2D("weights"),
     Scatter2D("output"),
-    Scatter3D("output")])
+    Scatter2D("weights:0", "output:1"),
+    Scatter2D("epoch", "output:1")])
