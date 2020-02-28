@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 import typing
 import numpy as np
 from bokeh.plotting import Figure
+from bokeh.models.glyphs import Line
 from bokeh.document import Document
 
 
@@ -11,7 +12,7 @@ class Visualisation(ABC):
         self.required_metrics = required_metrics
 
     @abstractmethod
-    def setup(self) -> Figure:
+    def setup(self) -> typing.Tuple[Figure, typing.List[Line]]:
         pass
 
     @abstractmethod

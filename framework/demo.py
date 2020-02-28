@@ -4,12 +4,12 @@ from matplotlib import cm
 
 from agents.loss_with_goal_line_deviation import LossWithGoalLineDeviation
 from agents.mse import MSE
-from problems.stripe_problem import StripeProblem
+from problems.simple_problem import SimpleProblem
 
 from experiment import Experiment
 from experiment.visualisations import Scatter2D, Scatter3D, Histogram
 
-problem_factory = StripeProblem
+problem_factory = SimpleProblem
 agent_factories = [LossWithGoalLineDeviation, MSE]
 
 experiment = Experiment(problem_factory, agent_factories)

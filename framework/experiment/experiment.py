@@ -5,10 +5,12 @@ import matplotlib.patches as mpatches
 import matplotlib.cm as cm
 import typing
 import itertools
-from bokeh.plotting import curdoc
-from bokeh.layouts import gridplot
-from bokeh.palettes import Category10
 from threading import Thread
+from bokeh.plotting import curdoc
+from bokeh.layouts import gridplot, row, column
+from bokeh.palettes import Category10
+from bokeh.models import CheckboxButtonGroup
+from bokeh.models.callbacks import CustomJS
 
 from agents.loss_with_goal_line_deviation import LossWithGoalLineDeviation
 from agents import Agent
@@ -29,13 +31,25 @@ class Experiment:
         metrics = set(itertools.chain(*[visualisation.required_metrics
                                         for visualisation in visualisations]))
 
-        # Create subplots
-        plots = [visualisation.setup(len(self.agents), palette=Category10[10])
-                 for visualisation in visualisations]
+        # Create plots
+        plots, lines = zip(*[visualisation.setup(len(self.agents), palette=Category10[10])
+                             for visualisation in visualisations])
+
+        buttons = CheckboxButtonGroup(
+            labels=[f.__name__ for f in self.agent_factories],
+            active=list(range(len(self.agent_factories))))
+
+        buttons.callback = CustomJS(args=dict(buttons=buttons, lines=lines),
+                                    code="""
+                                    lines.forEach(plot => plot.forEach((line, index) => {
+                                        line.visible = index in buttons.active;
+                                    }));
+                                    """)
 
         doc = curdoc()
         doc.title = title
-        doc.add_root(gridplot(plots, ncols=cols))
+        doc.add_root(column(buttons,
+                            gridplot(plots, ncols=cols)))
 
         def run_blocking():
             for epoch_batch in range(epoch_batches):

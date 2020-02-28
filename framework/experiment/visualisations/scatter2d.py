@@ -3,6 +3,7 @@ import typing
 import numpy as np
 from bokeh.plotting import Figure, figure
 from bokeh.models import ColumnDataSource
+from bokeh.models.glyphs import Line
 from bokeh.document import Document
 from tornado import gen
 from functools import partial
@@ -34,7 +35,7 @@ class Scatter2D(Visualisation):
 
         super().__init__(required_metrics)
 
-    def setup(self, num_agents: int, palette: list) -> Figure:
+    def setup(self, num_agents: int, palette: list) -> typing.Tuple[Figure, typing.List[Line]]:
         self._source = ColumnDataSource(data={
             **{f"x{i}": [] for i in range(num_agents)},
             **{f"y{i}": [] for i in range(num_agents)}
@@ -42,11 +43,11 @@ class Scatter2D(Visualisation):
         plot = figure(title=self.title,
                       x_axis_label=self.x_title,
                       y_axis_label=self.y_title)
-        for i in range(num_agents):
-            plot.line(x=f"x{i}", y=f"y{i}",
-                      source=self._source,
-                      color=palette[i])
-        return plot
+        lines = [plot.line(x=f"x{i}", y=f"y{i}",
+                           source=self._source,
+                           color=palette[i])
+                 for i in range(num_agents)]
+        return plot, lines
 
     @gen.coroutine
     def _update(self, **kwargs):
