@@ -6,7 +6,7 @@ import matplotlib.cm as cm
 import typing
 import itertools
 from bokeh.plotting import curdoc
-from bokeh.layouts import row
+from bokeh.layouts import gridplot
 from bokeh.palettes import cividis
 from threading import Thread
 
@@ -25,7 +25,7 @@ class Experiment:
         self.colors = cm.rainbow(np.linspace(0, 1, len(agent_factories)))[
             :, np.newaxis, :]
 
-    def run(self, visualisations: typing.Sequence[Visualisation], epoch_batches: int = 100, epoch_batch_size: int = 50):
+    def run(self, visualisations: typing.Sequence[Visualisation], epoch_batches: int = 100, epoch_batch_size: int = 50, cols: int = 2, title: str = "Experiment"):
         metrics = set(itertools.chain(*[visualisation.required_metrics
                                         for visualisation in visualisations]))
 
@@ -35,7 +35,8 @@ class Experiment:
                  for visualisation in visualisations]
 
         doc = curdoc()
-        doc.add_root(row(*plots))
+        doc.title = title
+        doc.add_root(gridplot(plots, ncols=cols))
 
         def run_blocking():
             for epoch_batch in range(epoch_batches):

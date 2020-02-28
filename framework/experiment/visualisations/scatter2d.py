@@ -8,40 +8,29 @@ from tornado import gen
 from functools import partial
 
 from .visualisation import Visualisation
+from ..metrics import Metric
 
 
 class Scatter2D(Visualisation):
 
-    def __init__(self, x: typing.Union[str, tuple], y: typing.Union[str, tuple] = None, title: str = None, x_title: str = None, y_title: str = None):
+    def __init__(self, x: str, y: str = None, title: str = None, x_title: str = None, y_title: str = None):
 
-        def format_axis_metric(axis: typing.Union[str, tuple]) -> tuple:
-            if isinstance(axis, str):
-                if ":" in axis:
-                    return tuple(fn(x) for (fn, x) in zip((str, int), axis.split(":")))
-                else:
-                    return axis, 0
-            elif isinstance(axis, tuple):
-                if len(axis) != 2:
-                    raise ValueError()
-                return axis
-            else:
-                raise ValueError()
-
-        x_metric, x_dim = format_axis_metric(x)
         if y is None:
-            y_metric, y_dim = x_metric, x_dim+1
-        else:
-            y_metric, y_dim = format_axis_metric(y)
+            if ":" not in x:
+                y = x + ":1"
+                x += ":0"
+            else:
+                raise ValueError("missing y metric")
 
-        self._metrics = [(x_metric, x_dim), (y_metric, y_dim)]
-        required_metrics = {x_metric, y_metric}
+        self._metrics = list(map(Metric.from_string, (x, y)))
+        required_metrics = {m.name for m in self._metrics}
 
-        self.title = title if title is not None else ", ".join(
+        self.title = title if title is not None else " vs ".join(
             required_metrics)
-        self.x_title = x_title if x_title is not None else ":".join(
-            map(str, self._metrics[0]))
-        self.y_title = y_title if y_title is not None else ":".join(
-            map(str, self._metrics[1]))
+        self.x_title = x_title if x_title is not None else str(
+            self._metrics[0])
+        self.y_title = y_title if y_title is not None else str(
+            self._metrics[1])
 
         super().__init__(required_metrics)
 
@@ -66,8 +55,8 @@ class Scatter2D(Visualisation):
     def plot(self, metrics: typing.List[typing.Dict[str, np.ndarray]], plot: Figure, doc: Document):
         def get_metrics():
             for i, agent_metrics in enumerate(metrics):
-                for axis, (axis_metric, axis_dimension) in zip(("x", "y"), self._metrics):
-                    yield f"{axis}{i}", agent_metrics[axis_metric][..., axis_dimension]
+                for axis, metric in zip(("x", "y"), self._metrics):
+                    yield f"{axis}{i}", metric.select(agent_metrics)
 
         doc.add_next_tick_callback(partial(self._source.stream,
                                            dict(get_metrics())))

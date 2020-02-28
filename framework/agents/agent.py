@@ -38,7 +38,6 @@ class Agent(ABC):
                                epochs=epochs,
                                callbacks=[tf.keras.callbacks.LambdaCallback(on_epoch_end=callback)])
 
-        data["epoch"] = np.arange(
-            start_epoch, start_epoch+epochs)[:, np.newaxis]
+        data["epoch"] = np.arange(start_epoch, start_epoch+epochs)
 
         return data
