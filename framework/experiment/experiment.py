@@ -7,7 +7,7 @@ import typing
 import itertools
 from bokeh.plotting import curdoc
 from bokeh.layouts import gridplot
-from bokeh.palettes import cividis
+from bokeh.palettes import Category10
 from threading import Thread
 
 from agents.loss_with_goal_line_deviation import LossWithGoalLineDeviation
@@ -30,8 +30,7 @@ class Experiment:
                                         for visualisation in visualisations]))
 
         # Create subplots
-        palette = cividis(len(self.agents))
-        plots = [visualisation.setup(len(self.agents), palette)
+        plots = [visualisation.setup(len(self.agents), palette=Category10[10])
                  for visualisation in visualisations]
 
         doc = curdoc()
@@ -40,9 +39,9 @@ class Experiment:
 
         def run_blocking():
             for epoch_batch in range(epoch_batches):
-                agent_data = [agent.train(epochs=epoch_batch_size,
-                                          metrics=metrics,
-                                          start_epoch=epoch_batch*epoch_batch_size)
+                start_epoch = epoch_batch * epoch_batch_size
+                agent_data = [{**agent.train(epochs=epoch_batch_size, metrics=metrics),
+                               "epoch": np.arange(start_epoch, start_epoch + epoch_batch_size)}
                               for agent in self.agents]
                 for visualisation, plot in zip(visualisations, plots):
                     visualisation.plot(agent_data, plot, doc)

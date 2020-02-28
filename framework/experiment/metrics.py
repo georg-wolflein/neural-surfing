@@ -11,7 +11,7 @@ class Metric:
     def __str__(self):
         if self.dimensions is None:
             return self.name
-        return self.name + ":".join(map(str, self.dimensions))
+        return self.name + ":" + ":".join(map(str, self.dimensions))
 
     def select(self, metrics: typing.Dict[str, np.ndarray]) -> np.ndarray:
         metric = metrics[self.name]

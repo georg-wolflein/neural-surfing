@@ -29,4 +29,4 @@ class LossWithGoalLineDeviation(Agent):
         def loss(y_true, y_pred):
             return tf.losses.mean_squared_error(y_true, y_pred) + get_distance_to_line(y_pred, y_initial, y_true) ** 2
 
-        model.compile(loss=loss, optimizer="adam", metrics=["accuracy"])
+        model.compile(loss=loss, optimizer="sgd", metrics=["accuracy"])

@@ -11,4 +11,4 @@ class MSE(Agent):
 
     def compile(self):
         self.problem.model.compile(
-            loss="mse", optimizer="adam", metrics=["accuracy"])
+            loss="mse", optimizer="sgd", metrics=["accuracy"])

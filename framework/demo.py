@@ -4,18 +4,19 @@ from matplotlib import cm
 
 from agents.loss_with_goal_line_deviation import LossWithGoalLineDeviation
 from agents.mse import MSE
-from problems.shallow_problem import ShallowProblem
+from problems.stripe_problem import StripeProblem
 
 from experiment import Experiment
 from experiment.visualisations import Scatter2D, Scatter3D, Histogram
 
-problem_factory = ShallowProblem
+problem_factory = StripeProblem
 agent_factories = [LossWithGoalLineDeviation, MSE]
 
 experiment = Experiment(problem_factory, agent_factories)
 experiment.run([
     Scatter2D("weights"),
-    Scatter2D("output"),
-    Scatter2D("weights:0", "output:1"),
-    Scatter2D("epoch", "weights:0", title="w1 over time"),
-    Histogram("weights:1")])
+    Scatter2D("output:1", "output:3"),
+    Histogram("output:0"),
+    Histogram("output:1"),
+    Histogram("output:2"),
+    Histogram("output:3")])
