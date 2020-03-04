@@ -1427,6 +1427,52 @@ Once a transition $t_i$ achieves the subgoal $\vec{s_i}$ in output space, should
 For example, if there are $n=10$ subgoals, should the point in output space that we reached in order to achieve the first subgoal be the new initial position for the heuristic, from which 10 new subgoals are calculated?
 One possible pitfall could be that the agent might go in a loop because it loses knowledge of where it started.   
 
+\section{Semester 2, week 6}
+
+\subsection{The `cheating' technique on the stripe problem trained with the probing approach}
+
+Like the gradient-based approach, the probing approach fails for the stripe problem with 10 subgoals.
+However, increasing the number of subgoals to 100 the probing approach reaches the target output in 200 training iterations (two per subgoal) (see Figure \ref{fig:sem2_week6:stripe:weights}). 
+
+The gradient-based approach fails in this scenario because the subgoals are too close.
+
+\begin{figure}[h]
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            title = {Weight space},
+            xlabel = {$w_1$},
+            ylabel = {$w_2$},
+            legend entries = {target, actual},
+            legend pos = north west
+            ]
+            \addplot+[mark=x] table {../data/sem2_week6_stripe_target_weights.dat};
+            \addplot+[mark=none] table {../data/sem2_week6_stripe_training_weights.dat};
+            \node[pin=180:start] at (1,1) {};
+            \node[pin=180:goal] at (1,-1) {};
+        \end{axis}
+    \end{tikzpicture}
+    \vspace{.05\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            title = {Output space (for samples 2 and 4)},
+            xlabel = {$y_2$},
+            ylabel = {$y_4$},
+            legend entries = {target, actual},
+            legend pos = north east
+            ]
+            \addplot+[mark=x] table {../data/sem2_week6_stripe_target_outputs.dat};
+            \addplot+[mark=none] table {../data/sem2_week6_stripe_training_outputs.dat};
+            \node[pin=0:start] at (0,0) {};
+            \node[pin=180:goal] at (1,0) {};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Weight and output spaces.}
+    \label{fig:sem2_week6:stripe:weights}
+\end{figure}
 
 \bibliographystyle{apalike}
 \bibliography{bibliography}
