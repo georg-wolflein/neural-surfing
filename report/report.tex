@@ -1,0 +1,153 @@
+\documentclass[oneside]{book}
+%\usepackage[a4paper, margin=3cm]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{color}
+\graphicspath{ {./images/} }
+
+\renewcommand\vec{\mathbf}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}
+\newcommand{\todo}{{\color{red} \textbf{TODO} }}
+
+\newcommand{\quickwordcount}[1]{%
+  \immediate\write18{texcount -1 -sum -merge #1.tex > #1-words}%
+  \input{#1-words}words%
+}
+
+\begin{document}
+
+\begin{titlepage}
+    \centering
+    
+	{\scshape\LARGE Senior Honours Project\par}
+	\vspace{0.25cm}
+	{\includegraphics[width=0.8\textwidth]{logo.png} \par}
+    \vspace{0.25cm}
+	{\huge\bfseries Freeing Neural Training Through Surfing\par}
+	\vspace{0.5cm}
+	
+    \vfill
+    {\large \textit{Georg Wölflein 170011885} \par}
+	{\large \textit{Supervisor: Dr. Mike Weir} \par}
+    
+    \vspace{0.5cm}
+
+    {April XX, 2020\par}
+
+    \vfill
+    
+    Word count: \quickwordcount{report}
+\end{titlepage}
+
+\frontmatter
+
+\addcontentsline{toc}{chapter}{Abstract}
+\chapter*{Abstract}
+\todo
+\newpage
+
+\addcontentsline{toc}{chapter}{Declaration}
+\chapter*{Declaration}
+``I declare that the material submitted for assessment is my own work except where credit is explicitly given to others by citation or acknowledgement.
+This work was performed during the current academic year except where otherwise stated.
+The main text of this project report is \quickwordcount{report} long, including project specification and plan.
+In submitting this project report to the University of St Andrews, I give permission for it to be made available for use in accordance with the regulations of the University Library. 
+I also give permission for the title and abstract to be published and for copies of the report to be made and supplied at cost to any bona fide library or research worker, and to be made available on the World Wide Web.
+I retain the copyright in this work.''
+
+\vspace{0.5cm}
+
+\textit{Georg Wölflein}
+
+\newpage
+
+\tableofcontents
+\newpage
+
+\mainmatter
+
+\chapter{Introduction}
+\section{Motivation}
+\todo
+\section{Objectives}
+\todo
+Primary objectives:
+\begin{enumerate}
+    \item Design a generic framework that can be used for various neural training algorithms
+    with a clear set of inputs and outputs at each step. This framework should include
+    benchmarking capabilities.
+    \item For a simple case of this framework (when the dimensionality of the control space
+    and output space are suitably low), implement a visualisation tool that shows the
+    algorithm’s steps.
+    \item Implement a particular training algorithm for the framework that uses potential field
+    techniques.
+    \item Evaluate the performance of this and other algorithms on tasks of differing
+    complexity, especially with regard to the local minimum problem and similar issues.
+\end{enumerate}
+Secondary objectives:
+\begin{enumerate}
+    \item Investigate how this approach can be generalized to any numerical optimisation problems.
+\end{enumerate}
+
+\section{Accomplishments}
+
+\chapter{Theory}
+\section{Fully-connected feedforward neural networks}
+
+\paragraph{Regression model}
+In machine learning, a regression model $f$ is defined as a mathematical function of the form
+\begin{equation}
+    \label{eq:reg_model}
+    f(\vec{x}) = \hat{y} = y + \epsilon
+\end{equation}
+that models the relationship between a $D$-dimensional feature vector $\vec{x} \in \mathbb{R}^D$ of independent (\textit{input}) variables and the dependent (\textit{output}) variable $y \in \mathbb{R}$. 
+Given a particular $\vec{x}$, the model will produce a \textit{prediction} for $y$ which we denote $\hat{y}$.
+Here, the additive error term $\epsilon$ represents the discrepancy between $y$ and $\hat{y}$.
+
+\paragraph{Supervised learning}
+A supervised learning algorithm for a regression task infers the function $f$ given in (\ref{eq:reg_model}) from a set of \textit{labelled training data}. This dataset consists of $N$ tuples of the form $\langle \vec{x}_i, y_i\rangle$ for $i=1,\dots,N$.
+For each feature vector $\vec{x}_i$, the corresponding $y_i$ represents the observed output, or \textit{label}.
+We use the vector
+\begin{equation}
+    \vec{y} = \begin{bmatrix}
+        y_1 & \cdots & y_N
+    \end{bmatrix}\tran
+\end{equation}
+to denote all the labelled outputs in the dataset, and
+\begin{equation}
+    \vec{X} = \begin{bmatrix}
+        \vec{x}_1 & \cdots & \vec{x}_N
+    \end{bmatrix}\tran
+\end{equation}
+is the $N \times D$ matrix representing the corresponding feature vectors.
+
+Similarly,
+\begin{equation}
+    \label{eq:sup_learn_prediction}
+    \vec{\hat{y}} = \begin{bmatrix}
+        \hat{y}_1 & \cdots & \hat{y}_N
+    \end{bmatrix}\tran
+\end{equation}
+denotes a particular prediction for each training sample.
+
+\paragraph{Artificial neural network}
+Artifical neural networks (ANNs) take inspiration from the human brain and can be regarded as a set of interconnected neurons. 
+More formally, an ANN is a directed graph of neurons (referred to as \textit{nodes} or \textit{units}) connected by weighted edges.
+\todo
+
+\paragraph{Multilayer perceptron}
+employed in this project
+\todo
+
+\subsection{Weight and output spaces}
+We define the weight space $\mathcal{W}$ \todo
+
+The output space $\mathcal{O}$ spans the space of all possible output predictions on the training set, $\vec{\hat{y}}$, so $\mathcal{O}=\mathbb{R}^N$ considering the fact that the training set has $N$ samples.
+
+\chapter*{Ideas}
+Generalize to classification as regression with multiple output variables?
+
+\end{document}
