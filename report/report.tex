@@ -118,6 +118,10 @@ Secondary objectives:
     \item Investigate how this approach can be generalized to any numerical optimisation problems.
 \end{enumerate}
 
+\section{Ethics}
+There are no ethical considerations. 
+All questions on the preliminary self-assessment form were answered with ``NO'' and hence no ethics form had to be completed.
+
 \chapter{Theory}
 \section{Supervised learning}
 
@@ -192,8 +196,7 @@ A single-layer perceptron (SLP) is a type of ANN that consists of two layers, an
 Every input node is connected to every output node, but there are no intra-layer links (i.e. there are no links between any two input nodes or any two output nodes). 
 This is what we call a \textit{fully-connected feedforward} architecture.
 SLP architectures will always form a \textit{directed acyclic graph} (DAG) because there are no intra-layer or backwards connections.
-Figure \ref{fig:single_layer_perceptron} depicts the DAG for an example SLP and
-\todo
+Figure \ref{fig:single_layer_perceptron} an example of a DAG representing a SLP.
 
 \begin{figure}[h]
     \begin{center}
@@ -204,18 +207,14 @@ Figure \ref{fig:single_layer_perceptron} depicts the DAG for an example SLP and
             \node [neuron] (x1) at (0,0) {$x_1$};
             \node [neuron] (x2) at (0,-2) {$x_2$};
             \node [neuron] (x3) at (0,-4) {$x_3$};
-            \node [neuron] (n1) at (3,1) {};
-            \node [neuron] (n2) at (3,-1) {};
-            \node [neuron] (n3) at (3,-3) {};
-            \node [neuron] (n4) at (3,-5) {};
+            \node [neuron] (n1) at (3,1)  {$\hat{y}_1$};
+            \node [neuron] (n2) at (3,-1) {$\hat{y}_2$};
+            \node [neuron] (n3) at (3,-3) {$\hat{y}_3$};
+            \node [neuron] (n4) at (3,-5) {$\hat{y}_4$};
             \node (b1) at (3, 2) {$b_1$};
             \node (b2) at (3, 0) {$b_2$};
             \node (b3) at (3, -2) {$b_3$};
             \node (b4) at (3, -4) {$b_4$};
-            \node (y1) at (6, 1) {$\hat{y}_1$};
-            \node (y2) at (6, -1) {$\hat{y}_2$};
-            \node (y3) at (6, -3) {$\hat{y}_3$};
-            \node (y4) at (6, -5) {$\hat{y}_4$};
             \draw[->] (x1) -- (n1);
             \draw[->] (x1) -- (n2);
             \draw[->] (x1) -- (n3);
@@ -228,22 +227,13 @@ Figure \ref{fig:single_layer_perceptron} depicts the DAG for an example SLP and
             \draw[->] (x3) -- (n2);
             \draw[->] (x3) -- (n3);
             \draw[->] (x3) -- (n4);
-            \draw[->] (n1) -- (y1);
-            \draw[->] (n2) -- (y2);
-            \draw[->] (n3) -- (y3);
-            \draw[->] (n4) -- (y4);
             \draw[->] (b1) -- (n1);
             \draw[->] (b2) -- (n2);
             \draw[->] (b3) -- (n3);
             \draw[->] (b4) -- (n4);
-
-            \draw[dashed] (-1,2.5) rectangle (1,-6);
-            \draw[dashed] (5,2.5) rectangle (7,-6);
-            \node[above] at (0, 2.5) {Input};
-            \node[above] at (6, 2.5) {Output};
         \end{tikzpicture}
     \end{center}
-    \caption{A single-layer perceptron with 3 input and 4 output neurons.}
+    \caption{A single-layer perceptron with three input and four output neurons.}
     \label{fig:single_layer_perceptron}
 \end{figure}
 
@@ -277,21 +267,100 @@ to capture all weights and the vector $\vec{b} = \begin{bmatrix}
 \end{bmatrix}\tran$ for the biases, we can give a mathematical formula describing the relationship between the inputs and outputs as
 \begin{equation}
     \label{eq:single_layer_perceptron}
-    \vec{f_{SLP}}(\vec{x}) = \vec{\hat{y}} = \vec{W} \vec{x} + \vec{b}.
+    \vec{f_{SLP}}(\vec{x}; \vec{W}, \vec{b}) = \vec{\hat{y}} = \vec{g}\left( \vec{W} \vec{x} + \vec{b} \right).
 \end{equation}
-
+Unlike the formula for a regression model, this is a vector-valued function, due to the fact that there are multiple outputs. 
+Notice, however, that when $n=1$, we reach the same form as in (\ref{eq:reg_model}). 
 
 \paragraph{Multi-layer perceptron}
-A multi-layer perceptron (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested SLPs \cite{burkov2019}.
+A multi-layer perceptron (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested SLPs as in \cite{burkov2019}.
+A MLP with $L$ layers is the mathematical function
+\begin{equation}
+    f_{MLP}(\vec{x})
+        = \hat{y}
+        = f_L \left(
+            \vec{f}_{L-1} \left(
+                \vec{\dots} \left(
+                    \vec{f}_1 \left(
+                        \vec{x}
+                    \right)
+                \right)
+            \right)
+        \right).
+\end{equation}
 
+Here, $\vec{f}_l(\vec{x}) = \vec{f_{SLP}}(\vec{x}; \vec{W}_l, \vec{b}_l)$ for $l = 1, \dots, L-1$. 
+The outermost function $f_L$ is a scalar-valued function $f_L(\vec{x}) = f_{SLP}(\vec{x}; \vec{W}_L, \vec{b}_L)$ because it represents a SLP with one output unit which also means that $\norm{\vec{b}_L}=1$ and $\vec{W}_L$ has only one row.
 
+The graph representing this network consists of connecting the outputs of the SLP representing layer $l$ with the inputs of the SLP representing layer $l+1$, as shown in Figure \ref{fig:multi_layer_perceptron}. 
+The layers between the input and output layers are referred to as \textit{hidden} layers.
 
-employed in this project
+\begin{figure}[h]
+    \begin{center}
+        \begin{tikzpicture}
+            [
+                neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+            ]
+            \node [neuron] (x1) at (0,0) {$x_1$};
+            \node [neuron] (x2) at (0,-2) {$x_2$};
+            \node [neuron] (x3) at (0,-4) {$x_3$};
+            \node [neuron] (h11) at (3,1) {};
+            \node [neuron] (h12) at (3,-1) {};
+            \node [neuron] (h13) at (3,-3) {};
+            \node [neuron] (h14) at (3,-5) {};
+            \node [neuron] (h21) at (6,-1) {};
+            \node [neuron] (h22) at (6,-3) {};
+            \node [neuron] (y) at (9, -2) {$\hat{y}$};
+            \node (b11) at (3, 2) {$b_{1,1}$};
+            \node (b12) at (3, 0) {$b_{1,2}$};
+            \node (b13) at (3, -2) {$b_{1,3}$};
+            \node (b14) at (3, -4) {$b_{1,4}$};
+            \node (b21) at (6, 0) {$b_{2,1}$};
+            \node (b22) at (6, -2) {$b_{2,2}$};
+            \node (b3) at (9, -1) {$b_{3,1}$};
+            \draw[->] (x1) -- (h11);
+            \draw[->] (x1) -- (h12);
+            \draw[->] (x1) -- (h13);
+            \draw[->] (x1) -- (h14);
+            \draw[->] (x2) -- (h11);
+            \draw[->] (x2) -- (h12);
+            \draw[->] (x2) -- (h13);
+            \draw[->] (x2) -- (h14);
+            \draw[->] (x3) -- (h11);
+            \draw[->] (x3) -- (h12);
+            \draw[->] (x3) -- (h13);
+            \draw[->] (x3) -- (h14);
+            \draw[->] (h11) -- (h21);
+            \draw[->] (h11) -- (h22);
+            \draw[->] (h12) -- (h21);
+            \draw[->] (h12) -- (h22);
+            \draw[->] (h13) -- (h21);
+            \draw[->] (h13) -- (h22);
+            \draw[->] (h14) -- (h21);
+            \draw[->] (h14) -- (h22);
+            \draw[->] (b11) -- (h11);
+            \draw[->] (b12) -- (h12);
+            \draw[->] (b13) -- (h13);
+            \draw[->] (b14) -- (h14);
+            \draw[->] (b21) -- (h21);
+            \draw[->] (b22) -- (h22);
+            \draw[->] (b3) -- (y);
+            \draw[->] (h21) -- (y);
+            \draw[->] (h22) -- (y);
+            \draw[dashed] (-1,3) rectangle (1,-6);
+            \draw[dashed] (2,3) rectangle (7,-6);
+            \draw[dashed] (8,3) rectangle (10,-6);
+            \node[below] (input) at (0,3) {Input layer};
+            \node[below] (hidden) at (4.5,3) {Hidden layers};
+            \node[below] (output) at (9,3) {Output layer};
+        \end{tikzpicture}
+    \end{center}
+    \caption{A multi-layer perceptron with three inputs and two hidden layers.}
+    \label{fig:multi_layer_perceptron}
+\end{figure}
 
-retain DAG property
-
-
-
+Since MLPs are simply nested SLPs, it follows that MLPs retain the DAG property and are therefore \textit{feedforward} networks as well.
+In the forward pass, the activations are propagated from layer to layer (i.e. nested function to nested function) as in (\ref{eq:single_layer_perceptron}).
 
 \section{Weight and output spaces}
 We define the weight space $\mathcal{W}$ \todo
