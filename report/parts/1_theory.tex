@@ -20,13 +20,13 @@ We use the vector
         y_1 & y_2 & \cdots & y_N
     \end{bmatrix}\tran
 \end{equation}
-to denote all the labelled outputs in the dataset, and
+to denote all the labelled outputs in the dataset, and the $N \times D$ matrix
 \begin{equation}
     \vec{X} = \begin{bmatrix}
         \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_N
     \end{bmatrix}\tran
 \end{equation}
-is the $N \times D$ matrix representing the corresponding feature vectors.
+for representing the corresponding feature vectors.
 
 Similarly,
 \begin{equation}
@@ -143,12 +143,13 @@ to capture all weights and the vector $\vec{b} = \begin{bmatrix}
 \end{bmatrix}\tran$ for the biases, we can give a mathematical formula describing the relationship between the inputs and outputs as
 \begin{equation}
     \label{eq:single_layer_perceptron}
-    \vec{f_{SLP}}(\vec{x}; \vec{W}, \vec{b}, \vec{g}) = \vec{\hat{y}} = \vec{g}\left( \vec{W} \vec{x} + \vec{b} \right).
+    \vec{f_{SLP}}(\vec{x}; \vec{W}, \vec{b}, \vec{g}) = \vec{g}\left( \vec{W} \vec{x} + \vec{b} \right).
 \end{equation}
 Unlike the formula for a regression model, this is a vector-valued function, due to the fact that there are multiple outputs. 
 Notice, however, that when $n=1$, we reach the same form as in (\ref{eq:reg_model}). 
 
 \subsection{Multi-layer perceptron}
+\label{sec:multi_layer_perceptron}
 A multi-layer perceptron (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested SLPs as in \cite{burkov2019}.
 A MLP with $L$ layers is the mathematical function
 \begin{equation}
@@ -165,11 +166,11 @@ A MLP with $L$ layers is the mathematical function
         \right)
 \end{equation}
 where $\vec{f}_l(\vec{x}) = \vec{f_{SLP}}(\vec{x}; \vec{W}_l, \vec{b}_l, \vec{g}_l)$ for $l = 1, \dots, L-1$. 
-
-Therefore, to fully define a MLP, we need the three-tuple
-$
+In order to fully define a MLP, we need the three-tuple
+\begin{equation}
+    \label{eq:mlp_three_tuple}
     \langle \mathscr{W}, \mathscr{B}, \mathscr{G} \rangle
-$
+\end{equation}
 where $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ are the weight matrices, $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ the bias vectors, and $\mathscr{G} = \vec{g}_1, \vec{g}_2, \dots, \vec{g}_L$ the vector-valued activation functions.
 Notice that for every $l < L$, $\vec{W}_l$ is a $n_l \times m_l$ matrix such that $n_l=m_{l+1}$ to esnure that the number of outputs of layer $l$ is the number of inputs to layer $l+1$.
 This means that the MLP has $m_1$ input neurons.
@@ -247,7 +248,6 @@ In the forward pass, the activations are propagated from layer to layer (i.e. ne
 
 \section{Activation functions}
 \label{sec:activation_functions}
-Although units within a network can have different activation functions, this project solely employs networks where every unit uses the same $g$. 
 Common activation functions include the sigmoid
 \begin{equation}
     S(x) = \frac{1}{1 + e^{-x}}
@@ -261,13 +261,42 @@ Common activation functions include the sigmoid
 
 \chapter{Neural surfing theory}
 \section{Weight and output spaces}
-We define the weight space $\mathcal{W}$ \todo
+In Section \ref{sec:multi_layer_perceptron} we determined that we need the three tuple from (\ref{eq:mlp_three_tuple}) to fully define a MLP. 
+Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ and $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ representing each layer's weight matrices and bias vectors, respectively. 
 
-The output space $\mathcal{O}$ spans the space of all possible output predictions on the training set, $\vec{\hat{y}}$, so $\mathcal{O}=\mathbb{R}^N$ considering the fact that the training set has $N$ samples.
+\paragraph{Weight space}
+We define the weight space $\mathcal{W}$ of a MLP as the set of all possible assignments to its \textit{trainable parameters}. 
+The trainable parameters are its weights and biases, so the weight space encompasses all possible configurations of $\mathscr{W}$ and $\mathscr{B}$. 
+
+A SLP with $m$ inputs and $n$ outputs will have $m \times n$ weights and $n$ biases, totalling $n(m+1)$ trainable parameters.
+Now consider a MLP with $L$ layers, where $m_1, m_2, \dots, m_L$ is the number of inputs to each layer. 
+For any layer $l$, the number of outputs $n_l$ is $m_{l+1}$ except for the last layer where $n_L=1$.
+It follows that the total number of trainable parameters in the network is
+\begin{align*}
+    P &= \sum_{l=1}^{L}{\left(n_l (m_l + 1)\right)} \\
+    &= \sum_{l=1}^{L-1}{\left(m_{l+1} (m_l + 1)\right)} + m_L + 1,
+\end{align*}
+so the weight space for that network is defined as
+\begin{equation}
+    \mathcal{W} = \mathbb{R}^P.
+\end{equation}
+
+\paragraph{Output space}
+The output space $\mathcal{O}$ spans the space of all possible output predictions on the training set.
+In our definition of a MLP from Section \ref{sec:multi_layer_perceptron}, it states that the network must only have one output node and thus the prediction $\hat{y}$ is a scalar. 
+
+From (\ref{eq:sup_learn_prediction}), the vector $\vec{\hat{y}}$ represents the prediction $\hat{y}$ for all $N$ training samples.
+This means that the output space spans all possible assignments of $\vec{\hat{y}}$, so
+\begin{equation}
+    \mathcal{O}=\mathbb{R}^N.
+\end{equation}
+
+\paragraph{Relationship between weight and output spaces}
+\todo
 
 \chapter{Problems}
 \section{Stripe problem}
 
 
-\chapter*{Ideas}
-Generalize to classification as regression with multiple output variables?
+\chapter{Generalising neural surfing}
+Generalize to classification as regression with multiple output variables
