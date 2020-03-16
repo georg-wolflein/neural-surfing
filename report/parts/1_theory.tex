@@ -72,9 +72,9 @@ A single-layer perceptron (SLP) is a type of ANN that consists of two layers, an
 Every input node is connected to every output node, but there are no intra-layer links (i.e. there are no links between any two input nodes or any two output nodes). 
 This is what we call a \textit{fully-connected feedforward} architecture.
 SLP architectures will always form a \textit{directed acyclic graph} (DAG) because there are no intra-layer or backwards connections.
-Figure \ref{fig:single_layer_perceptron} an example of a DAG representing a SLP.
+Figure \ref{fig:single_layer_perceptron} shows an example of a DAG representing a SLP.
 
-\begin{figure}[h]
+\begin{figure}
     \begin{center}
         \begin{tikzpicture}
             [
@@ -143,7 +143,7 @@ to capture all weights and the vector $\vec{b} = \begin{bmatrix}
 \end{bmatrix}\tran$ for the biases, we can give a mathematical formula describing the relationship between the inputs and outputs as
 \begin{equation}
     \label{eq:single_layer_perceptron}
-    \vec{f_{SLP}}(\vec{x}; \vec{W}, \vec{b}) = \vec{\hat{y}} = \vec{g}\left( \vec{W} \vec{x} + \vec{b} \right).
+    \vec{f_{SLP}}(\vec{x}; \vec{W}, \vec{b}, \vec{g}) = \vec{\hat{y}} = \vec{g}\left( \vec{W} \vec{x} + \vec{b} \right).
 \end{equation}
 Unlike the formula for a regression model, this is a vector-valued function, due to the fact that there are multiple outputs. 
 Notice, however, that when $n=1$, we reach the same form as in (\ref{eq:reg_model}). 
@@ -162,16 +162,23 @@ A MLP with $L$ layers is the mathematical function
                     \right)
                 \right)
             \right)
-        \right).
+        \right)
 \end{equation}
+where $\vec{f}_l(\vec{x}) = \vec{f_{SLP}}(\vec{x}; \vec{W}_l, \vec{b}_l, \vec{g}_l)$ for $l = 1, \dots, L-1$. 
 
-Here, $\vec{f}_l(\vec{x}) = \vec{f_{SLP}}(\vec{x}; \vec{W}_l, \vec{b}_l)$ for $l = 1, \dots, L-1$. 
-The outermost function $f_L$ is a scalar-valued function $f_L(\vec{x}) = f_{SLP}(\vec{x}; \vec{W}_L, \vec{b}_L)$ because it represents a SLP with one output unit which also means that $\norm{\vec{b}_L}=1$ and $\vec{W}_L$ has only one row.
+Therefore, to fully define a MLP, we need the three-tuple
+$
+    \langle \mathscr{W}, \mathscr{B}, \mathscr{G} \rangle
+$
+where $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ are the weight matrices, $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ the bias vectors, and $\mathscr{G} = \vec{g}_1, \vec{g}_2, \dots, \vec{g}_L$ the vector-valued activation functions.
+Notice that for every $l < L$, $\vec{W}_l$ is a $n_l \times m_l$ matrix such that $n_l=m_{l+1}$ to esnure that the number of outputs of layer $l$ is the number of inputs to layer $l+1$.
+This means that the MLP has $m_1$ input neurons.
+The outermost function $f_L$ is the scalar-valued function $f_L(\vec{x}) = f_{SLP}(\vec{x}; \vec{W}_L, \vec{b}_L, \vec{g}_L)$ because it represents a SLP with only one output unit which also means that $\norm{\vec{b}_L}=1$, $\vec{W}_L$ has only one row, and finally $n_L=1$.
 
-The graph representing this network consists of connecting the outputs of the SLP representing layer $l$ with the inputs of the SLP representing layer $l+1$, as shown in Figure \ref{fig:multi_layer_perceptron}. 
+The graph representing this type of network consists of connecting the outputs of the SLP representing layer $l$ with the inputs of the SLP representing layer $l+1$, as shown in Figure \ref{fig:multi_layer_perceptron}. 
 The layers between the input and output layers are referred to as \textit{hidden} layers.
 
-\begin{figure}[h]
+\begin{figure}
     \begin{center}
         \begin{tikzpicture}
             [
