@@ -67,12 +67,30 @@ To obtain the prediction $\hat{y}$ given the $D$-dimensional feature vector $\ve
 Then, we propagate the activations using (\ref{eq:ann_activation}) until finally the prediction is the activation of the last neuron, $\hat{y}=a_n$.
 This process is often called \textit{forward propagation} or \textit{forward pass} \cite{russell2010}.
 
-\subsection{Single-layer perceptron}
-A single-layer perceptron (SLP) is a type of ANN that consists of two layers, an input and an output layer.
-Every input node is connected to every output node, but there are no intra-layer links (i.e. there are no links between any two input nodes or any two output nodes). 
+\subsection{Activation functions}
+\label{sec:activation_functions}
+In its original form, \citeauthor{mcculloch1943} defined the neuron as having only a binary activation \cite{mcculloch1943}. 
+This means that in our model in (\ref{eq:ann_activation}), we would require $a_i \in \{0, 1\}$ and hence an activation function of the form $g: \mathbb{R} \rightarrow \{0, 1\}$.
+Applied to our model, this function would be defined\footnote{In fact, \citeauthor{mcculloch1943} defined the activation to be zero when $x<\theta$ for a threshold parameter $\theta \in \mathbb{R}$ and one otherwise, but in our model the bias term $b_i$ acts as the threshold.} as
+\begin{equation}
+    \label{eq:step_activation}
+    g_{\text{step}}(x) = \begin{cases} 
+        0 & x < 0 \\
+        1 & x \geq 0
+    \end{cases}.
+\end{equation}
+
+Common activation functions include the sigmoid
+\begin{equation}
+    S(x) = \frac{1}{1 + e^{-x}}
+\end{equation}
+\todo
+
+\subsection{Single-layer network}
+We introduce a single-layer network (SLN) as a type of ANN which consists of two conceptual layers, an input and an output layer.
+Every input node is connected to every output node, but there are no intra-layer links (i.e. there are no links between any two input nodes or any two output nodes), as shown in Figure \ref{fig:single_layer_perceptron}. 
 This is what we call a \textit{fully-connected feedforward} architecture.
-SLP architectures will always form a \textit{directed acyclic graph} (DAG) because there are no intra-layer or backwards connections.
-Figure \ref{fig:single_layer_perceptron} shows an example of a DAG representing a SLP.
+SLN architectures will always form a \textit{directed acyclic graph} (DAG) because there are no intra-layer or backwards connections.
 
 \begin{figure}
     \begin{center}
@@ -113,29 +131,34 @@ Figure \ref{fig:single_layer_perceptron} shows an example of a DAG representing 
     \label{fig:single_layer_perceptron}
 \end{figure}
 
-Let us consider a SLP with $m$ inputs and $n$ outputs. 
+We purposefully use the term SLN instead of single-layer perceptron (SLP) to avoid confusion. 
+A SLP has only one output unit and uses the step activation function given in (\ref{eq:step_activation}) \cite{rosenblatt1958}.
+In our definition of a SLN we allow more than one output and impose no restrictions on $g$.
+We still use the term `single layer' because the input layer, lacking any incoming weight or bias connections, is not considered to be a `proper' layer.
+
+Let us consider a SLN with $m$ inputs and $n$ outputs. 
 Since every output unit $i$ only has connections from every input unit $j$,
 we can adapt (\ref{eq:ann_activation}) to give the activation of a particular output neuron $i$ as
 \begin{equation}
     a_i = y_i = g\left({ex}_i\right) = g\left(\sum_{j=1}^m{w_{j,i} x_j} + b_i\right)
-    = g\left( \vec{w}_i \vec{x}_i + b_i\right)
+    = g\left( \vec{w}_i\tran \vec{x}_i + b_i\right)
 \end{equation}
 where
 $
     \vec{w}_i = \begin{bmatrix}
         w_{1,i} & w_{2,i} & \cdots & w_{m,i}
-    \end{bmatrix}
+    \end{bmatrix}\tran
 $
 represents the weights of all the edges that connect to output unit $i$.
-If we use the $n \times m$ matrix
+If we use the $m \times n$ matrix
 \begin{equation}
     \vec{W} = \begin{bmatrix}
-        \vec{w}_1 \\ \vec{w}_2 \\ \vdots \\ \vec{w}_n
+        \vec{w}_1 & \vec{w}_2 & \cdots & \vec{w}_n
     \end{bmatrix} = \begin{bmatrix}
-        w_{1,1} & w_{2,1} & \cdots & w_{m,1} \\
-        w_{1,2} & w_{2,2} & \cdots & w_{m,2} \\
+        w_{1,1} & w_{1,2} & \cdots & w_{1,n} \\
+        w_{2,1} & w_{2,2} & \cdots & w_{2,n} \\
         \vdots & \vdots & \ddots & \vdots \\
-        w_{1,n} & w_{2,n} & \cdots & w_{m,n}
+        w_{m,1} & w_{m,2} & \cdots & w_{m,n}
     \end{bmatrix}
 \end{equation}
 to capture all weights and the vector $\vec{b} = \begin{bmatrix}
@@ -143,17 +166,19 @@ to capture all weights and the vector $\vec{b} = \begin{bmatrix}
 \end{bmatrix}\tran$ for the biases, we can give a mathematical formula describing the relationship between the inputs and outputs as
 \begin{equation}
     \label{eq:single_layer_perceptron}
-    \vec{f_{SLP}}(\vec{x}; \vec{W}, \vec{b}, \vec{g}) = \vec{g}\left( \vec{W} \vec{x} + \vec{b} \right).
+    \vec{f_{\text{SLN}}}(\vec{x}; \vec{W}, \vec{b}, \vec{g}) = \vec{g}\left( \vec{W}\tran \vec{x} + \vec{b} \right).
 \end{equation}
 Unlike the formula for a regression model, this is a vector-valued function, due to the fact that there are multiple outputs. 
-Notice, however, that when $n=1$, we reach the same form as in (\ref{eq:reg_model}). 
+
+Note that when $n=1$, we reach the same form as in (\ref{eq:reg_model}). 
+Moreover, if we additionally use the step activation function from (\ref{eq:step_activation}), we arrive at the SLP model given by \citet{rosenblatt1958}.
 
 \subsection{Multi-layer perceptron}
 \label{sec:multi_layer_perceptron}
-A multi-layer perceptron (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested SLPs as in \cite{burkov2019}.
+A multi-layer perceptron (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested functions as in \citet{burkov2019}.
 A MLP with $L$ layers is the mathematical function
 \begin{equation}
-    f_{MLP}(\vec{x})
+    f_{\text{MLP}}(\vec{x})
         = \hat{y}
         = f_L \left(
             \vec{f}_{L-1} \left(
@@ -165,7 +190,7 @@ A MLP with $L$ layers is the mathematical function
             \right)
         \right)
 \end{equation}
-where $\vec{f}_l(\vec{x}) = \vec{f_{SLP}}(\vec{x}; \vec{W}_l, \vec{b}_l, \vec{g}_l)$ for $l = 1, \dots, L-1$. 
+where $\vec{f}_l(\vec{x}) = \vec{f_{\text{SLN}}}(\vec{x}; \vec{W}_l, \vec{b}_l, \vec{g}_l)$ for $l = 1, \dots, L-1$. 
 In order to fully define a MLP, we need the three-tuple
 \begin{equation}
     \label{eq:mlp_three_tuple}
@@ -174,9 +199,9 @@ In order to fully define a MLP, we need the three-tuple
 where $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ are the weight matrices, $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ the bias vectors, and $\mathscr{G} = \vec{g}_1, \vec{g}_2, \dots, \vec{g}_L$ the vector-valued activation functions.
 Notice that for every $l < L$, $\vec{W}_l$ is a $n_l \times m_l$ matrix such that $n_l=m_{l+1}$ to esnure that the number of outputs of layer $l$ is the number of inputs to layer $l+1$.
 This means that the MLP has $m_1$ input neurons.
-The outermost function $f_L$ is the scalar-valued function $f_L(\vec{x}) = f_{SLP}(\vec{x}; \vec{W}_L, \vec{b}_L, \vec{g}_L)$ because it represents a SLP with only one output unit which also means that $\norm{\vec{b}_L}=1$, $\vec{W}_L$ has only one row, and finally $n_L=1$.
+The outermost function $f_L$ is the scalar-valued function $f_L(\vec{x}) = f_{\text{SLN}}(\vec{x}; \vec{W}_L, \vec{b}_L, \vec{g}_L)$ because it represents a SLN with only one output unit which also means that $\norm{\vec{b}_L}=1$, $\vec{W}_L$ has only one row, and finally $n_L=1$.
 
-The graph representing this type of network consists of connecting the outputs of the SLP representing layer $l$ with the inputs of the SLP representing layer $l+1$, as shown in Figure \ref{fig:multi_layer_perceptron}. 
+The graph representing this type of network consists of connecting the outputs of the SLN representing layer $l$ with the inputs of the SLN representing layer $l+1$, as shown in Figure \ref{fig:multi_layer_perceptron}. 
 The layers between the input and output layers are referred to as \textit{hidden} layers.
 
 \begin{figure}
@@ -243,16 +268,10 @@ The layers between the input and output layers are referred to as \textit{hidden
     \label{fig:multi_layer_perceptron}
 \end{figure}
 
-Since MLPs are simply nested SLPs, it follows that MLPs retain the DAG property and are therefore \textit{feedforward} networks as well.
+Since MLPs are simply nested SLNs, it follows that MLPs retain the DAG property and are therefore \textit{feedforward} networks as well.
 In the forward pass, the activations are propagated from layer to layer (i.e. nested function to nested function) as in (\ref{eq:single_layer_perceptron}).
 
-\section{Activation functions}
-\label{sec:activation_functions}
-Common activation functions include the sigmoid
-\begin{equation}
-    S(x) = \frac{1}{1 + e^{-x}}
-\end{equation}
-\todo
+
 
 \chapter{Neural network learning}
 \section{Gradient descent with mean squared error}
@@ -268,7 +287,7 @@ Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$
 We define the weight space $\mathcal{W}$ of a MLP as the set of all possible assignments to its \textit{trainable parameters}. 
 The trainable parameters are its weights and biases, so the weight space encompasses all possible configurations of $\mathscr{W}$ and $\mathscr{B}$. 
 
-A SLP with $m$ inputs and $n$ outputs will have $m \times n$ weights and $n$ biases, totalling $n(m+1)$ trainable parameters.
+A SLN with $m$ inputs and $n$ outputs will have $m \times n$ weights and $n$ biases, totalling $n(m+1)$ trainable parameters.
 Now consider a MLP with $L$ layers, where $m_1, m_2, \dots, m_L$ is the number of inputs to each layer. 
 For any layer $l$, the number of outputs $n_l$ is $m_{l+1}$ except for the last layer where $n_L=1$.
 It follows that the total number of trainable parameters in the network is

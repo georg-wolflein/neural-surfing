@@ -1,5 +1,6 @@
 \documentclass{report}
 \usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
 \usepackage[hidelinks]{hyperref}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -8,6 +9,10 @@
 \usepackage{pgfplots}
 \usepackage{mathrsfs}
 \usepackage{amsthm}
+\usepackage{natbib}
+
+\bibliographystyle{apalike}
+\setcitestyle{authoryear,open={[},close={]}}
 
 \graphicspath{ {./images/} }
 \pgfplotsset{compat=1.16}
@@ -15,6 +20,7 @@
 \tikzexternalize[prefix=figures/]
 
 \renewcommand\vec{\mathbf}
+\renewcommand\cite{\citep}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 \newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}
 \newcommand{\todo}{{\color{red} \textbf{TODO} }}
@@ -76,7 +82,6 @@ I retain the copyright in this work.''
 \input{parts/2_framework.tex}
 
 \addcontentsline{toc}{chapter}{Bibliography}
-\bibliographystyle{apalike}
 \bibliography{bibliography}
 
 \end{document}
