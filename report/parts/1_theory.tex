@@ -13,7 +13,7 @@ Here, the additive error term $\epsilon$ represents the discrepancy between $y$ 
 
 \paragraph{Labelled dataset}
 A dataset consists of $N$ tuples of the form $\langle \vec{x}_i, y_i\rangle$ for $i=1,\dots,N$.
-For each feature vector $\vec{x}_i$, the corresponding $y_i$ represents the observed output, or \textit{label} \cite{burkov2019}.
+For each feature vector $\vec{x}_i$ (a row vector), the corresponding $y_i$ represents the observed output, or \textit{label} \cite{burkov2019}.
 We use the vector
 \begin{equation}
     \vec{y} = \begin{bmatrix}
@@ -22,6 +22,7 @@ We use the vector
 \end{equation}
 to denote all the labelled outputs in the dataset, and the $N \times D$ matrix
 \begin{equation}
+    \label{eq:sup_learn_input_matrix}
     \vec{X} = \begin{bmatrix}
         \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_N
     \end{bmatrix}\tran
@@ -335,35 +336,163 @@ In the forward pass, the activations are propagated from layer to layer (i.e. ne
 In Section \ref{sec:multi_layer_perceptron} we determined that we need the three tuple from (\ref{eq:mlp_three_tuple}) to fully define a MLP. 
 Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ and $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ representing each layer's weight matrices and bias vectors, respectively. 
 
-\paragraph{Weight space}
-We define the weight space $\mathcal{W}$ of a MLP as the set of all possible assignments to its \textit{trainable parameters}. 
-The trainable parameters are its weights and biases, so the weight space encompasses all possible configurations of $\mathscr{W}$ and $\mathscr{B}$. 
+\begin{definition}[Weight space]
+    We define the weight space $\mathcal{W}$ of a MLP as the set of all possible assignments to its \textit{trainable parameters}. 
+    The trainable parameters are its weights and biases, so the weight space encompasses all possible configurations of $\mathscr{W}$ and $\mathscr{B}$. 
+    Hence the weight space for a network with $P$ trainable parameters is defined as
+    \begin{equation}
+        \mathcal{W} = \mathbb{R}^P.
+    \end{equation}
+\end{definition}
 
-A SLN with $m$ inputs and $n$ outputs will have $m \times n$ weights and $n$ biases, totalling $n(m+1)$ trainable parameters.
-Now consider a MLP with $L$ layers, where $m_1, m_2, \dots, m_L$ is the number of inputs to each layer. 
-For any layer $l$, the number of outputs $n_l$ is $m_{l+1}$ except for the last layer where $n_L=1$.
-It follows that the total number of trainable parameters in the network is
-\begin{align*}
-    P &= \sum_{l=1}^{L}{\left(n_l (m_l + 1)\right)} \\
-    &= \sum_{l=1}^{L-1}{\left(m_{l+1} (m_l + 1)\right)} + m_L + 1,
-\end{align*}
-so the weight space for that network is defined as
-\begin{equation}
-    \mathcal{W} = \mathbb{R}^P.
-\end{equation}
+\begin{lemma}
+    A $L$-layered MLP where the number of inputs to layer $l$ is given as $m_l$ will have a total of
+    $P = \sum_{l=1}^{L-1}{\left(m_{l+1} (m_l + 1)\right)} + m_L + 1$
+    trainable parameters.
+\end{lemma}
 
-\paragraph{Output space}
-The output space $\mathcal{O}$ spans the space of all possible output predictions on the training set.
-In our definition of a MLP from Section \ref{sec:multi_layer_perceptron}, it states that the network must only have one output node and thus the prediction $\hat{y}$ is a scalar. 
+\begin{proof}
+    A SLN with $m$ inputs and $n$ outputs will have $m \times n$ weights and $n$ biases, totalling $n(m+1)$ trainable parameters.
+    Now consider a MLP with $L$ layers, where $m_1, m_2, \dots, m_L$ is the number of inputs to each layer. 
+    For any layer $l$, the number of outputs $n_l=m_{l+1}$ except for the last layer where $n_L=1$.
+    It follows that the total number of trainable parameters in the network is
+    \begin{align*}
+        P &= \sum_{l=1}^{L}{\left(n_l (m_l + 1)\right)} \\
+        &= \sum_{l=1}^{L-1}{\left(n_l (m_l + 1)\right)} + n_L (m_L + 1)\\
+        &= \sum_{l=1}^{L-1}{\left(m_{l+1} (m_l + 1)\right)} + m_L + 1.
+    \end{align*}
+\end{proof}
 
-From (\ref{eq:sup_learn_prediction}), the vector $\vec{\hat{y}}$ represents the prediction $\hat{y}$ for all $N$ training samples.
-This means that the output space spans all possible assignments of $\vec{\hat{y}}$, so
-\begin{equation}
-    \mathcal{O}=\mathbb{R}^N.
-\end{equation}
+\begin{definition}[Output space]
+    The output space $\mathcal{O}$ spans the space of all possible output predictions on the training set.
+    In our definition of a MLP from Section \ref{sec:multi_layer_perceptron}, it states that the network must only have one output node and thus the prediction $\hat{y}$ is a scalar. 
 
-\paragraph{Relationship between weight and output spaces}
-\todo
+    From (\ref{eq:sup_learn_prediction}), the vector $\vec{\hat{y}}$ represents the prediction $\hat{y}$ for all $N$ training samples.
+    This means that the output space spans all possible assignments of $\vec{\hat{y}}$, so
+    \begin{equation}
+        \mathcal{O}=\mathbb{R}^N.
+    \end{equation}
+\end{definition}
+
+\begin{theorem}[Relationship between $\mathcal{W}$ and $\mathcal{O}$]
+    For any SLN with one output unit, the function $h: \mathcal{W} \rightarrow \mathcal{O}$ mapping the weights to outputs is not a linear mapping.
+\end{theorem}
+\begin{proof}
+    Let us consider a SLN with $m$ inputs and one output, as depicted in Figure \ref{fig:sln_m_in_1_out}.
+    \begin{figure}
+        \begin{center}
+            \begin{tikzpicture}
+                [
+                    neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+                ]
+                
+                \node [neuron] (x1)  at (0,0) {$x_1$};
+                \node [neuron] (x2) at (0,-2) {$x_2$};
+                \node (dots) at (0,-3) {$\vdots$};
+                \node [neuron] (xm) at (0,-4) {$x_m$};
+                \node [neuron] (y) at (4,-2) {$\hat{y}$};
+                \node (b) at (4, -1) {$b$};
+                \draw[->] (x1) -- (y) node[midway, above, sloped] {$w_1$};
+                \draw[->] (x2) -- (y) node[midway, above, sloped] {$w_2$};
+                \draw[->] (xm) -- (y) node[midway, above, sloped] {$w_m$};
+                \draw[->] (b) -- (y);
+            \end{tikzpicture}
+        \end{center}
+        \caption{The DAG representing a SLN with $m$ inputs and one output unit.}
+        \label{fig:sln_m_in_1_out}
+    \end{figure}
+    Modifying the formula for a SLN given in (\ref{eq:single_layer_perceptron}) for the case where there is only one output unit, we obtain
+    $\hat{y} = f_\text{SLP}(\vec{x}; \vec{w}\tran, b, g) = g\left(\vec{w}\tran \vec{x} + b\right)$
+    where
+    $\vec{x} = \begin{bmatrix}
+        x_1 & x_2 & \cdots & x_m
+    \end{bmatrix}\tran$
+    is the input feature vector.
+
+    We will consider a dataset with $N$ samples where the input is given by a $N\times m$ matrix
+    $\vec{X} = \begin{bmatrix}
+        \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_N
+    \end{bmatrix}\tran$
+    as in (\ref{eq:sup_learn_input_matrix}) and the labelled outputs $\vec{\hat{y}}$ are defined as in (\ref{eq:sup_learn_prediction}).
+    For our SLN, the function $h: \mathcal{W} \rightarrow \mathcal{O}$ is defined as applying the SLN to each input sample, so
+    \begin{equation*}
+        h \left( \vec{w} \right)
+        = \vec{\hat{y}}
+        = \begin{bmatrix}
+            g \left( \vec{w}\tran \vec{x}_1 + b \right) \\
+            g \left( \vec{w}\tran \vec{x}_2 + b \right) \\
+            \vdots \\
+            g \left( \vec{w}\tran \vec{x}_N + b \right) \\
+        \end{bmatrix}.
+    \end{equation*}
+
+    We will assume that $h$ is a linear mapping. 
+    From the definition of linear mappings, it must be true that $h(\vec{u} + \vec{v}) = h(\vec{u}) + h(\vec{v})$ for $\vec{u}, \vec{v} \in \mathcal{W}$ \cite{rudin2006}.
+    On the LHS we have
+    \begin{equation*}
+        h \left( \vec{u} + \vec{v} \right)
+        = \begin{bmatrix}
+            g((\vec{u} + \vec{v})\tran \vec{x}_1 + b) \\
+            g((\vec{u} + \vec{v})\tran \vec{x}_2 + b) \\
+            \vdots \\
+            g((\vec{u} + \vec{v})\tran \vec{x}_N + b) \\
+        \end{bmatrix}
+        = \begin{bmatrix}
+            g(\vec{u}\tran \vec{x}_1 + \vec{v}\tran \vec{x}_1 + b) \\
+            g(\vec{u}\tran \vec{x}_2 + \vec{v}\tran \vec{x}_2 + b) \\
+            \vdots \\
+            g(\vec{u}\tran \vec{x}_N + \vec{v}\tran \vec{x}_N + b) \\
+        \end{bmatrix}
+    \end{equation*}
+    and on the RHS we get
+    \begin{equation*}
+        h \left( \vec{u} \right) + h \left( \vec{v} \right)
+        = \begin{bmatrix}
+            g(\vec{u}\tran \vec{x}_1 + b) \\
+            g(\vec{u}\tran \vec{x}_2 + b) \\
+            \vdots \\
+            g(\vec{u}\tran \vec{x}_N + b) \\
+        \end{bmatrix}
+        + \begin{bmatrix}
+            g(\vec{v}\tran \vec{x}_1 + b) \\
+            g(\vec{v}\tran \vec{x}_2 + b) \\
+            \vdots \\
+            g(\vec{v}\tran \vec{x}_N + b) \\
+        \end{bmatrix}
+        = \begin{bmatrix}
+            g(\vec{u}\tran \vec{x}_1 + b) + g(\vec{v}\tran \vec{x}_1 + b) \\
+            g(\vec{u}\tran \vec{x}_2 + b) + g(\vec{v}\tran \vec{x}_2 + b) \\
+            \vdots \\
+            g(\vec{u}\tran \vec{x}_N + b) + g(\vec{v}\tran \vec{x}_N + b) \\
+        \end{bmatrix}.
+    \end{equation*}
+
+    We obtain
+    \begin{equation*}
+        \begin{bmatrix}
+            g(\vec{u}\tran \vec{x}_1 + \vec{v}\tran \vec{x}_1 + b) \\
+            g(\vec{u}\tran \vec{x}_2 + \vec{v}\tran \vec{x}_2 + b) \\
+            \vdots \\
+            g(\vec{u}\tran \vec{x}_N + \vec{v}\tran \vec{x}_N + b) \\
+        \end{bmatrix}
+        = \begin{bmatrix}
+            g(\vec{u}\tran \vec{x}_1 + b) + g(\vec{v}\tran \vec{x}_1 + b) \\
+            g(\vec{u}\tran \vec{x}_2 + b) + g(\vec{v}\tran \vec{x}_2 + b) \\
+            \vdots \\
+            g(\vec{u}\tran \vec{x}_N + b) + g(\vec{v}\tran \vec{x}_N + b) \\
+        \end{bmatrix}.
+    \end{equation*}
+
+    Let $\alpha_i = \vec{u}\tran \vec{x}_i$ and $\beta_i = \vec{v}\tran \vec{x}_i$ for all $i$.
+    Since $\vec{u},\vec{v} \in \mathbb{R}^m$ and all $\vec{x}_i \in \mathbb{R}^m$, it follows that $\alpha_i, \beta_i \in \mathbb{R}$ for all $i$.
+    Hence $g(\alpha + \beta + b) = g(\alpha + b) + g(\beta + b)$.
+
+    The only functions that satisfy $g$ are functions that satisfy Cauchy's functional equation\footnote{Cauchy's functional equation is $f(a+b)=f(a)+f(b)$. For $a,b \in \mathbb{Q}$, the only solutions are linear functions of the form $f(x) = cx$ for some $c \in \mathbb{Q}$ \cite{reem2017}.}, but these solutions only apply when $b=0$ and furthermore are linear, whereas the activation function $g$ is non-linear. 
+    We arrived at a contradiction, thus disproving our initial assumption that $h$ is a linear mapping, so it must be a non-linear mapping.
+\end{proof}
+
+\todo: Significance of this proof
+
 
 \chapter{Problems}
 \section{Stripe problem}

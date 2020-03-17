@@ -10,6 +10,7 @@
 \usepackage{mathrsfs}
 \usepackage{natbib}
 \usepackage{xspace}
+\usepackage{amsthm}
 
 \bibliographystyle{apalike}
 \setcitestyle{authoryear,open={[},close={]}}
@@ -30,6 +31,11 @@
   \immediate\write18{texcount -1 -sum -merge #1.tex > #1-words}%
   \input{#1-words}words%
 }
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
 
 \pgfdeclarelayer{pre main}
 \begin{document}
