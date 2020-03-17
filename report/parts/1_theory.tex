@@ -203,56 +203,67 @@ $
     \end{bmatrix}\tran
 $
 represents the weights of all the edges that connect to output unit $i$.
-If we use the $m \times n$ matrix
-\begin{equation}
-    \vec{W} = \begin{bmatrix}
-        \vec{w}_1 & \vec{w}_2 & \cdots & \vec{w}_n
-    \end{bmatrix} = \begin{bmatrix}
-        w_{1,1} & w_{1,2} & \cdots & w_{1,n} \\
-        w_{2,1} & w_{2,2} & \cdots & w_{2,n} \\
-        \vdots & \vdots & \ddots & \vdots \\
-        w_{m,1} & w_{m,2} & \cdots & w_{m,n}
-    \end{bmatrix}
-\end{equation}
-to capture all weights and the vector $\vec{b} = \begin{bmatrix}
-    b_1 & b_2 & \cdots & b_n
-\end{bmatrix}\tran$ for the biases, we can give a mathematical formula describing the relationship between the inputs and outputs as
-\begin{equation}
-    \label{eq:single_layer_perceptron}
-    \vec{f_{\text{SLN}}}(\vec{x}; \vec{W}, \vec{b}, \vec{g}) = \vec{g}\left( \vec{W}\tran \vec{x} + \vec{b} \right).
-\end{equation}
-Unlike the formula for a regression model, this is a vector-valued function, due to the fact that there are multiple outputs. 
+This is all we need to formally define a SLN.
 
+\begin{definition}[Single-layer network]
+    \label{def:sln}
+    A SLN with $m$ inputs and $m$ outputs is the mathematical formula
+    \begin{equation}
+        \label{eq:single_layer_perceptron}
+        \vec{f_{\text{SLN}}}(\vec{x}; \vec{W}, \vec{b}, \vec{g}) = \vec{g}\left( \vec{W}\tran \vec{x} + \vec{b} \right)
+    \end{equation}
+    where the  $m \times n$ matrix
+    \begin{equation}
+        \vec{W} = \begin{bmatrix}
+            \vec{w}_1 & \vec{w}_2 & \cdots & \vec{w}_n
+        \end{bmatrix} = \begin{bmatrix}
+            w_{1,1} & w_{1,2} & \cdots & w_{1,n} \\
+            w_{2,1} & w_{2,2} & \cdots & w_{2,n} \\
+            \vdots & \vdots & \ddots & \vdots \\
+            w_{m,1} & w_{m,2} & \cdots & w_{m,n}
+        \end{bmatrix}
+    \end{equation}
+    captures all weights, the vector $\vec{b} = \begin{bmatrix}
+        b_1 & b_2 & \cdots & b_n
+    \end{bmatrix}\tran$ represents the biases, and $\vec{g}$ is the vector-valued activation function.
+\end{definition}
+
+Unlike the formula for a regression model, a SLN is a vector-valued function, due to the fact that there are multiple outputs. 
 Note that when $n=1$, we reach the same form as in (\ref{eq:reg_model}). 
 Moreover, if we additionally use the threshold activation function from (\ref{eq:thres_activation}), we arrive at the SLP model given by \citet{rosenblatt1958}.
 
 \subsection{Multi-layer perceptron}
 \label{sec:multi_layer_perceptron}
 A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP as defined in literature does not necessarily need to be the binary threshold function $g_\text{thres}$; in fact, it is often one of the more modern activation functions explained in Section \ref{sec:activation_functions} \cite{hastie2017,burkov2019}. Hence we can use the term `multi-layer perceptron'.} (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested functions as in \citet{burkov2019}.
-A MLP with $L$ layers is the mathematical function
-\begin{equation}
-    f_{\text{MLP}}(\vec{x})
-        = \hat{y}
-        = f_L \left(
-            \vec{f}_{L-1} \left(
-                \vec{\dots} \left(
-                    \vec{f}_1 \left(
-                        \vec{x}
+\begin{definition}[Multi-layer perceptron]
+    \label{def:mlp}
+    A MLP with $L$ layers is the mathematical function
+    \begin{equation}
+        f_{\text{MLP}}(\vec{x})
+            = \hat{y}
+            = f_L \left(
+                \vec{f}_{L-1} \left(
+                    \vec{\dots} \left(
+                        \vec{f}_1 \left(
+                            \vec{x}
+                        \right)
                     \right)
                 \right)
             \right)
-        \right)
-\end{equation}
-where $\vec{f}_l(\vec{x}) = \vec{f_{\text{SLN}}}(\vec{x}; \vec{W}_l, \vec{b}_l, \vec{g}_l)$ for $l = 1, \dots, L-1$. 
-In order to fully define a MLP, we need the three-tuple
-\begin{equation}
-    \label{eq:mlp_three_tuple}
-    \langle \mathscr{W}, \mathscr{B}, \mathscr{G} \rangle
-\end{equation}
-where $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ are the weight matrices, $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ the bias vectors, and $\mathscr{G} = \vec{g}_1, \vec{g}_2, \dots, \vec{g}_L$ the vector-valued activation functions.
+    \end{equation}
+    where $\vec{f}_l(\vec{x}) = \vec{f_{\text{SLN}}}(\vec{x}; \vec{W}_l, \vec{b}_l, \vec{g}_l)$ for $l = 1, \dots, L-1$. 
+    The outermost function $f_L$ represents a SLN with only one output unit and is hence the scalar-valued function $f_L(\vec{x}) = f_{\text{SLN}}(\vec{x}; \vec{W}_L, \vec{b}_L, \vec{g}_L)$.
+    This means that we can fully define the parameters of a MLP with the three-tuple
+    \begin{equation}
+        \label{eq:mlp_three_tuple}
+        \langle \mathscr{W}, \mathscr{B}, \mathscr{G} \rangle
+    \end{equation}
+    where $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ are the weight matrices, $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ the bias vectors, and $\mathscr{G} = \vec{g}_1, \vec{g}_2, \dots, \vec{g}_L$ the vector-valued activation functions.
+\end{definition}
+
 Notice that for every $l < L$, $\vec{W}_l$ is a $n_l \times m_l$ matrix such that $n_l=m_{l+1}$ to esnure that the number of outputs of layer $l$ is the number of inputs to layer $l+1$.
 This means that the MLP has $m_1$ input neurons.
-The outermost function $f_L$ is the scalar-valued function $f_L(\vec{x}) = f_{\text{SLN}}(\vec{x}; \vec{W}_L, \vec{b}_L, \vec{g}_L)$ because it represents a SLN with only one output unit which also means that $\norm{\vec{b}_L}=1$, $\vec{W}_L$ has only one row, and finally $n_L=1$.
+Since the final layer has only one output unit, $\vec{W}_L$ has only one row, and finally $n_L=1$
 
 The graph representing this type of network consists of connecting the outputs of the SLN representing layer $l$ with the inputs of the SLN representing layer $l+1$, as shown in Figure \ref{fig:multi_layer_perceptron}. 
 The layers between the input and output layers are referred to as \textit{hidden} layers.
@@ -333,7 +344,7 @@ In the forward pass, the activations are propagated from layer to layer (i.e. ne
 
 \chapter{Neural surfing theory}
 \section{Weight and output spaces}
-In Section \ref{sec:multi_layer_perceptron} we determined that we need the three tuple from (\ref{eq:mlp_three_tuple}) to fully define a MLP. 
+In Definition \ref{def:mlp} we established that the three-tuple from (\ref{eq:mlp_three_tuple}) is sufficient to fully define a MLP. 
 Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ and $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ representing each layer's weight matrices and bias vectors, respectively. 
 
 \begin{definition}[Weight space]
@@ -346,7 +357,7 @@ Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$
 \end{definition}
 
 \begin{lemma}
-    A $L$-layered MLP where the number of inputs to layer $l$ is given as $m_l$ will have a total of
+    A MLP with $L$ layers where the number of inputs to layer $l$ is given as $m_l$ will have a total of
     $P = \sum_{l=1}^{L-1}{\left(m_{l+1} (m_l + 1)\right)} + m_L + 1$
     trainable parameters.
 \end{lemma}
@@ -365,8 +376,7 @@ Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$
 
 \begin{definition}[Output space]
     The output space $\mathcal{O}$ spans the space of all possible output predictions on the training set.
-    In our definition of a MLP from Section \ref{sec:multi_layer_perceptron}, it states that the network must only have one output node and thus the prediction $\hat{y}$ is a scalar. 
-
+    In Definition \ref{def:mlp}, it states that the network must only have one output node and thus the prediction $\hat{y}$ is a scalar. 
     From (\ref{eq:sup_learn_prediction}), the vector $\vec{\hat{y}}$ represents the prediction $\hat{y}$ for all $N$ training samples.
     This means that the output space spans all possible assignments of $\vec{\hat{y}}$, so
     \begin{equation}
@@ -401,7 +411,7 @@ Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$
         \caption{The DAG representing a SLN with $m$ inputs and one output unit.}
         \label{fig:sln_m_in_1_out}
     \end{figure}
-    Modifying the formula for a SLN given in (\ref{eq:single_layer_perceptron}) for the case where there is only one output unit, we obtain
+    Modifying the formula for a SLN given in Definition \ref{def:sln} (\ref{eq:single_layer_perceptron}) for the case where there is only one output unit, we obtain
     $\hat{y} = f_\text{SLP}(\vec{x}; \vec{w}\tran, b, g) = g\left(\vec{w}\tran \vec{x} + b\right)$
     where
     $\vec{x} = \begin{bmatrix}
