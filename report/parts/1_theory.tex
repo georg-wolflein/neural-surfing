@@ -69,22 +69,65 @@ This process is often called \textit{forward propagation} or \textit{forward pas
 
 \subsection{Activation functions}
 \label{sec:activation_functions}
-In its original form, \citeauthor{mcculloch1943} defined the neuron as having only a binary activation \cite{mcculloch1943}. 
-This means that in our model in (\ref{eq:ann_activation}), we would require $a_i \in \{0, 1\}$ and hence an activation function of the form $g: \mathbb{R} \rightarrow \{0, 1\}$.
+In its original form, \citeauthor{mcculloch1943} defined the neuron as having only binary activation \cite{mcculloch1943}. 
+This means that in our model from (\ref{eq:ann_activation}), we would require $a_i \in \{0, 1\}$ and hence an activation function of the form $g: \mathbb{R} \rightarrow \{0, 1\}$.
 Applied to our model, this function would be defined\footnote{In fact, \citeauthor{mcculloch1943} defined the activation to be zero when $x<\theta$ for a threshold parameter $\theta \in \mathbb{R}$ and one otherwise, but in our model the bias term $b_i$ acts as the threshold.} as
 \begin{equation}
-    \label{eq:step_activation}
-    g_{\text{step}}(x) = \begin{cases} 
+    \label{eq:thres_activation}
+    g_\text{thres}(x) = \begin{cases} 
         0 & x < 0 \\
         1 & x \geq 0
     \end{cases}.
 \end{equation}
 
-Common activation functions include the sigmoid
+Commonly used activation functions in modern neural networks include the sigmoid
 \begin{equation}
     S(x) = \frac{1}{1 + e^{-x}}
 \end{equation}
-\todo
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            x=0.75cm,
+            y=3cm,
+            axis lines=center,
+            xlabel={$x$}, xlabel style={anchor=west},
+            ylabel={$S(x)$}, ylabel style={anchor=south},
+            ymin=0, ymax=1.2,
+            xmin=-3.3, xmax=3.3,
+            samples=100,
+            xtick={-3,...,3},
+            ytick={0, 0.5, 1},
+            title style={at={(0.5,1)},anchor=south,yshift=15.0},
+            title={Sigmoid}
+        ]
+            \addplot[black] {1 / (1 + exp(-x))};
+        \end{axis}
+    \end{tikzpicture}
+    \vspace{.05\textwidth}
+    \begin{tikzpicture}
+        \begin{axis}[
+            x=2.25cm,
+            y=3cm,
+            axis lines=center,
+            xlabel={$x$}, xlabel style={anchor=west},
+            ylabel={$f_{\text{ReLU}}(x)$}, ylabel style={anchor=south},
+            ymin=0, ymax=1.2,
+            xmin=-1.1, xmax=1.1,
+            samples=100,
+            xtick={-1, -0.5, 0, 0.5, 1},
+            ytick={0, 0.5, 1},
+            title style={at={(0.5,1)},anchor=south,yshift=15.0},
+            title={Rectified linear unit}
+        ]
+            \addplot[black][domain=0:1] {x};
+            \addplot[black][domain=-1:0] {0};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Plots of the the two most common activation functions.}
+    \label{fig:activation_functions}
+\end{figure}
 
 \subsection{Single-layer network}
 We introduce a single-layer network (SLN) as a type of ANN which consists of two conceptual layers, an input and an output layer.
@@ -132,7 +175,7 @@ SLN architectures will always form a \textit{directed acyclic graph} (DAG) becau
 \end{figure}
 
 We purposefully use the term SLN instead of single-layer perceptron (SLP) to avoid confusion. 
-A SLP has only one output unit and uses the step activation function given in (\ref{eq:step_activation}) \cite{rosenblatt1958}.
+A SLP has only one output unit and uses the threshold activation function given in (\ref{eq:thres_activation}) \cite{rosenblatt1958}.
 In our definition of a SLN we allow more than one output and impose no restrictions on $g$.
 We still use the term `single layer' because the input layer, lacking any incoming weight or bias connections, is not considered to be a `proper' layer.
 
@@ -171,11 +214,11 @@ to capture all weights and the vector $\vec{b} = \begin{bmatrix}
 Unlike the formula for a regression model, this is a vector-valued function, due to the fact that there are multiple outputs. 
 
 Note that when $n=1$, we reach the same form as in (\ref{eq:reg_model}). 
-Moreover, if we additionally use the step activation function from (\ref{eq:step_activation}), we arrive at the SLP model given by \citet{rosenblatt1958}.
+Moreover, if we additionally use the threshold activation function from (\ref{eq:thres_activation}), we arrive at the SLP model given by \citet{rosenblatt1958}.
 
 \subsection{Multi-layer perceptron}
 \label{sec:multi_layer_perceptron}
-A multi-layer perceptron (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested functions as in \citet{burkov2019}.
+A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP as defined in literature does not necessarily need to be the binary threshold function $g_\text{thres}$; in fact, it is often one of the more modern activation functions explained in Section \ref{sec:activation_functions} \cite{hastie2017,burkov2019}. Hence we can use the term `multi-layer perceptron'.} (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested functions as in \citet{burkov2019}.
 A MLP with $L$ layers is the mathematical function
 \begin{equation}
     f_{\text{MLP}}(\vec{x})
