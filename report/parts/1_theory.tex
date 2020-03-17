@@ -11,8 +11,8 @@ that models the relationship between a $D$-dimensional feature vector $\vec{x} \
 Given a particular $\vec{x}$, the model will produce a \textit{prediction} for $y$ which we denote $\hat{y}$.
 Here, the additive error term $\epsilon$ represents the discrepancy between $y$ and $\hat{y}$.
 
-\paragraph{Supervised learning}
-A supervised learning algorithm for a regression task infers the function $f$ given in (\ref{eq:reg_model}) from a set of \textit{labelled training data}. This dataset consists of $N$ tuples of the form $\langle \vec{x}_i, y_i\rangle$ for $i=1,\dots,N$.
+\paragraph{Labelled dataset}
+A dataset consists of $N$ tuples of the form $\langle \vec{x}_i, y_i\rangle$ for $i=1,\dots,N$.
 For each feature vector $\vec{x}_i$, the corresponding $y_i$ represents the observed output, or \textit{label} \cite{burkov2019}.
 We use the vector
 \begin{equation}
@@ -28,14 +28,16 @@ to denote all the labelled outputs in the dataset, and the $N \times D$ matrix
 \end{equation}
 for representing the corresponding feature vectors.
 
-Similarly,
+\paragraph{Supervised learning}
+A supervised learning algorithm for a regression task infers the function $f$ given in (\ref{eq:reg_model}) from a set of \textit{labelled training data} of the form explained previously. 
+We use the vector
 \begin{equation}
     \label{eq:sup_learn_prediction}
     \vec{\hat{y}} = \begin{bmatrix}
         \hat{y}_1 & \hat{y}_2 & \cdots & \hat{y}_N
     \end{bmatrix}\tran
 \end{equation}
-denotes a particular prediction for each training sample.
+to denote the prediction that $f$ produces for each training sample.
 
 \section{Artifical neural networks}
 Artifical neural networks (ANNs) take inspiration from the human brain and can be regarded as a set of interconnected neurons. 
@@ -49,29 +51,15 @@ A particular unit $i$'s \textit{excitation}, denoted ${ex}_i$, is calculated as 
 where $a_j \in \mathbb{R}$ is another unit $j$'s \textit{activation} and $b_i \in \mathbb{R}$ is the $i$th unit's \textit{bias}.
 Notice that if there exists no link between unit $i$ and a particular $j$ then simply $w_{i,j}=0$ and therefore $j$ will not contribute to $i$'s excitation. 
 
-The unit $i$'s activation is its excitation applied to a non-linear \textit{activation function}, $g$. We have
+The unit $i$'s activation is its excitation applied to a non-linear \textit{activation function}, $g_i$. We have
 \begin{equation}
     \label{eq:ann_activation}
-    a_i = g\left({ex}_i\right) = g\left(\sum_{j=1}^n{w_{j,i} a_j} + b_i\right).
+    a_i = g_i\left({ex}_i\right) = g_i\left(\sum_{j=1}^n{w_{j,i} a_j} + b_i\right).
 \end{equation}
-Activation functions will be explored in more detail in Section \ref{sec:activation_functions}. 
 
-
-\paragraph{ANNs as regression models}
-We can employ an ANN to model a regression problem of the form given in (\ref{eq:reg_model}). 
-To do so, we need at least $D+1$ neurons in the network. 
-We consider the first $D$ units to be the \textit{input} neurons, and the last neuron, $n$, is the output unit.
-Furthermore, we require $w_{j,k}=0$ for $j,k \in \mathbb{Z}^+$ where $j \leq n$ and $k \leq D$ to ensure that there are no links feeding into the input neurons.
-
-To obtain the prediction $\hat{y}$ given the $D$-dimensional feature vector $\vec{x}$, we set the activation of the $i$th unit to the value the $i$th element in $\vec{x}$ for $i=1,\dots,D$.
-Then, we propagate the activations using (\ref{eq:ann_activation}) until finally the prediction is the activation of the last neuron, $\hat{y}=a_n$.
-This process is often called \textit{forward propagation} or \textit{forward pass} \cite{russell2010}.
-
-\subsection{Activation functions}
-\label{sec:activation_functions}
+\paragraph{Activation functions}
 In its original form, \citeauthor{mcculloch1943} defined the neuron as having only binary activation \cite{mcculloch1943}. 
-This means that in our model from (\ref{eq:ann_activation}), we would require $a_i \in \{0, 1\}$ and hence an activation function of the form $g: \mathbb{R} \rightarrow \{0, 1\}$.
-Applied to our model, this function would be defined\footnote{In fact, \citeauthor{mcculloch1943} defined the activation to be zero when $x<\theta$ for a threshold parameter $\theta \in \mathbb{R}$ and one otherwise, but in our model the bias term $b_i$ acts as the threshold.} as
+This means that in our model from (\ref{eq:ann_activation}), we would require $a_i \in \{0, 1\}$ and hence an activation function of the form $g_\text{thres}: \mathbb{R} \rightarrow \{0, 1\}$ which would be defined\footnote{In fact, \citeauthor{mcculloch1943} defined the activation to be zero when $x<\theta$ for a threshold parameter $\theta \in \mathbb{R}$ and one otherwise, but in our model the bias term $b_i$ acts as the threshold.} as
 \begin{equation}
     \label{eq:thres_activation}
     g_\text{thres}(x) = \begin{cases} 
@@ -83,6 +71,13 @@ Applied to our model, this function would be defined\footnote{In fact, \citeauth
 Commonly used activation functions in modern neural networks include the sigmoid
 \begin{equation}
     S(x) = \frac{1}{1 + e^{-x}}
+\end{equation}
+and the rectified linear unit (ReLU)
+\begin{equation}
+    g_\text{ReLU} = \begin{cases}
+        0 & x < 0 \\
+        x & x \geq 0
+    \end{cases}.
 \end{equation}
 
 \begin{figure}
@@ -112,7 +107,7 @@ Commonly used activation functions in modern neural networks include the sigmoid
             y=3cm,
             axis lines=center,
             xlabel={$x$}, xlabel style={anchor=west},
-            ylabel={$f_{\text{ReLU}}(x)$}, ylabel style={anchor=south},
+            ylabel={$g_{\text{ReLU}}(x)$}, ylabel style={anchor=south},
             ymin=0, ymax=1.2,
             xmin=-1.1, xmax=1.1,
             samples=100,
@@ -128,6 +123,20 @@ Commonly used activation functions in modern neural networks include the sigmoid
     \caption{Plots of the the two most common activation functions.}
     \label{fig:activation_functions}
 \end{figure}
+
+Rectified units do not suffer from the \textit{vanishing gradient effect} \cite{glorot2011}.
+This phenomenon occurs with sigmoid activation functions when they reach high saturation, i.e. when the input is significantly far from zero such that the gradient is almost horizontal.
+However, the vanishing gradient problem is usually not prevelant in shallow\footnote{Shallow networks refer to ANNs with few layers.} networks so the sigmoid function still remains popular \cite{neal1992}.
+
+\paragraph{ANNs as regression models}
+We can employ an ANN to model a regression problem of the form given in (\ref{eq:reg_model}). 
+To do so, we need at least $D+1$ neurons in the network. 
+We consider the first $D$ units to be the \textit{input} neurons, and the last neuron, $n$, is the output unit.
+Furthermore, we require $w_{j,k}=0$ for $j,k \in \mathbb{Z}^+$ where $j \leq n$ and $k \leq D$ to ensure that there are no links feeding into the input neurons.
+
+To obtain the prediction $\hat{y}$ given the $D$-dimensional feature vector $\vec{x}$, we set the activation of the $i$th unit to the value the $i$th element in $\vec{x}$ for $i=1,\dots,D$.
+Then, we propagate the activations using (\ref{eq:ann_activation}) until finally the prediction is the activation of the last neuron, $\hat{y}=a_n$.
+This process is often called \textit{forward propagation} or \textit{forward pass} \cite{russell2010}.
 
 \subsection{Single-layer network}
 We introduce a single-layer network (SLN) as a type of ANN which consists of two conceptual layers, an input and an output layer.
@@ -176,7 +185,7 @@ SLN architectures will always form a \textit{directed acyclic graph} (DAG) becau
 
 We purposefully use the term SLN instead of single-layer perceptron (SLP) to avoid confusion. 
 A SLP has only one output unit and uses the threshold activation function given in (\ref{eq:thres_activation}) \cite{rosenblatt1958}.
-In our definition of a SLN we allow more than one output and impose no restrictions on $g$.
+In our definition of a SLN we allow more than one output and impose no restrictions on $g$, except that the same activation function is used for every output neuron.
 We still use the term `single layer' because the input layer, lacking any incoming weight or bias connections, is not considered to be a `proper' layer.
 
 Let us consider a SLN with $m$ inputs and $n$ outputs. 
