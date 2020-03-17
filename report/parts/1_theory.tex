@@ -378,14 +378,16 @@ Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$
     The output space $\mathcal{O}$ spans the space of all possible output predictions on the training set.
     In Definition \ref{def:mlp}, it states that the network must only have one output node and thus the prediction $\hat{y}$ is a scalar. 
     From (\ref{eq:sup_learn_prediction}), the vector $\vec{\hat{y}}$ represents the prediction $\hat{y}$ for all $N$ training samples.
-    This means that the output space spans all possible assignments of $\vec{\hat{y}}$, so
+    The output space spans all possible assignments of $\vec{\hat{y}}$, so
     \begin{equation}
         \mathcal{O}=\mathbb{R}^N.
     \end{equation}
 \end{definition}
 
-\begin{theorem}[Relationship between $\mathcal{W}$ and $\mathcal{O}$]
-    For any SLN with one output unit, the function $h: \mathcal{W} \rightarrow \mathcal{O}$ mapping the weights to outputs is not a linear mapping.
+\subsection{Relationship between weight and output space}
+\begin{theorem}
+    \label{thm:sln_one_output}
+    For an SLN with one output unit, the function $h: \mathcal{W} \rightarrow \mathcal{O}$ mapping the weights to outputs is not a linear mapping.
 \end{theorem}
 \begin{proof}
     Let us consider a SLN with $m$ inputs and one output, as depicted in Figure \ref{fig:sln_m_in_1_out}.
@@ -499,6 +501,44 @@ Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$
 
     The only functions that satisfy $g$ are functions that satisfy Cauchy's functional equation\footnote{Cauchy's functional equation is $f(a+b)=f(a)+f(b)$. For $a,b \in \mathbb{Q}$, the only solutions are linear functions of the form $f(x) = cx$ for some $c \in \mathbb{Q}$ \cite{reem2017}.}, but these solutions only apply when $b=0$ and furthermore are linear, whereas the activation function $g$ is non-linear. 
     We arrived at a contradiction, thus disproving our initial assumption that $h$ is a linear mapping, so it must be a non-linear mapping.
+\end{proof}
+
+\begin{corollary}
+    \label{col:weight_output_sln}
+    For a SLN with any number of output units, $h: \mathcal{W} \rightarrow \mathcal{O}$ is not a linear mapping.
+\end{corollary}
+\begin{proof}
+    Consider a SLN $S$ with $m$ inputs and $n$ outputs.
+    We construct $n$ smaller SLNs, $S_1,S_2,\dots,S_n$ where each $S_i$ has all $m$ input units, but only the $i$th output unit. 
+    The DAG representing $S_i$ will only contain links from the input nodes to output node $\hat{y}_i$ (and, of course, the associated bias term $b_i$).
+    Now, we can simulate the function of $S$ by the construction
+    \begin{equation*}
+        S(\vec{x})
+        = \begin{bmatrix}
+            \hat{y}_1 \\
+            \hat{y}_2 \\
+            \vdots \\
+            \hat{y}_n \\
+        \end{bmatrix}
+        = \begin{bmatrix}
+            S_1(\vec{x}) \\
+            S_2(\vec{x}) \\
+            \vdots \\
+            S_n(\vec{x}) \\
+        \end{bmatrix}.
+    \end{equation*}
+    By Theorem \ref{thm:sln_one_output}, each $S_i$ does not have a linear mapping from weight space to output space, so $S$ cannot have a linear mapping either.
+\end{proof}
+
+\begin{corollary}[Weight-output mapping in general]
+    \label{col:weight_output_mlp}
+    For any MLP, $h: \mathcal{W} \rightarrow \mathcal{O}$ is not a linear mapping.
+\end{corollary}
+\begin{proof}
+    Consider a MLP with $L$ layers.
+    By Definition \ref{def:mlp}, that MLP is a nested function of $L$ SLNs. 
+    Corollary \ref{col:weight_output_sln} states that each of these SLNs do not have a linear mapping from weight to output space.
+    Hence the composition of the $L$ SLNs, a MLP, does not have a linear mapping from weight to output space.
 \end{proof}
 
 \todo: Significance of this proof
