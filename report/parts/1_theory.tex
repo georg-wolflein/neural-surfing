@@ -441,13 +441,14 @@ Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$
     \end{equation*}
 \end{proof}
 
-\subsection{Relationship between weight and output space}
+\paragraph{Remarks}
 The significance of Lemma \ref{lmm:weight_space_mlp} is that we obtain a formula for the number of trainable parameters $P$ in a MLP. 
 By Definition \ref{def:weight_space}, $P$ determines the dimensionality of the weight space. 
 On other other hand, Definition \ref{def:output_space} states that the number of samples in the training set $N$ determines the dimensionality of the output space.
 There is no relationship between $P$ and $N$ since the number of samples in the training set can be arbitrarily chosen. 
 It follows that there is no relationship between the dimensionalities of $\mathcal{W}$ and $\mathcal{O}$.
 
+\subsection{Relationship between weight and output space}
 We will now examine the nature of the mapping between the two spaces, and whether there exists a linear mapping. 
 Note that linear mappings can exist between spaces of different dimensionalities \cite{rudin2006}.
 
@@ -524,7 +525,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
         \end{bmatrix}.
     \end{equation*}
 
-    We will assume that $h$ is a linear mapping. 
+    We will assume, by way of contradiction, that $h$ is a linear mapping. 
     From the definition of linear mappings, it must be true that $h(\vec{u} + \vec{v}) = h(\vec{u}) + h(\vec{v})$ for $\vec{u}, \vec{v} \in \mathcal{W}_S$ \cite{rudin2006}.
     On the LHS we have
     \begin{equation*}
@@ -655,18 +656,106 @@ Note that linear mappings can exist between spaces of different dimensionalities
 
 \begin{corollary}[Weight-output mapping in general]
     \label{col:weight_output_mlp}
-    For any MLP, $h: \mathcal{W} \rightarrow \mathcal{O}$ is not a linear mapping.
+    For any MLP $M$, $h_M: \mathcal{W}_M \rightarrow \mathcal{O}_M$ is not a linear mapping.
 \end{corollary}
 \begin{proof}
-    Consider a MLP $M$ with $L$ layers.
-    By Definition \ref{def:mlp}, that MLP is a nested function of $L$ SLNs. 
+    Let $M$ have $L$ layers.
+    By Definition \ref{def:mlp}, $M$ is a nested function of $L$ SLNs. 
     Corollary \ref{col:weight_output_sln} states that each of these SLNs does not have a linear mapping from weight to output space.
     Hence the composition of $L$ SLNs that forms $M$ does not have a linear mapping from weight to output space.
 \end{proof}
 
-\todo: Significance of this proof
+\paragraph{Remarks}
+The findings from Corollary \ref{col:weight_output_mlp} are very significant.
+They show that there is no apparent relationship between weight and output space that we can easily determine analytically. 
+If there were a straightforward mapping between weight and output space, we would be able to simply be able to determine the ideal weight configuration that would achieve our target $\vec{y}$ in output space. 
 
-\section{Ideal goal line}
+However, since this is not possible, the findings above set the scene for the neural surfing technique. 
+One of the core assumptions is that at a small enough scale, the mapping between weight and output space is \textit{locally linear}, or at least close enough.
+
+\subsection{Gradient descent from the perspective of weight and output space}
+\todo: Write about how SGD with MSE usually gets viewed from the perspective of error-weight space. However, it is interesting to look at the perspective of weight and output space. It becomes apparent that MSE can be thought of as greedily trying to reduce the Euclidean distance from $\vec{\hat{y}}$ to $\vec{y}$ in output space.
+
+\section{Unrealizable regions}
+\begin{definition}[Strongly unrealizable point]
+    \label{def:unrealizable_point}
+    Given an artificial neural network $A$, a point $\vec{p} \in \mathcal{O}_A$ in output space is \textit{strongly unrealizable} if and only if there exists no weight configuration $\vec{w} \in \mathcal{W}_A$ such that $h_A(\vec{w}) = \vec{p}$.
+    In order words, it is impossible to attain $\vec{p}$.
+\end{definition}
+\begin{definition}[Strongly unrealizable region]
+    \label{def:unrealizable_region}
+    Given an artificial neural network $A$, a \textit{strongly} unrealizable region $\mathcal{U} \subset \mathcal{O}_A$ is a subspace of the output space where every point $\vec{p} \in \mathcal{U}$ is strongly unrealizable.
+    
+    It is apparent that there exists no neural learning algorithm that can elicit a change in weight space that will attain a point in a strongly unrealizable region in output space.
+    Hence we define a \textit{weakly} unrealizable region for a particular neural learning algorithm as a region in output space that cannot be attained by a particular algorithm.
+\end{definition}
+
+\begin{lemma}
+    A strongly unrealizable region cannot encompass the whole output space.
+\end{lemma}
+\begin{proof}
+    Let us consider an artifical neural network $A$. 
+    We will show that for every unrealizable region, $\mathcal{U} \subsetneq \mathcal{O}_A$.
+    By Definition \ref{def:unrealizable_region}, $\mathcal{U} \subset \mathcal{O}_A$, so it remains to prove that every unrealizable region $\mathcal{U} \neq \mathcal{O}_A$.
+
+    Choose any weight configuration $\vec{w} \in \mathcal{W}_A$. 
+    Let the point $\vec{p}=h_A(\vec{w})$. 
+    We know that $\vec{p}$ is \textit{not} strongly unrealizable because $\vec{w}$ achieves $\vec{p}$. 
+    Hence no unrealizable region can contain $\vec{p}$, so $\vec{p} \notin \mathcal{U}$ but $\vec{p} \in \mathcal{O}_A$. 
+    It follows that $\mathcal{U} \neq \mathcal{O}_A$.
+\end{proof}
+
+Let us look at a couple of examples of unrealizable regions.
+\begin{figure}
+    \begin{center}
+        \begin{tikzpicture}
+            [
+                neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+            ]
+            \node [neuron] (x1) at (0,0) {$x_1$};
+            \node [neuron] (x2) at (0,-2) {$x_2$};
+            \node [neuron] (y) at (3,-1)  {$\hat{y}$};
+            \node (b) at (3, 0) {$b$};
+            \draw[->] (x1) -- (y);
+            \draw[->] (x2) -- (y);
+            \draw[->] (b) -- (y);
+            \draw[->] (b) -- (y);
+        \end{tikzpicture}
+    \end{center}
+    \caption{A simple MLP with one layer and two inputs (equivalently, a SLN with two inputs and one ouput).}
+    \label{fig:sln_2_in_1_out}
+\end{figure}
+\begin{example}
+    A trivial example of an unrealizable region is predicting two different outputs for the same training sample.
+    Consider a MLP $M$ with one layer and two inputs, as shown in Figure \ref{fig:sln_2_in_1_out}.
+    Let $\vec{x}\in \mathbb{R}^2$ be any point in input space.
+    For this example, let the training data be the matrix
+    $
+        \vec{X} = \begin{bmatrix}
+            \vec{x} & \vec{x}
+        \end{bmatrix}\tran
+    $.
+    Now we can define an unrealizable region
+    \begin{equation*}
+        \mathcal{U} = \left\{
+            \begin{bmatrix}
+                p_1 \\ p_2
+            \end{bmatrix} : p_1, p_2 \in \mathbb{R}, p_1 \neq p_2
+        \right\}
+    \end{equation*}
+    because $h_M(\vec{x})$ cannot produce two different outputs for the same value of $\vec{x}$.
+\end{example}
+\begin{example}
+    \todo: XOR function for network with one layer creates an unrealizable region
+\end{example}
+
+
+
+
+
+\todo: What if $\vec{y}$ is unrealizable?
+
+\section{Goal-connecting paths}
 
 \chapter{Problems}
 \section{Stripe problem}
