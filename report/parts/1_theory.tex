@@ -17,6 +17,7 @@
     For each feature vector $\vec{x}_i$ (a row vector), the corresponding $y_i$ represents the observed output, or \textit{label} \cite{burkov2019}.
     We use the vector
     \begin{equation}
+        \label{eq:sup_learn_target}
         \vec{y} = \begin{bmatrix}
             y_1 & y_2 & \cdots & y_N
         \end{bmatrix}\tran
@@ -47,17 +48,17 @@ Artifical neural networks (ANNs) take inspiration from the human brain and can b
 More formally, an ANN is a directed graph of $n$ neurons (referred to as \textit{nodes} or \textit{units}) with weighted edges (\textit{links}).
 Each link connecting two units $i$ and $j$ is directed and associated with a real-valued weight $w_{i,j}$. 
 
-A particular unit $i$'s \textit{excitation}, denoted ${ex}_i$, is calculated as the weighted sum
+A particular unit $i$'s \textit{excitation}, denoted $z_i$, is calculated as the weighted sum
 \begin{equation}
-    {ex}_i = \sum_{j=1}^n{w_{j,i} a_j} + b_i
+    z_i = \sum_{j=1}^n{w_{j,i} a_j} + b_i
 \end{equation}
 where $a_j \in \mathbb{R}$ is another unit $j$'s \textit{activation} and $b_i \in \mathbb{R}$ is the $i$th unit's \textit{bias}.
-Notice that if there exists no link between unit $i$ and a particular $j$ then simply $w_{i,j}=0$ and therefore $j$ will not contribute to $i$'s excitation. 
+Notice that in this model, if there exists no link between unit $i$ and a particular $j$ then simply $w_{i,j}=0$ and therefore $j$ will not contribute to $i$'s excitation. 
 
-The unit $i$'s activation is its excitation applied to a non-linear \textit{activation function}, $g_i$. We have
+The unit $i$'s activation is its excitation applied to a non-linear \textit{activation function}, $g: \mathbb{R} \rightarrow \mathbb{R}$. We have
 \begin{equation}
     \label{eq:ann_activation}
-    a_i = g_i\left({ex}_i\right) = g_i\left(\sum_{j=1}^n{w_{j,i} a_j} + b_i\right).
+    a_i = g\left(z_i\right) = g\left(\sum_{j=1}^n{w_{j,i} a_j} + b_i\right).
 \end{equation}
 
 \paragraph{Activation functions}
@@ -80,9 +81,9 @@ and the rectified linear unit (ReLU)
     g_\text{ReLU} = \begin{cases}
         0 & x < 0 \\
         x & x \geq 0
-    \end{cases}.
+    \end{cases}
 \end{equation}
-
+which are depicted in Figure \ref{fig:activation_functions}.
 \begin{figure}
     \centering
     \begin{tikzpicture}
@@ -130,6 +131,10 @@ and the rectified linear unit (ReLU)
 Rectified units do not suffer from the \textit{vanishing gradient effect} \cite{glorot2011}.
 This phenomenon occurs with sigmoid activation functions when they reach high saturation, i.e. when the input is significantly far from zero such that the gradient is almost horizontal.
 However, the vanishing gradient problem is usually not prevelant in shallow\footnote{Shallow networks refer to ANNs with few layers.} networks so the sigmoid function still remains popular \cite{neal1992}.
+
+Particularly in deep neural networks, different neurons (grouped in \textit{layers}, see Section \ref{sec:multi_layer_perceptron}) often have different activation functions \cite{burkov2019}, but for the purposes of this report it is more convenient (in terms of notation) to have the activation function be the same for all neurons, so it does not need to be supplied as a parameter to the function describing the particular neural network.
+Much of the work in this report can easily be generalized to designs with multple activation functions.
+This is because the algorithms explained in this report do not concern themselves with the specifics of the activation functions, as long as they are non-linear.
 
 \paragraph{ANNs as regression models}
 We can employ an ANN to model a regression problem of the form given in (\ref{eq:reg_model}). 
@@ -195,7 +200,7 @@ Let us consider a SLN with $m$ inputs and $n$ outputs.
 Since every output unit $i$ only has connections from every input unit $j$,
 we can adapt (\ref{eq:ann_activation}) to give the activation of a particular output neuron $i$ as
 \begin{equation}
-    a_i = y_i = g\left({ex}_i\right) = g\left(\sum_{j=1}^m{w_{j,i} x_j} + b_i\right)
+    a_i = y_i = g\left(z_i\right) = g\left(\sum_{j=1}^m{w_{j,i} x_j} + b_i\right)
     = g\left( \vec{w}_i\tran \vec{x}_i + b_i\right)
 \end{equation}
 where
@@ -213,7 +218,7 @@ This is all we need to formally define a SLN.
     $\vec{S}: \mathbb{R}^m \rightarrow \mathbb{R}^n$ defined as
     \begin{equation}
         \label{eq:single_layer_perceptron}
-        \vec{S}(\vec{x}; \vec{W}, \vec{b}, \vec{g}) = \vec{g}\left( \vec{W}\tran \vec{x} + \vec{b} \right)
+        \vec{S}(\vec{x}; \vec{W}, \vec{b}) = \vec{g}\left( \vec{W}\tran \vec{x} + \vec{b} \right)
     \end{equation}
     where the  $m \times n$ matrix
     \begin{equation}
@@ -227,14 +232,26 @@ This is all we need to formally define a SLN.
             w_{m,1} & w_{m,2} & \cdots & w_{m,n}
         \end{bmatrix}
     \end{equation}
-    captures all weights, the vector
+    captures all weights and the vector
     \begin{equation}
         \label{eq:sln_bias}
         \vec{b} = \begin{bmatrix}
             b_1 & b_2 & \cdots & b_n
         \end{bmatrix}\tran
     \end{equation}
-    represents the biases, and $\vec{g}$ is the vector-valued activation function.
+    represents the biases.
+    The vector-valued activation function $\vec{g} : \mathbb{R}^n \rightarrow \mathbb{R}^n$ is simply the activation function $g: \mathbb{R} \rightarrow \mathbb{R}$ applied pointwise to a vector, i.e.
+    \begin{equation*}
+        \vec{g}(\vec{z}) = \begin{bmatrix}
+            g(z_1) & g(z_2) & \cdots & g(z_n)
+        \end{bmatrix}\tran
+    \end{equation*}
+    for the vector of excitations
+    $
+        \vec{z} = \begin{bmatrix}
+            z_1 & z_2 & \cdots & z_n
+        \end{bmatrix}\tran
+    $.
 \end{definition}
 
 Unlike the formula for a regression model, a SLN is a vector-valued function, due to the fact that there are multiple outputs. 
@@ -249,7 +266,7 @@ A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP 
     A MLP $M$ with $m$ inputs and $L$ layers is the mathematical function
     $M : \mathbb{R}^m \rightarrow \mathbb{R}$ defined as the nested function
     \begin{equation}
-        M(\vec{x})
+        M(\vec{x}; \mathscr{W}, \mathscr{B})
             = \hat{y}
             = f_L \left(
                 \vec{f}_{L-1} \left(
@@ -261,14 +278,9 @@ A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP 
                 \right)
             \right)
     \end{equation}
-    where $\vec{f}_l(\vec{x}) = \vec{S}(\vec{x}; \vec{W}_l, \vec{b}_l, \vec{g}_l)$ for $l = 1, \dots, L-1$. 
-    The outermost function $f_L$ represents a SLN with only one output unit and is hence the scalar-valued function $f_L(\vec{x}) = S(\vec{x}; \vec{W}_L, \vec{b}_L, \vec{g}_L)$.
-    This means that we can fully define the parameters of a MLP with the three-tuple
-    \begin{equation}
-        \label{eq:mlp_three_tuple}
-        \langle \mathscr{W}, \mathscr{B}, \mathscr{G} \rangle
-    \end{equation}
-    where $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ are the weight matrices, $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ the bias vectors, and $\mathscr{G} = \vec{g}_1, \vec{g}_2, \dots, \vec{g}_L$ the vector-valued activation functions.
+    where $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ are the weight matrices and $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ the bias vectors such that the nested functions are given by $\vec{f}_l(\vec{x}) = \vec{S}(\vec{x}; \vec{W}_l, \vec{b}_l)$ for $l = 1, \dots, L-1$. 
+    The outermost function $f_L$ represents a SLN with only one output unit and is hence the scalar-valued function $f_L(\vec{x}) = S(\vec{x}; \vec{W}_L, \vec{b}_L)$.
+    
 \end{definition}
 
 Notice that for every $l < L$, $\vec{W}_l$ is a $n_l \times m_l$ matrix such that $n_l=m_{l+1}$ to esnure that the number of outputs of layer $l$ is the number of inputs to layer $l+1$.
@@ -354,13 +366,13 @@ In the forward pass, the activations are propagated from layer to layer (i.e. ne
 
 \chapter{Neural surfing theory}
 \section{Weight and output spaces}
-In Definition \ref{def:mlp} we established that the three-tuple from (\ref{eq:mlp_three_tuple}) is sufficient to fully define a MLP. 
+In Definition \ref{def:mlp} we established that the tuple $\langle \mathscr{W}, \mathscr{B} \rangle$ along with the activation function is sufficient to fully define a MLP. 
 Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ and $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ representing each layer's weight matrices and bias vectors, respectively. 
 
 \begin{definition}[Weight space]
     \label{def:weight_space}
     The weight space $\mathcal{W}_A$ of an artificial neural network $A$ is the set of all possible assignments to its \textit{trainable parameters}. 
-    The trainable parameters are its weights and biases.
+    The trainable parameters are its weights $\mathscr{W}$ and biases $\mathscr{B}$.
     If $A$ has $P$ trainable parameters then its weight space is defined as
     \begin{equation}
         \mathcal{W}_A = \mathbb{R}^P.
@@ -434,17 +446,38 @@ The significance of Lemma \ref{lmm:weight_space_mlp} is that we obtain a formula
 By Definition \ref{def:weight_space}, $P$ determines the dimensionality of the weight space. 
 On other other hand, Definition \ref{def:output_space} states that the number of samples in the training set $N$ determines the dimensionality of the output space.
 There is no relationship between $P$ and $N$ since the number of samples in the training set can be arbitrarily chosen. 
-It follows that $\mathcal{W}$ and $\mathcal{O}$ are usually spaces of different dimensionalities. 
+It follows that there is no relationship between the dimensionalities of $\mathcal{W}$ and $\mathcal{O}$.
 
-We will now examine whether there exists a linear mapping between these two spaces. 
+We will now examine the nature of the mapping between the two spaces, and whether there exists a linear mapping. 
 Note that linear mappings can exist between spaces of different dimensionalities \cite{rudin2006}.
+
+\begin{definition}[Weight-output mapping]
+    \label{def:weight_output_space_mapping}
+    Given an artifical neural network $A:\mathbb{R}^m \rightarrow \mathbb{R}^n$ with $m$ inputs and $n$ outputs parameterized by a set of trainable parameters $\vec{w} \in \mathcal{W_A}$,
+    the weight-to-output-space mapping $h_A: \mathcal{W}_A \rightarrow \mathcal{O}_A$ for a dataset with $N$ $m$-dimensional feature vectors given by the matrix
+    $\vec{X} = \begin{bmatrix}
+        \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_N
+    \end{bmatrix}\tran \in \mathbb{R}^{N\times m}$
+    is
+    \begin{equation*}
+        h_A \left( \vec{w} \right)
+        = \begin{bmatrix}
+            A(\vec{x}_1; \vec{w} ) \\
+            A(\vec{x}_2; \vec{w} ) \\
+            \vdots \\
+            A(\vec{x}_N; \vec{w} ) \\
+        \end{bmatrix}.
+    \end{equation*}
+
+    \todo: explain confusion of the term weight-output mapping
+\end{definition}
 
 \begin{theorem}
     \label{thm:sln_one_output}
-    For a SLN with one output unit, the function $h: \mathcal{W} \rightarrow \mathcal{O}$ mapping the weights to outputs is not a linear mapping.
+    For a SLN $S$ with one output unit, the function $h_S: \mathcal{W}_S \rightarrow \mathcal{O}_S$ is not a linear mapping.
 \end{theorem}
 \begin{proof}
-    Let us consider a SLN with $m$ inputs and one output, as depicted in Figure \ref{fig:sln_m_in_1_out}.
+    Let $S$ have $m$ inputs, as depicted in Figure \ref{fig:sln_m_in_1_out}.
     \begin{figure}
         \begin{center}
             \begin{tikzpicture}
@@ -468,22 +501,21 @@ Note that linear mappings can exist between spaces of different dimensionalities
         \label{fig:sln_m_in_1_out}
     \end{figure}
     Modifying the formula for a SLN given in Definition \ref{def:sln} (\ref{eq:single_layer_perceptron}) for the case where there is only one output unit, we obtain
-    $\hat{y} = f_\text{SLP}(\vec{x}; \vec{w}\tran, b, g) = g\left(\vec{w}\tran \vec{x} + b\right)$
+    $\hat{y} = f_\text{SLP}(\vec{x}; \vec{w}\tran, b) = g\left(\vec{w} \vec{x} + b\right)$
     where
     $\vec{x} = \begin{bmatrix}
         x_1 & x_2 & \cdots & x_m
     \end{bmatrix}\tran$
     is the input feature vector.
 
-    We will consider a dataset with $N$ samples where the input is given by a $N\times m$ matrix
+    We will consider a dataset with $N$ samples where the input is given by the $N\times m$ matrix
     $\vec{X} = \begin{bmatrix}
         \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_N
     \end{bmatrix}\tran$
-    as in (\ref{eq:sup_learn_input_matrix}) and the labelled outputs $\vec{\hat{y}}$ are defined as in (\ref{eq:sup_learn_prediction}).
-    For our SLN, the function $h: \mathcal{W} \rightarrow \mathcal{O}$ is defined as applying the SLN to each input sample, so
+    as in (\ref{eq:sup_learn_input_matrix}).
+    By Definition \ref{def:weight_output_space_mapping}, the mapping from weight to output space $h_S: \mathcal{W}_S \rightarrow \mathcal{O}_S$ is
     \begin{equation*}
-        h \left( \vec{w} \right)
-        = \vec{\hat{y}}
+        h_S \left( \vec{w} \right)
         = \begin{bmatrix}
             g \left( \vec{w}\tran \vec{x}_1 + b \right) \\
             g \left( \vec{w}\tran \vec{x}_2 + b \right) \\
@@ -493,7 +525,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
     \end{equation*}
 
     We will assume that $h$ is a linear mapping. 
-    From the definition of linear mappings, it must be true that $h(\vec{u} + \vec{v}) = h(\vec{u}) + h(\vec{v})$ for $\vec{u}, \vec{v} \in \mathcal{W}$ \cite{rudin2006}.
+    From the definition of linear mappings, it must be true that $h(\vec{u} + \vec{v}) = h(\vec{u}) + h(\vec{v})$ for $\vec{u}, \vec{v} \in \mathcal{W}_S$ \cite{rudin2006}.
     On the LHS we have
     \begin{equation*}
         h \left( \vec{u} + \vec{v} \right)
@@ -559,10 +591,11 @@ Note that linear mappings can exist between spaces of different dimensionalities
 
 \begin{corollary}
     \label{col:weight_output_sln}
-    For a SLN with any number of output units, $h: \mathcal{W} \rightarrow \mathcal{O}$ is not a linear mapping.
+    For any SLN $S$, the function $h_S: \mathcal{W}_S \rightarrow \mathcal{O}_S$ is not a linear mapping.
 \end{corollary}
 \begin{proof}
-    Consider a SLN $S$ with $m$ inputs and $n$ outputs.
+    We will generalize the results from Theorem \ref{thm:sln_one_output} to SLNs with multiple outputs.
+    Let $S$ have $m$ inputs and $n$ outputs.
     We construct $n$ smaller SLNs, $S_1,S_2,\dots,S_n$ where each $S_i$ has all $m$ input units, but only the $i$th output unit. 
     The DAG representing $S_i$ will only contain links from the input nodes to output node $\hat{y}_i$ (and, of course, the associated bias term $b_i$).
     Now, we can simulate the function of $S$ by the construction
