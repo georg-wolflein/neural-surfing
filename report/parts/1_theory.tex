@@ -597,7 +597,43 @@ Note that linear mappings can exist between spaces of different dimensionalities
     We will generalize the results from Theorem \ref{thm:sln_one_output} to SLNs with multiple outputs.
     Let $S$ have $m$ inputs and $n$ outputs.
     We construct $n$ smaller SLNs, $S_1,S_2,\dots,S_n$ where each $S_i$ has all $m$ input units, but only the $i$th output unit. 
-    The DAG representing $S_i$ will only contain links from the input nodes to output node $\hat{y}_i$ (and, of course, the associated bias term $b_i$).
+    The DAG representing $S_i$ will only contain links from the input nodes to output node $\hat{y}_i$ (and, of course, the associated bias term $b_i$) as depicted in Figure \ref{fig:sln_m_in_n_out_construction}.
+    \begin{figure}
+        \begin{center}
+            \begin{tikzpicture}
+                [
+                    neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+                ]
+                
+                \node [neuron] (x1)  at (0,0) {$x_1$};
+                \node [neuron] (x2) at (0,-2) {$x_2$};
+                \node (dots) at (0,-3) {$\vdots$};
+                \node [neuron] (xm) at (0,-4) {$x_m$};
+                \node [neuron,red] (y1) at (4,1) {$\hat{y}_1$};
+                \node [neuron,green] (y2) at (4,-2) {$\hat{y}_2$};
+                \node [neuron,blue] (yn) at (4,-5) {$\hat{y}_n$};
+                \node [red] (b1) at (4, 2) {$b_1$};
+                \node [green] (b2) at (4, -1) {$b_2$};
+                \node [blue] (bn) at (4, -4) {$b_n$};
+                \node (dots) at (4,-3.25) {$\vdots$};
+                \draw[->,red] (x1) -- (y1);
+                \draw[->,red] (x2) -- (y1);
+                \draw[->,red] (xm) -- (y1);
+                \draw[->,red] (b1) -- (y1);
+                \draw[->,green] (x1) -- (y2);
+                \draw[->,green] (x2) -- (y2);
+                \draw[->,green] (xm) -- (y2);
+                \draw[->,green] (b2) -- (y2);
+                \draw[->,blue] (x1) -- (yn);
+                \draw[->,blue] (x2) -- (yn);
+                \draw[->,blue] (xm) -- (yn);
+                \draw[->,blue] (bn) -- (yn);
+            \end{tikzpicture}
+        \end{center}
+        \caption{The DAGs representing the constructions of $n$ SLNs with one output from a SLN with $m$ inputs and $n$ outputs. Each color represents one of the constructed smaller SLNs.}
+        \label{fig:sln_m_in_n_out_construction}
+    \end{figure}
+    
     Now, we can simulate the function of $S$ by the construction
     \begin{equation*}
         S(\vec{x})
@@ -615,7 +651,6 @@ Note that linear mappings can exist between spaces of different dimensionalities
         \end{bmatrix}.
     \end{equation*}
     By Theorem \ref{thm:sln_one_output}, each $S_i$ does not have a linear mapping from weight space to output space, so $S$ cannot have a linear mapping either.
-    \todo: diagram
 \end{proof}
 
 \begin{corollary}[Weight-output mapping in general]
