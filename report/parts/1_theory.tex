@@ -1,33 +1,35 @@
 \chapter{Neural network theory}
 \section{Supervised learning}
 
-\paragraph{Regression model}
-In machine learning, a regression model $f$ is defined as a mathematical function of the form
-\begin{equation}
-    \label{eq:reg_model}
-    f(\vec{x}) = \hat{y} = y + \epsilon
-\end{equation}
-that models the relationship between a $D$-dimensional feature vector $\vec{x} \in \mathbb{R}^D$ of independent (\textit{input}) variables and the dependent (\textit{output}) variable $y \in \mathbb{R}$. 
-Given a particular $\vec{x}$, the model will produce a \textit{prediction} for $y$ which we denote $\hat{y}$.
-Here, the additive error term $\epsilon$ represents the discrepancy between $y$ and $\hat{y}$.
+\begin{definition}[Regression model]
+    In machine learning, a regression model $f$ is defined as a mathematical function of the form
+    \begin{equation}
+        \label{eq:reg_model}
+        f(\vec{x}) = \hat{y} = y + \epsilon
+    \end{equation}
+    that models the relationship between a $D$-dimensional feature vector $\vec{x} \in \mathbb{R}^D$ of independent (\textit{input}) variables and the dependent (\textit{output}) variable $y \in \mathbb{R}$. 
+    Given a particular $\vec{x}$, the model will produce a \textit{prediction} for $y$ which we denote $\hat{y}$.
+    Here, the additive error term $\epsilon$ represents the discrepancy between $y$ and $\hat{y}$.
+\end{definition}
 
-\paragraph{Labelled dataset}
-A dataset consists of $N$ tuples of the form $\langle \vec{x}_i, y_i\rangle$ for $i=1,\dots,N$.
-For each feature vector $\vec{x}_i$ (a row vector), the corresponding $y_i$ represents the observed output, or \textit{label} \cite{burkov2019}.
-We use the vector
-\begin{equation}
-    \vec{y} = \begin{bmatrix}
-        y_1 & y_2 & \cdots & y_N
-    \end{bmatrix}\tran
-\end{equation}
-to denote all the labelled outputs in the dataset, and the $N \times D$ matrix
-\begin{equation}
-    \label{eq:sup_learn_input_matrix}
-    \vec{X} = \begin{bmatrix}
-        \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_N
-    \end{bmatrix}\tran
-\end{equation}
-for representing the corresponding feature vectors.
+\begin{definition}[Labelled dataset]
+    A labelled dataset consists of $N$ tuples of the form $\langle \vec{x}_i, y_i\rangle$ for $i=1,\dots,N$.
+    For each feature vector $\vec{x}_i$ (a row vector), the corresponding $y_i$ represents the observed output, or \textit{label} \cite{burkov2019}.
+    We use the vector
+    \begin{equation}
+        \vec{y} = \begin{bmatrix}
+            y_1 & y_2 & \cdots & y_N
+        \end{bmatrix}\tran
+    \end{equation}
+    to denote all the labelled outputs in the dataset, and the $N \times D$ matrix
+    \begin{equation}
+        \label{eq:sup_learn_input_matrix}
+        \vec{X} = \begin{bmatrix}
+            \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_N
+        \end{bmatrix}\tran
+    \end{equation}
+    for representing the corresponding feature vectors.
+\end{definition}
 
 \paragraph{Supervised learning}
 A supervised learning algorithm for a regression task infers the function $f$ given in (\ref{eq:reg_model}) from a set of \textit{labelled training data} of the form explained previously. 
@@ -71,7 +73,7 @@ This means that in our model from (\ref{eq:ann_activation}), we would require $a
 
 Commonly used activation functions in modern neural networks include the sigmoid
 \begin{equation}
-    S(x) = \frac{1}{1 + e^{-x}}
+    g_\text{sig}(x) = \frac{1}{1 + e^{-x}}
 \end{equation}
 and the rectified linear unit (ReLU)
 \begin{equation}
@@ -89,7 +91,7 @@ and the rectified linear unit (ReLU)
             y=3cm,
             axis lines=center,
             xlabel={$x$}, xlabel style={anchor=west},
-            ylabel={$S(x)$}, ylabel style={anchor=south},
+            ylabel={$g_\text{sig}(x)$}, ylabel style={anchor=south},
             ymin=0, ymax=1.2,
             xmin=-3.3, xmax=3.3,
             samples=100,
@@ -207,13 +209,15 @@ This is all we need to formally define a SLN.
 
 \begin{definition}[Single-layer network]
     \label{def:sln}
-    A SLN with $m$ inputs and $m$ outputs is the mathematical formula
+    A SLN with $m$ inputs and $m$ outputs is the vector-valued function
+    $\vec{S}: \mathbb{R}^m \rightarrow \mathbb{R}^n$ defined as
     \begin{equation}
         \label{eq:single_layer_perceptron}
-        \vec{f_{\text{SLN}}}(\vec{x}; \vec{W}, \vec{b}, \vec{g}) = \vec{g}\left( \vec{W}\tran \vec{x} + \vec{b} \right)
+        \vec{S}(\vec{x}; \vec{W}, \vec{b}, \vec{g}) = \vec{g}\left( \vec{W}\tran \vec{x} + \vec{b} \right)
     \end{equation}
     where the  $m \times n$ matrix
     \begin{equation}
+        \label{eq:sln_weight_matrix}
         \vec{W} = \begin{bmatrix}
             \vec{w}_1 & \vec{w}_2 & \cdots & \vec{w}_n
         \end{bmatrix} = \begin{bmatrix}
@@ -223,9 +227,14 @@ This is all we need to formally define a SLN.
             w_{m,1} & w_{m,2} & \cdots & w_{m,n}
         \end{bmatrix}
     \end{equation}
-    captures all weights, the vector $\vec{b} = \begin{bmatrix}
-        b_1 & b_2 & \cdots & b_n
-    \end{bmatrix}\tran$ represents the biases, and $\vec{g}$ is the vector-valued activation function.
+    captures all weights, the vector
+    \begin{equation}
+        \label{eq:sln_bias}
+        \vec{b} = \begin{bmatrix}
+            b_1 & b_2 & \cdots & b_n
+        \end{bmatrix}\tran
+    \end{equation}
+    represents the biases, and $\vec{g}$ is the vector-valued activation function.
 \end{definition}
 
 Unlike the formula for a regression model, a SLN is a vector-valued function, due to the fact that there are multiple outputs. 
@@ -237,9 +246,10 @@ Moreover, if we additionally use the threshold activation function from (\ref{eq
 A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP as defined in literature does not necessarily need to be the binary threshold function $g_\text{thres}$; in fact, it is often one of the more modern activation functions explained in Section \ref{sec:activation_functions} \cite{hastie2017,burkov2019}. Hence we can use the term `multi-layer perceptron'.} (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested functions as in \citet{burkov2019}.
 \begin{definition}[Multi-layer perceptron]
     \label{def:mlp}
-    A MLP with $L$ layers is the mathematical function
+    A MLP $M$ with $m$ inputs and $L$ layers is the mathematical function
+    $M : \mathbb{R}^m \rightarrow \mathbb{R}$ defined as the nested function
     \begin{equation}
-        f_{\text{MLP}}(\vec{x})
+        M(\vec{x})
             = \hat{y}
             = f_L \left(
                 \vec{f}_{L-1} \left(
@@ -251,8 +261,8 @@ A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP 
                 \right)
             \right)
     \end{equation}
-    where $\vec{f}_l(\vec{x}) = \vec{f_{\text{SLN}}}(\vec{x}; \vec{W}_l, \vec{b}_l, \vec{g}_l)$ for $l = 1, \dots, L-1$. 
-    The outermost function $f_L$ represents a SLN with only one output unit and is hence the scalar-valued function $f_L(\vec{x}) = f_{\text{SLN}}(\vec{x}; \vec{W}_L, \vec{b}_L, \vec{g}_L)$.
+    where $\vec{f}_l(\vec{x}) = \vec{S}(\vec{x}; \vec{W}_l, \vec{b}_l, \vec{g}_l)$ for $l = 1, \dots, L-1$. 
+    The outermost function $f_L$ represents a SLN with only one output unit and is hence the scalar-valued function $f_L(\vec{x}) = S(\vec{x}; \vec{W}_L, \vec{b}_L, \vec{g}_L)$.
     This means that we can fully define the parameters of a MLP with the three-tuple
     \begin{equation}
         \label{eq:mlp_three_tuple}
@@ -348,46 +358,90 @@ In Definition \ref{def:mlp} we established that the three-tuple from (\ref{eq:ml
 Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ and $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ representing each layer's weight matrices and bias vectors, respectively. 
 
 \begin{definition}[Weight space]
-    We define the weight space $\mathcal{W}$ of a MLP as the set of all possible assignments to its \textit{trainable parameters}. 
-    The trainable parameters are its weights and biases, so the weight space encompasses all possible configurations of $\mathscr{W}$ and $\mathscr{B}$. 
-    Hence the weight space for a network with $P$ trainable parameters is defined as
+    \label{def:weight_space}
+    The weight space $\mathcal{W}_A$ of an artificial neural network $A$ is the set of all possible assignments to its \textit{trainable parameters}. 
+    The trainable parameters are its weights and biases.
+    If $A$ has $P$ trainable parameters then its weight space is defined as
     \begin{equation}
-        \mathcal{W} = \mathbb{R}^P.
+        \mathcal{W}_A = \mathbb{R}^P.
+    \end{equation}
+\end{definition}
+
+\begin{definition}[Output space]
+    \label{def:output_space}
+    The output space $\mathcal{O}_A$ of an artificial neural network $A$ with one output neuron spans the space of all possible output predictions on the training set.
+    From (\ref{eq:sup_learn_prediction}), the vector $\vec{\hat{y}}$ represents the prediction $\hat{y}$ for all $N$ training samples.
+    The output space spans all possible assignments of $\vec{\hat{y}}$, so
+    \begin{equation}
+        \mathcal{O_A}=\mathbb{R}^N.
     \end{equation}
 \end{definition}
 
 \begin{lemma}
-    A MLP with $L$ layers where the number of inputs to layer $l$ is given as $m_l$ will have a total of
-    $P = \sum_{l=1}^{L-1}{\left(m_{l+1} (m_l + 1)\right)} + m_L + 1$
-    trainable parameters.
+    \label{lmm:weight_space_sln}
+    The weight space for a SLN $S$ with $m$ inputs and $n$ outputs is $\mathcal{W}_S = \mathbb{R}^{n(m+1)}$.
+\end{lemma}
+\begin{proof}
+    $S$'s trainable parameters are the weight matrix $\vec{W} \in \mathbb{R}^{m\times n}$ from (\ref{eq:sln_weight_matrix}) and bias vector $\vec{b} \in \mathbb{R}^n$ from (\ref{eq:sln_bias}).
+    By Definition \ref{def:weight_space}, the weight space encompasses all values of $\vec{W}$ and $\vec{b}$, so
+    \begin{equation*}
+        \mathcal{W}_S = \mathbb{R}^{m \times n} \times \mathbb{R}^{n} = \mathbb{R}^{m n + n} = \mathbb{R}^{(m + 1) n}.
+    \end{equation*}
+\end{proof}
+
+\begin{lemma}
+    \label{lmm:weight_space_mlp}
+    A MLP $M$ with $L$ layers where the number of inputs to layer $l$ is given as $m_l$ will have the weight space $\mathcal{W}_M = \mathbb{R}^P$ where
+    $P = \sum_{l=1}^{L-1}{\left(m_{l+1} (m_l + 1)\right)} + m_L + 1$.
 \end{lemma}
 
 \begin{proof}
-    A SLN with $m$ inputs and $n$ outputs will have $m \times n$ weights and $n$ biases, totalling $n(m+1)$ trainable parameters.
-    Now consider a MLP with $L$ layers, where $m_1, m_2, \dots, m_L$ is the number of inputs to each layer. 
-    For any layer $l$, the number of outputs $n_l=m_{l+1}$ except for the last layer where $n_L=1$.
-    It follows that the total number of trainable parameters in the network is
+    By Definition \ref{def:mlp}, $M$ is comprised of $L$ SLNs which we will denote $\vec{S}_1, \vec{S}_2, \dots, S_L$.
+    This allows us to express the weight space of $M$ as the product of the weight spaces of each of the SLNs,
+    $$
+        \mathcal{W}_M
+        = \prod_{l=1}^L{\mathcal{W}_{S_l}}.
+    $$
+
+    For every layer $l$, the number of inputs to $S_l$ will be the number of inputs to the $l$th layer, $m_l$. 
+    Let $n_l$ denote the number outputs for each layer $l$.
+    Then, by Lemma \ref{lmm:weight_space_sln},
+    $$\mathcal{W}_{S_l} = \mathbb{R}^{n_l(m_l+1)}.$$
+    
+    By splitting of the last factor in the product of weight spaces, we obtain 
+    \begin{equation*}
+        \mathcal{W}_M
+        = \prod_{l=1}^{L-1}{\mathcal{W}_{S_l}} \times \mathcal{W}_{S_L}
+        = \prod_{l=1}^{L-1}{\mathbb{R}^{n_l(m_l+1)}} \times \mathbb{R}^{n_L(m_L+1)}.
+    \end{equation*}
+
+    Notice that for any layer $l$, the number of outputs is equal to the number of inputs to the next layer, so $n_l=m_{l+1}$ except for the last layer where there is only one output unit leaving $n_L=1$.
+    This leaves
     \begin{align*}
-        P &= \sum_{l=1}^{L}{\left(n_l (m_l + 1)\right)} \\
-        &= \sum_{l=1}^{L-1}{\left(n_l (m_l + 1)\right)} + n_L (m_L + 1)\\
-        &= \sum_{l=1}^{L-1}{\left(m_{l+1} (m_l + 1)\right)} + m_L + 1.
+        \mathcal{W}_M
+        &= \prod_{l=1}^{L-1}{\mathbb{R}^{m_{l+1}(m_l+1)}} \times \mathbb{R}^{m_L+1} \\
+        &= \mathbb{R}^{\sum_{l=1}^{L-1}{m_{l+1}(m_l+1)}} \times \mathbb{R}^{m_L+1} \\
+        &= \mathbb{R}^{\sum_{l=1}^{L-1}{m_{l+1}(m_l+1)} + m_L+1},
     \end{align*}
+    so $\mathcal{W}_M = \mathbb{R}^P$ with
+    \begin{equation*}
+        P = \sum_{l=1}^{L-1}{m_{l+1}(m_l+1)} + m_L+1.
+    \end{equation*}
 \end{proof}
 
-\begin{definition}[Output space]
-    The output space $\mathcal{O}$ spans the space of all possible output predictions on the training set.
-    In Definition \ref{def:mlp}, it states that the network must only have one output node and thus the prediction $\hat{y}$ is a scalar. 
-    From (\ref{eq:sup_learn_prediction}), the vector $\vec{\hat{y}}$ represents the prediction $\hat{y}$ for all $N$ training samples.
-    The output space spans all possible assignments of $\vec{\hat{y}}$, so
-    \begin{equation}
-        \mathcal{O}=\mathbb{R}^N.
-    \end{equation}
-\end{definition}
-
 \subsection{Relationship between weight and output space}
+The significance of Lemma \ref{lmm:weight_space_mlp} is that we obtain a formula for the number of trainable parameters $P$ in a MLP. 
+By Definition \ref{def:weight_space}, $P$ determines the dimensionality of the weight space. 
+On other other hand, Definition \ref{def:output_space} states that the number of samples in the training set $N$ determines the dimensionality of the output space.
+There is no relationship between $P$ and $N$ since the number of samples in the training set can be arbitrarily chosen. 
+It follows that $\mathcal{W}$ and $\mathcal{O}$ are usually spaces of different dimensionalities. 
+
+We will now examine whether there exists a linear mapping between these two spaces. 
+Note that linear mappings can exist between spaces of different dimensionalities \cite{rudin2006}.
+
 \begin{theorem}
     \label{thm:sln_one_output}
-    For an SLN with one output unit, the function $h: \mathcal{W} \rightarrow \mathcal{O}$ mapping the weights to outputs is not a linear mapping.
+    For a SLN with one output unit, the function $h: \mathcal{W} \rightarrow \mathcal{O}$ mapping the weights to outputs is not a linear mapping.
 \end{theorem}
 \begin{proof}
     Let us consider a SLN with $m$ inputs and one output, as depicted in Figure \ref{fig:sln_m_in_1_out}.
@@ -528,6 +582,7 @@ Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$
         \end{bmatrix}.
     \end{equation*}
     By Theorem \ref{thm:sln_one_output}, each $S_i$ does not have a linear mapping from weight space to output space, so $S$ cannot have a linear mapping either.
+    \todo: diagram
 \end{proof}
 
 \begin{corollary}[Weight-output mapping in general]
@@ -535,14 +590,15 @@ Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$
     For any MLP, $h: \mathcal{W} \rightarrow \mathcal{O}$ is not a linear mapping.
 \end{corollary}
 \begin{proof}
-    Consider a MLP with $L$ layers.
+    Consider a MLP $M$ with $L$ layers.
     By Definition \ref{def:mlp}, that MLP is a nested function of $L$ SLNs. 
-    Corollary \ref{col:weight_output_sln} states that each of these SLNs do not have a linear mapping from weight to output space.
-    Hence the composition of the $L$ SLNs, a MLP, does not have a linear mapping from weight to output space.
+    Corollary \ref{col:weight_output_sln} states that each of these SLNs does not have a linear mapping from weight to output space.
+    Hence the composition of $L$ SLNs that forms $M$ does not have a linear mapping from weight to output space.
 \end{proof}
 
 \todo: Significance of this proof
 
+\section{Ideal goal line}
 
 \chapter{Problems}
 \section{Stripe problem}
