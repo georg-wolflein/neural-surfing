@@ -44,6 +44,7 @@ We use the vector
 to denote the prediction that $f$ produces for each training sample.
 
 \section{Artifical neural networks}
+\label{sec:ann}
 Artifical neural networks (ANNs) take inspiration from the human brain and can be regarded as a set of interconnected neurons. 
 More formally, an ANN is a directed graph of $n$ neurons (referred to as \textit{nodes} or \textit{units}) with weighted edges (\textit{links}).
 Each link connecting two units $i$ and $j$ is directed and associated with a real-valued weight $w_{i,j}$. 
@@ -127,6 +128,7 @@ which are depicted in Figure \ref{fig:activation_functions}.
     \caption{Plots of the the two most common activation functions.}
     \label{fig:activation_functions}
 \end{figure}
+Unlike $g_\text{step}$, these activation functions are differentiable which is an advantage for being able to use gradient descent \cite[p. 729]{russell2010}.
 
 Rectified units do not suffer from the \textit{vanishing gradient effect} \cite{glorot2011}.
 This phenomenon occurs with sigmoid activation functions when they reach high saturation, i.e. when the input is significantly far from zero such that the gradient is almost horizontal.
@@ -144,7 +146,7 @@ Furthermore, we require $w_{j,k}=0$ for $j,k \in \mathbb{Z}^+$ where $j \leq n$ 
 
 To obtain the prediction $\hat{y}$ given the $D$-dimensional feature vector $\vec{x}$, we set the activation of the $i$th unit to the value the $i$th element in $\vec{x}$ for $i=1,\dots,D$.
 Then, we propagate the activations using (\ref{eq:ann_activation}) until finally the prediction is the activation of the last neuron, $\hat{y}=a_n$.
-This process is often called \textit{forward propagation} or \textit{forward pass} \cite{russell2010}.
+This process is often called \textit{forward propagation} or \textit{forward pass} \cite{burkov2019}.
 
 \subsection{Single-layer network}
 We introduce a single-layer network (SLN) as a type of ANN which consists of two conceptual layers, an input and an output layer.
@@ -260,7 +262,7 @@ Moreover, if we additionally use the threshold activation function from (\ref{eq
 
 \subsection{Multi-layer perceptron}
 \label{sec:multi_layer_perceptron}
-A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP as defined in literature does not necessarily need to be the binary threshold function $g_\text{thres}$; in fact, it is often one of the more modern activation functions explained in Section \ref{sec:activation_functions} \cite{hastie2017,burkov2019}. Hence we can use the term `multi-layer perceptron'.} (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested functions as in \citet{burkov2019}.
+A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP as defined in literature does not necessarily need to be the binary threshold function $g_\text{thres}$; in fact, it is often one of the more modern activation functions explained in Section \ref{sec:ann} \cite{hastie2017,burkov2019}. Hence we can use the term `multi-layer perceptron'.} (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested functions as in \citet{burkov2019}.
 \begin{definition}[Multi-layer perceptron]
     \label{def:mlp}
     A MLP $M$ with $m$ inputs and $L$ layers is the mathematical function
@@ -745,15 +747,67 @@ Let us look at a couple of examples of unrealizable regions.
     \end{equation*}
     because $h_M(\vec{x})$ cannot produce two different outputs for the same value of $\vec{x}$.
 \end{example}
-\begin{example}
-    \todo: XOR function for network with one layer creates an unrealizable region
+\begin{example}[XOR mapping]
+    Let us look at a less contrived example.
+    While it ``is well known that any Boolean function \elide can be approximated by a suitable two-layer feed-forward network'' \cite{blum1989}, 
+    single-layer networks with non-decreasing activation functions can only learn a Boolean mapping that is \textit{linearly separable} \cite[p. 723]{russell2010}.
+    A linearly separable mapping has a linear decision boundary which means that there is only one linear hyperplane separating the two classes (true and false).
+    
+    The XOR function is not linearly separable because it requires at least two linear decision boundaries, as shown in Figure \ref{fig:xor}.
+    \begin{figure}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                x=2cm,
+                y=2cm,
+                axis lines=center,
+                xlabel={$x_1$}, xlabel style={anchor=west},
+                ylabel={$x_2$}, ylabel style={anchor=south},
+                ymin=0, ymax=1.7,
+                xmin=0, xmax=1.7,
+                samples=100,
+                xtick={0, 1},
+                ytick={0, 1}
+            ]
+                \addplot[only marks, mark=*] coordinates {(0,1) (1,0)};
+                \addplot[only marks, mark=o] coordinates {(0,0) (1,1)};
+                \addplot[black, no marks] coordinates {(0,.5) (.5,0)};
+                \addplot[black, no marks] coordinates {(0,1.5) (1.5,0)};
+                \addplot[black, ->] coordinates {(.25,.25) (.35,.35)};
+                \addplot[black, ->] coordinates {(.75,.75) (.65,.65)};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{The locations of the two hyperplanes in input space acting as decision boundaries required to learn an XOR mapping. The filled-in dot represents an activation of 1 (true) and the circle represents 0 activation (false).}
+        \label{fig:xor}
+    \end{figure}
+    We will consider the same single-layer architecture from Figure \ref{fig:sln_2_in_1_out} again, using the sigmoid activation function.
+    The sigmoid is a non-decreasing function.
+    Since we only have one unit (the output neuron) with this non-decreasing non-linear activation function, it follows that we can only have one decision boundary.
+    We just showed that the XOR mapping requires two decision boundaries.
+    Therefore, given the input matrix
+    \begin{equation*}
+        \vec{X} = \begin{bmatrix}
+            0 & 0 \\
+            0 & 1 \\
+            1 & 0 \\
+            1 & 1
+        \end{bmatrix},
+    \end{equation*}
+    the point
+    $
+        \vec{p} = \begin{bmatrix}
+            0 & 1 & 1 & 0
+        \end{bmatrix}\tran
+    $
+    in output space is strongly unrealizable.
+    So $\mathcal{U} = \{\vec{p}\}$ is an example of an unrealizable region.    
 \end{example}
 
 
 
 
 
-\todo: What if $\vec{y}$ is unrealizable?
+\todo: What if $\vec{y}$ is unrealizable? (XOR example demonstrates that)
 
 \section{Goal-connecting paths}
 
