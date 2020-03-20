@@ -367,6 +367,9 @@ In the forward pass, the activations are propagated from layer to layer (i.e. ne
 \section{Simulated annealing}
 
 \chapter{Neural surfing theory}
+
+\todo: define input space and decision boundaries
+
 \section{Weight and output spaces}
 In Definition \ref{def:mlp} we established that the tuple $\langle \mathscr{W}, \mathscr{B} \rangle$ along with the activation function is sufficient to fully define a MLP. 
 Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ and $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ representing each layer's weight matrices and bias vectors, respectively. 
@@ -472,7 +475,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
         \end{bmatrix}.
     \end{equation*}
 
-    \todo: explain confusion of the term weight-output mapping
+    Note that we use the term `weight-output mapping' to refer to the `weight-to-output-space mapping' which should be confused with the mapping from weight space to a particular output prediction. 
 \end{definition}
 
 \begin{theorem}
@@ -767,7 +770,13 @@ Let us look at a couple of examples of unrealizable regions.
                 xmin=0, xmax=1.7,
                 samples=100,
                 xtick={0, 1},
-                ytick={0, 1}
+                ytick={0, 1},
+                extra x ticks=0,
+                extra x tick style={
+                    tick label style={
+                        anchor=north east,
+                        xshift=-.5*\pgfkeysvalueof{/pgfplots/major tick length}
+                }}
             ]
                 \addplot[only marks, mark=*] coordinates {(0,1) (1,0)};
                 \addplot[only marks, mark=o] coordinates {(0,0) (1,1)};
@@ -807,12 +816,184 @@ Let us look at a couple of examples of unrealizable regions.
 
 
 
-\todo: What if $\vec{y}$ is unrealizable? (XOR example demonstrates that)
+\todo: Explain significance if target is unrealizable (XOR example demonstrates that)
 
 \section{Goal-connecting paths}
+\begin{definition}[Goal-connecting path]
+    For an artificial neural network $A$ with current weight configuration $\vec{w}_0 \in \mathcal{W}_A$, a goal-connecting path in output space to the goal $\vec{g}\in \mathcal{O}_A$ is a sequence of points $\vec{s}_0, \vec{s}_1,\dots,\vec{s}_{S} \in \mathcal{O}_A$ where the initial state $\vec{s}_0 = h_A(\vec{w}_0)$ and final state $\vec{s}_S=\vec{g}$.
+    The points $\vec{s}_1,\vec{s}_2,\dots,\vec{s}_S$ are referred to as \textit{subgoals}, hence $S$ is the number of subgoals in the goal-connecting path. 
+
+    The goal-connecting path is \textit{realizable} if and only if no subgoal is a strongly unrealizable point (Definition \ref{def:unrealizable_point}).
+    This means that a realizable goal-connecting path can equivalently be defined by the weight configurations $\vec{w}_0, \vec{w_1},\dots,\vec{w}_S \in \mathcal{W}_A$ such that $h_A(\vec{w}_i) = \vec{s}_i$ for $i \leq S$.
+\end{definition}
+
+\begin{definition}[Ideal goal-connecting path]
+    \label{def:ideal_goal_connecting_path}
+    The ideal goal-connecting path of $S$ subgoals for an artifical neural network $A$ is, in terms of weight space, the \textit{shortest} realizable goal-connecting path with equidistant subgoals. 
+\end{definition}
+
+\begin{lemma}
+    \label{lmm:ideal_subgoal_construction}
+    Given $\vec{w}_0$ and $\vec{w}_S$, the $i$th subgoal of the ideal goal-connecting path in weight space is given by
+    $
+        \vec{w}_i = \vec{w}_0 + \frac{i}{S}\left( \vec{w}_S - \vec{w}_0 \right)
+    $.
+\end{lemma}
+\begin{proof}
+    First, we will show that the points are equidistant, i.e. $\norm{\vec{w}_0 - \vec{w}_1} = \norm{\vec{w}_1 - \vec{w}_2} = \dots = \norm{\vec{w}_{S-1} - \vec{w}_S}$.
+    This is equivalent to asserting that $\norm{\vec{w}_{i-1} - \vec{w}_i} = \norm{\vec{w}_i - \vec{w}_{i+1}}$ for $0 < i < S$.
+    Substituting on the LHS,
+    \begin{align*}
+        \norm{\vec{w}_{i-1} - \vec{w}_i}
+        &= \norm{\vec{w}_0 + \frac{i-1}{S}\left( \vec{w}_S - \vec{w}_0 \right) - \vec{w}_0 - \frac{i}{S}\left( \vec{w}_S - \vec{w}_0 \right)} \\
+        &= \norm{-\frac{1}{S}\left(\vec{w}_S - \vec{w}_0 \right)},
+    \end{align*}
+    and on the RHS,
+    \begin{align*}
+        \norm{\vec{w}_i - \vec{w}_{i+1}}
+        &= \norm{\vec{w}_0 + \frac{i}{S}\left( \vec{w}_S - \vec{w}_0 \right) - \vec{w}_0 - \frac{i+1}{S}\left( \vec{w}_S - \vec{w}_0 \right)} \\
+        &= \norm{-\frac{1}{S}\left(\vec{w}_S - \vec{w}_0 \right)}.
+    \end{align*}
+
+    The shortest path between two points is a straight line, so the ideal goal-connecting path in weight space must form a straight line from $\vec{w}_0$ to $\vec{w}_S$, and all subgoals must lie on this line.
+    The equation of the line $l:\mathbb{R} \rightarrow \mathcal{W}_A$ from $\vec{w}_0$ to $\vec{w}_S$ is $l(\lambda) = \vec{w}_0 + \lambda\left( \vec{w}_S - \vec{w}_0 \right)$.
+    It is easy to see that $l\left(\frac{i}{S}\right)=\vec{w}_i$ for $0 \leq i \leq S$, so the subgoals are collinear.
+\end{proof}
+
+\paragraph{Remarks}
+Lemma \ref{lmm:ideal_subgoal_construction} shows a construction for achieving the ideal goal-connecting path, given knowledge of the target weight configuration $\vec{w}_S$.
+Of course, this is not known to the neural learning algorithm while it is learning, only once it finished and was able to actually achieve the goal. 
+However, we can use the ideal goal-connecting path in retrospect to evaluate the performance of the neural learning algorithm in comparison to the ideal path.
+Furthermore, we can plot the ideal goal-connecting path in output space in order to find unrealizable regions.
 
 \chapter{Problems}
-\section{Stripe problem}
+\section{The stripe problem}
+\todo: General intuition incl input space plot with hyperplanes.
+
+\subsection{Radial basis activation functions}
+We will first introduce the concept of radial basis functions, as they exhibit some advantageous properties that will aid us to contrive an example of the stripe problem with a minimal number of neurons.
+\begin{definition}[Radial basis functions]
+    A radial basis function (RBF) is a smooth continuous real-valued\footnote{We define RBFs has having a scalar domain and range because this suffices for our purposes. In actual fact, RBFs are defined more generally to map between suitable vector spaces \cite{buhmann2000}.} function $\phi : \mathbb{R} \rightarrow \mathbb{R}$ that satisfies the property $\phi(x) = \phi(\norm{x})$ \cite{buhmann2000}. 
+    %RBFs are commonly used as a kernel in support vector machines (SVMs) \cite{burkov2019}.
+    Two commonly used RBFs, both infinitely differentiable, are the Gaussian function
+    \begin{equation}
+        \phi(x) = e^{-x^2}
+    \end{equation}
+    and the bump function\footnote{We give a slightly modified version of the well-known $C_\infty$ ``bump'' function \cite{johnson2015} that is vertically scaled such that $\phi(0)=1$ for convenience.}
+    \begin{equation}
+        \phi(x) = 
+        \begin{cases}
+            e^{1-\frac{1}{1-x^2}} & \text{for $-1<x<1$} \\
+            0 & \text{otherwise}
+        \end{cases}.
+    \end{equation}
+\end{definition}
+
+These functions, graphed in Figure \ref{fig:rbfs}, exhibit slightly different properties.
+The Gaussian function never actually reaches zero which means that its derivative is never zero (except at the peak, i.e. $x=0$). 
+On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{dx}=0$ for $x \notin (-1, 1)$.
+
+\begin{lemma}[RBF hyperplanes]
+    
+\end{lemma}
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[
+        declare function={
+            gaussian(\x)= exp(-\x^2);
+            bump(\x)= and(\x>=-1, \x<=1) * exp(1-1/(1-(\x^2)));
+        }
+    ]
+        \begin{axis}[
+            x=1.5cm,
+            y=1.5cm,
+            axis lines=center,
+            xlabel={$x$}, xlabel style={anchor=west},
+            ylabel={$\phi(x)$}, ylabel style={anchor=south},
+            ymin=0, ymax=2.2,
+            xmin=-3.2, xmax=3.2,
+            grid,
+            samples=100,
+            xtick={-3,...,3},
+            ytick={0, 1, 2},
+            extra x ticks = 0
+        ]
+            \addplot[blue] {gaussian(x)};
+            \addplot[red,domain=-1:1] {bump(x)};
+            \legend{Gaussian function,bump function}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Plots of the two most common radial basis functions.}
+    \label{fig:rbfs}
+\end{figure}
+
+\begin{figure}[h]
+    \centering
+    \begin{tikzpicture}[
+        declare function={
+            rbf(\x)= exp(-\x^2);
+        }
+    ]
+        \begin{axis}[
+            scale only axis,
+            width=.8\textwidth,
+            ymin=-3, ymax=3,
+            xmin=-3, xmax=3,
+            zmin=0, zmax=2,
+            xlabel={$w_1$},
+            ylabel={$w_2$},
+            zlabel={mean squared error},
+            samples=60,
+            xtick={-3,0,3},
+            ytick={-3,0,3},
+            ztick={0, 1, 2},
+            view={30}{75},
+            title={Gaussian function}
+        ]
+            \addplot3 [
+                mesh,
+                domain=-3:3,
+                y domain=-3:3
+            ] {(rbf(2*x))^2 + (rbf(2*y))^2 + (1 - rbf(2*x + 2*y))^2};
+            \node[label={360:{$\vec{w}_0$}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
+            \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
+        \end{axis}
+    \end{tikzpicture}
+    \begin{tikzpicture}[
+        declare function={
+            rbf(\x)= and(\x>=-1, \x<=1) * exp(1-1/(1-(\x^2)));
+        }
+    ]
+        \begin{axis}[
+            scale only axis,
+            width=.8\textwidth,
+            ymin=-3, ymax=3,
+            xmin=-3, xmax=3,
+            zmin=0, zmax=2,
+            xlabel={$w_1$},
+            ylabel={$w_2$},
+            zlabel={mean squared error},
+            samples=60,
+            xtick={-3,0,3},
+            ytick={-3,0,3},
+            ztick={0, 1, 2},
+            view={30}{75},
+            title={Bump function}
+        ]
+            \addplot3 [
+                mesh,
+                domain=-3:3,
+                y domain=-3:3
+            ] {(rbf(2*x))^2 + (rbf(2*y))^2 + (1 - rbf(2*x + 2*y))^2};
+            \node[label={360:{$\vec{w}_0$}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
+            \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{The error-weight surface of the stripe problem.}
+    \label{fig:week6:stripe:errorsurface}
+\end{figure}
+
 
 
 \chapter{Generalising neural surfing}

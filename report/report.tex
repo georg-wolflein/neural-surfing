@@ -11,6 +11,7 @@
 \usepackage{natbib}
 \usepackage{xspace}
 \usepackage{amsthm}
+\usepackage{chngcntr}
 
 \bibliographystyle{apalike}
 \setcitestyle{authoryear,open={[},close={]}}
@@ -39,6 +40,7 @@
 \newtheorem{definition}{Definition}
 \newtheorem{example}{Example}
 
+\counterwithout{footnote}{chapter}
 
 \pgfdeclarelayer{pre main}
 \begin{document}

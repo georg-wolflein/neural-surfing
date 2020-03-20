@@ -806,7 +806,7 @@ There is no path from the initial configuration to the global minimum with a str
                 mesh,
                 domain=-3:3,
                 y domain=-3:3
-            ] {(exp(-4*x^2))^2 + (exp(-4*y^2))^2 + (1 - exp(-(2*x + 2*y)^2))^2};
+            ] {(exp(-(2*x)^2))^2 + (exp(-(2*y)^2))^2 + (1 - exp(-(2*x + 2*y)^2))^2};
             \node[label={360:{initial configuration}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
         \end{axis}
     \end{tikzpicture}
