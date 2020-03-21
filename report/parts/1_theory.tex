@@ -374,8 +374,6 @@ In the forward pass, the activations are propagated from layer to layer (i.e. ne
 We will briefly introduce the concept of binary classification and show how it fits in the framework of the already defined regression model.
 This will allow us to examine the so-called decision boundary in input space which will be useful for formulating the stripe problem (Section \ref{sec:stripe_problem}).
 
-\todo: talk about output activation function (sigmoid, probability)
-
 \begin{definition}[Binary classification model]
     A binary classification model $C$ is defined as a mathematical function of the form
     \begin{equation}
@@ -399,8 +397,75 @@ This will allow us to examine the so-called decision boundary in input space whi
     \end{equation}
 \end{proof}
 \begin{remark}
-    
+    What we have shown is that we can repurpose any regression model for a binary classification task, including for example MLPs.
+    When using a MLP, the sigmoid activation function (\ref{eq:sigmoid}) naturally lends itself to be used on the output unit because its range, the interval $(0,1)$, can be interpreted as a probability.
+    In this case we would set the decision threshold $t=\frac{1}{2}$.
 \end{remark}
+
+\begin{example}[Hyperplane decision boundary]
+    Let us consider a MLP $M$ with only one layer and two inputs, as depicted in Figure \ref{fig:sln_2_in_1_out}.
+    \begin{figure}
+        \begin{center}
+            \begin{tikzpicture}
+                [
+                    neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+                ]
+                \node [neuron] (x1) at (0,0) {$x_1$};
+                \node [neuron] (x2) at (0,-2) {$x_2$};
+                \node [neuron] (y) at (3,-1)  {$\hat{y}$};
+                \node (b) at (3, 0) {$b$};
+                \draw[->] (x1) -- (y) node[above,midway,sloped] {$w_1$};
+                \draw[->] (x2) -- (y) node[above,midway,sloped] {$w_2$};
+                \draw[->] (b) -- (y);
+                \draw[->] (b) -- (y);
+            \end{tikzpicture}
+        \end{center}
+        \caption{A simple MLP with one layer and two inputs (equivalently, a SLN with two inputs and one ouput).}
+        \label{fig:sln_2_in_1_out}
+    \end{figure}
+    We will consider the configuration where $w_1=w_2=1$ and $b=0$. 
+    The output unit will have the sigmoid activation function.
+    
+    The decision boundary will be a line because $\mathcal{I}_M$ has two dimensions, and a hyperplane in a two-dimensional space is simply a line.
+    The equation of this line can be obtained by setting the output equal to the decision threshold $t$.
+    We get
+    \begin{align*}
+        t &= M\left(\begin{bmatrix}
+            x_1 \\ x_2
+        \end{bmatrix}\right) \\
+        \frac{1}{2} &= g_\text{sig}\left(w_1 x_1 + w_2 x_2 + b\right) \\
+        &= g_\text{sig}\left(x_1 + x_2\right) \\
+        &= \frac{1}{1+e^{-x_1-x_2}} \\
+        2 &= 1+e^{-x_1-x_2} \\
+        \ln\left(1\right) &= -x_1-x_2 \\
+        x_1 &= -x_2.
+    \end{align*}
+    
+    Figure \ref{fig:sigmoid_hyperplane} depicts this hyperplane along with some samples in input space to show how they would be classified. 
+    The arrow on the hyperplane shows the direction of increasing output, i.e. what would be classified as $1$.
+    \begin{figure}
+        \centering
+        \begin{tikzpicture}
+            \begin{axis}[
+                x=1cm,
+                y=1cm,
+                axis lines=center,
+                xlabel={$x_1$}, xlabel style={anchor=west},
+                ylabel={$x_2$}, ylabel style={anchor=south},
+                ymin=-3.2, ymax=3.2,
+                xmin=-3.2, xmax=3.2,
+                samples=2
+            ]
+                \addplot[black,only marks,mark=*] coordinates {(1,1) (-2,3) (2,0) (3,-2) (2,3) (-1,2) (3,1)};
+                \addplot[black,only marks,mark=o] coordinates {(-1,-1) (2,-3) (-2,0) (-3,2) (-2,-3) (1,-2) (-3,-1)};
+                \addplot[black, no marks] {-x};
+                \addplot[black, ->] coordinates {(-2, 2) (-1.5, 2.5)};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Plot of the input space of a MLP from Figure \ref{fig:sln_2_in_1_out} with sigmoid activation where $w_1=w_2=1$ and $b=0$. Filled in dots represent a prediction of $\hat{y}>\frac{1}{2}$ whereas the empty circular dots represent $\hat{y}<\frac{1}{2}$.}
+        \label{fig:sigmoid_hyperplane}
+    \end{figure}
+\end{example}
 
 \chapter{Neural network learning}
 \section{Gradient descent with mean squared error}
@@ -753,28 +818,9 @@ Note that linear mappings can exist between spaces of different dimensionalities
 \end{proof}
 
 Let us look at a couple of examples of unrealizable regions.
-\begin{figure}
-    \begin{center}
-        \begin{tikzpicture}
-            [
-                neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
-            ]
-            \node [neuron] (x1) at (0,0) {$x_1$};
-            \node [neuron] (x2) at (0,-2) {$x_2$};
-            \node [neuron] (y) at (3,-1)  {$\hat{y}$};
-            \node (b) at (3, 0) {$b$};
-            \draw[->] (x1) -- (y);
-            \draw[->] (x2) -- (y);
-            \draw[->] (b) -- (y);
-            \draw[->] (b) -- (y);
-        \end{tikzpicture}
-    \end{center}
-    \caption{A simple MLP with one layer and two inputs (equivalently, a SLN with two inputs and one ouput).}
-    \label{fig:sln_2_in_1_out}
-\end{figure}
 \begin{example}
     A trivial example of an unrealizable region is predicting two different outputs for the same training sample.
-    Consider a MLP $M$ with one layer and two inputs, as shown in Figure \ref{fig:sln_2_in_1_out}.
+    Consider again an MLP $M$ with one layer and two inputs, as shown in Figure \ref{fig:sln_2_in_1_out}.
     Let $\vec{x}\in \mathbb{R}^2$ be any point in input space.
     For this example, let the training data be the matrix
     $
@@ -983,10 +1029,12 @@ We will first introduce the concept of radial basis functions, as they exhibit s
     %RBFs are commonly used as a kernel in support vector machines (SVMs) \cite{burkov2019}.
     Two commonly used RBFs, both infinitely differentiable, are the Gaussian function
     \begin{equation}
+        \label{eq:sigmoid}
         \phi(x) = e^{-x^2}
     \end{equation}
     and the bump function\footnote{We give a slightly modified version of the well-known $C_\infty$ ``bump'' function \cite{johnson2015} that is vertically scaled such that $\phi(0)=1$ for convenience.}
     \begin{equation}
+        \label{eq:bump}
         \phi(x) = 
         \begin{cases}
             e^{1-\frac{1}{1-x^2}} & \text{for $-1<x<1$} \\
