@@ -2,14 +2,24 @@
 \section{Supervised learning}
 
 \begin{definition}[Regression model]
-    In machine learning, a regression model $f$ is defined as a mathematical function of the form
+    \label{def:reg_model}
+    In machine learning, a regression model $R$ is defined as a mathematical function of the form $R:\mathbb{R}^D\rightarrow \mathbb{R}$ given by
     \begin{equation}
         \label{eq:reg_model}
-        f(\vec{x}) = \hat{y} = y + \epsilon
+        R(\vec{x}) = \hat{y} = y + \epsilon
     \end{equation}
     that models the relationship between a $D$-dimensional feature vector $\vec{x} \in \mathbb{R}^D$ of independent (\textit{input}) variables and the dependent (\textit{output}) variable $y \in \mathbb{R}$. 
     Given a particular $\vec{x}$, the model will produce a \textit{prediction} for $y$ which we denote $\hat{y}$.
     Here, the additive error term $\epsilon$ represents the discrepancy between $y$ and $\hat{y}$.
+\end{definition}
+
+\begin{definition}[Input space]
+    \label{def:input_space}
+    The input space $\mathcal{I}_R$ of a regression model $R$ is the set of all possible assignments to the feature vector $\vec{x}$.
+    For a feature vector of $D$ dimensions,
+    \begin{equation}
+        \mathcal{I}_A=\mathbb{R}^D.
+    \end{equation}
 \end{definition}
 
 \begin{definition}[Labelled dataset]
@@ -32,16 +42,17 @@
     for representing the corresponding feature vectors.
 \end{definition}
 
-\paragraph{Supervised learning}
-A supervised learning algorithm for a regression task infers the function $f$ given in (\ref{eq:reg_model}) from a set of \textit{labelled training data} of the form explained previously. 
-We use the vector
-\begin{equation}
-    \label{eq:sup_learn_prediction}
-    \vec{\hat{y}} = \begin{bmatrix}
-        \hat{y}_1 & \hat{y}_2 & \cdots & \hat{y}_N
-    \end{bmatrix}\tran
-\end{equation}
-to denote the prediction that $f$ produces for each training sample.
+\begin{definition}[Supervised learning]
+    A supervised learning algorithm for a regression task infers the function $f$ given in (\ref{eq:reg_model}) from a set of \textit{labelled training data} of the form explained previously. 
+    We use the vector
+    \begin{equation}
+        \label{eq:sup_learn_prediction}
+        \vec{\hat{y}} = \begin{bmatrix}
+            \hat{y}_1 & \hat{y}_2 & \cdots & \hat{y}_N
+        \end{bmatrix}\tran
+    \end{equation}
+    to denote the prediction that $f$ produces for each training sample.
+\end{definition}
 
 \section{Artifical neural networks}
 \label{sec:ann}
@@ -359,7 +370,37 @@ The layers between the input and output layers are referred to as \textit{hidden
 Since MLPs are simply nested SLNs, it follows that MLPs retain the DAG property and are therefore \textit{feedforward} networks as well.
 In the forward pass, the activations are propagated from layer to layer (i.e. nested function to nested function) as in (\ref{eq:single_layer_perceptron}).
 
+\section{The decision boundary in input space}
+We will briefly introduce the concept of binary classification and show how it fits in the framework of the already defined regression model.
+This will allow us to examine the so-called decision boundary in input space which will be useful for formulating the stripe problem (Section \ref{sec:stripe_problem}).
 
+\todo: talk about output activation function (sigmoid, probability)
+
+\begin{definition}[Binary classification model]
+    A binary classification model $C$ is defined as a mathematical function of the form
+    \begin{equation}
+        C(\vec{x}) = \hat{y} = y + \epsilon
+    \end{equation}
+    with the same notation as in Definition \ref{def:reg_model} except that we impose the additional restriction that $y,\hat{y}\in \left\{0,1 \right\}$ such that the signature of the function becomes $C:\mathbb{R}^D\rightarrow \left\{0,1\right\}$.
+\end{definition}
+\begin{definition}[Decision boundary]
+    Given a binary classification model $C$, the decision boundary is the hypersurface\footnote{A hypersurface is a manifold with one fewer dimension. Since the input space is $D$-dimensional, the hypersurface representing the decision boundary will have $D-1$ dimensions.} in input space $\mathcal{I}_C$ that separates the two output classes \cite[p. 723]{russell2010}.
+    We will also use the term `hyperplane' to loosely refer to the decision boundary if it is flat/linear.
+\end{definition}
+
+\begin{lemma}
+    Given a decision threshold $t$, we can use a regression model $R$ to solve any binary classification problem.
+\end{lemma}
+\begin{proof}
+    We are looking define an equivalent classification model $C$ that outputs $0$ if $R\left(\vec{x}\right)<t$ and $1$ otherwise. 
+    This can be achieved using the threshold activation function $g_\text{thres}$ from (\ref{eq:thres_activation}) in the form
+    \begin{equation}
+        C(\vec{x}) = g_\text{thres}\left(R\left(\vec{x}\right) - t\right).
+    \end{equation}
+\end{proof}
+\begin{remark}
+    
+\end{remark}
 
 \chapter{Neural network learning}
 \section{Gradient descent with mean squared error}
@@ -368,11 +409,10 @@ In the forward pass, the activations are propagated from layer to layer (i.e. ne
 
 \chapter{Neural surfing theory}
 
-\todo: define input space and decision boundaries
-
 \section{Weight and output spaces}
 In Definition \ref{def:mlp} we established that the tuple $\langle \mathscr{W}, \mathscr{B} \rangle$ along with the activation function is sufficient to fully define a MLP. 
 Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ and $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ representing each layer's weight matrices and bias vectors, respectively. 
+These parameters will be useful for defining the weight and ouput spaces.
 
 \begin{definition}[Weight space]
     \label{def:weight_space}
@@ -446,12 +486,13 @@ Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$
     \end{equation*}
 \end{proof}
 
-\paragraph{Remarks}
-The significance of Lemma \ref{lmm:weight_space_mlp} is that we obtain a formula for the number of trainable parameters $P$ in a MLP. 
-By Definition \ref{def:weight_space}, $P$ determines the dimensionality of the weight space. 
-On other other hand, Definition \ref{def:output_space} states that the number of samples in the training set $N$ determines the dimensionality of the output space.
-There is no relationship between $P$ and $N$ since the number of samples in the training set can be arbitrarily chosen. 
-It follows that there is no relationship between the dimensionalities of $\mathcal{W}$ and $\mathcal{O}$.
+\begin{remark}
+    The significance of Lemma \ref{lmm:weight_space_mlp} is that we obtain a formula for the number of trainable parameters $P$ in a MLP. 
+    By Definition \ref{def:weight_space}, $P$ determines the dimensionality of the weight space. 
+    On other other hand, Definition \ref{def:output_space} states that the number of samples in the training set $N$ determines the dimensionality of the output space.
+    There is no relationship between $P$ and $N$ since the number of samples in the training set can be arbitrarily chosen. 
+    It follows that there is no relationship between the dimensionalities of $\mathcal{W}$ and $\mathcal{O}$.
+\end{remark}
 
 \subsection{Relationship between weight and output space}
 We will now examine the nature of the mapping between the two spaces, and whether there exists a linear mapping. 
@@ -670,13 +711,14 @@ Note that linear mappings can exist between spaces of different dimensionalities
     Hence the composition of $L$ SLNs that forms $M$ does not have a linear mapping from weight to output space.
 \end{proof}
 
-\paragraph{Remarks}
-The findings from Corollary \ref{col:weight_output_mlp} are very significant.
-They show that there is no apparent relationship between weight and output space that we can easily determine analytically. 
-If there were a straightforward mapping between weight and output space, we would be able to simply be able to determine the ideal weight configuration that would achieve our target $\vec{y}$ in output space. 
-
-However, since this is not possible, the findings above set the scene for the neural surfing technique. 
-One of the core assumptions is that at a small enough scale, the mapping between weight and output space is \textit{locally linear}, or at least close enough.
+\begin{remark}
+    The findings from Corollary \ref{col:weight_output_mlp} are very significant.
+    They show that there is no apparent relationship between weight and output space that we can easily determine analytically. 
+    If there were a straightforward mapping between weight and output space, we would be able to simply be able to determine the ideal weight configuration that would achieve our target $\vec{y}$ in output space. 
+    
+    However, since this is not possible, the findings above set the scene for the neural surfing technique. 
+    One of the core assumptions is that at a small enough scale, the mapping between weight and output space is \textit{locally linear}, or at least close enough.
+\end{remark}
 
 \subsection{Gradient descent from the perspective of weight and output space}
 \todo: Write about how SGD with MSE usually gets viewed from the perspective of error-weight space. However, it is interesting to look at the perspective of weight and output space. It becomes apparent that MSE can be thought of as greedily trying to reduce the Euclidean distance from $\vec{\hat{y}}$ to $\vec{y}$ in output space.
@@ -778,8 +820,8 @@ Let us look at a couple of examples of unrealizable regions.
                         xshift=-.5*\pgfkeysvalueof{/pgfplots/major tick length}
                 }}
             ]
-                \addplot[only marks, mark=*] coordinates {(0,1) (1,0)};
-                \addplot[only marks, mark=o] coordinates {(0,0) (1,1)};
+                \addplot[black,only marks,mark=*] coordinates {(0,1) (1,0)};
+                \addplot[black,only marks,mark=o] coordinates {(0,0) (1,1)};
                 \addplot[black, no marks] coordinates {(0,.5) (.5,0)};
                 \addplot[black, no marks] coordinates {(0,1.5) (1.5,0)};
                 \addplot[black, ->] coordinates {(.25,.25) (.35,.35)};
@@ -860,14 +902,78 @@ Let us look at a couple of examples of unrealizable regions.
     It is easy to see that $l\left(\frac{i}{S}\right)=\vec{w}_i$ for $0 \leq i \leq S$, so the subgoals are collinear.
 \end{proof}
 
-\paragraph{Remarks}
-Lemma \ref{lmm:ideal_subgoal_construction} shows a construction for achieving the ideal goal-connecting path, given knowledge of the target weight configuration $\vec{w}_S$.
-Of course, this is not known to the neural learning algorithm while it is learning, only once it finished and was able to actually achieve the goal. 
-However, we can use the ideal goal-connecting path in retrospect to evaluate the performance of the neural learning algorithm in comparison to the ideal path.
-Furthermore, we can plot the ideal goal-connecting path in output space in order to find unrealizable regions.
+\begin{remark}
+    Lemma \ref{lmm:ideal_subgoal_construction} shows a construction for achieving the ideal goal-connecting path, given knowledge of the target weight configuration $\vec{w}_S$.
+    Of course, this is not known to the neural learning algorithm while it is learning, only once it finished and was able to actually achieve the goal. 
+    However, we can use the ideal goal-connecting path in retrospect to evaluate the performance of the neural learning algorithm in comparison to the ideal path.
+    Furthermore, we can plot the ideal goal-connecting path in output space in order to find unrealizable regions.
+\end{remark}
 
 \chapter{Problems}
 \section{The stripe problem}
+\label{sec:stripe_problem}
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[
+        declare function={
+            gaussian(\x)= exp(-\x^2);
+            bump(\x)= and(\x>=-1, \x<=1) * exp(1-1/(1-(\x^2)));
+        }
+    ]
+        \begin{axis}[
+            x=1cm,
+            y=1cm,
+            axis lines=center,
+            xlabel={$x_1$}, xlabel style={anchor=west},
+            ylabel={$x_2$}, ylabel style={anchor=south},
+            ymin=0, ymax=4.2,
+            xmin=0, xmax=4.2,
+            grid=none,
+            samples=100,
+            ticks=none,
+            title={Initial configuration}
+        ]
+            \addplot[black,only marks,mark=*] coordinates {(2,1.5) (2,2.5)};
+            \addplot[black,only marks,mark=o] coordinates {(2,.5) (.5,.5) (3.5,.5) (.5,3.5) (3.5,3.5) (2,3.5)};
+            \addplot[black, no marks] coordinates {(0,1) (4,1)};
+            \addplot[black, no marks] coordinates {(0,3) (4,3)};
+            \addplot[black, ->] coordinates {(1,1) (1,1.35)};
+            \addplot[black, ->] coordinates {(1,3) (1,2.65)};
+        \end{axis}
+    \end{tikzpicture}
+    \vspace{.05\textwidth}
+    \begin{tikzpicture}[
+        declare function={
+            gaussian(\x)= exp(-\x^2);
+            bump(\x)= and(\x>=-1, \x<=1) * exp(1-1/(1-(\x^2)));
+        }
+    ]
+        \begin{axis}[
+            x=1cm,
+            y=1cm,
+            axis lines=center,
+            xlabel={$x_1$}, xlabel style={anchor=west},
+            ylabel={$x_2$}, ylabel style={anchor=south},
+            ymin=0, ymax=4.2,
+            xmin=0, xmax=4.2,
+            grid=none,
+            samples=100,
+            ticks=none,
+            title={Target configuration}
+        ]
+            \addplot[black,only marks,mark=*] coordinates {(2,.5) (2,1.5) (2,2.5) (2,3.5)};
+            \addplot[black,only marks,mark=o] coordinates {(.5,.5) (3.5,.5) (.5,3.5) (3.5,3.5)};
+            \addplot[black, no marks] coordinates {(1,0) (1,4)};
+            \addplot[black, no marks] coordinates {(3,0) (3,4)};
+            \addplot[black, ->] coordinates {(1,1) (1.35,1)};
+            \addplot[black, ->] coordinates {(3,1) (2.65,1)};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Hyperplanes in input space for the stripe problem with eight samples.}
+    \label{fig:stripe_original_hyperplanes}
+\end{figure}
+
 \todo: General intuition incl input space plot with hyperplanes.
 
 \subsection{Radial basis activation functions}
@@ -928,7 +1034,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
     \label{fig:rbfs}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}
     \centering
     \begin{tikzpicture}[
         declare function={
@@ -943,13 +1049,12 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
             zmin=0, zmax=2,
             xlabel={$w_1$},
             ylabel={$w_2$},
-            zlabel={mean squared error},
+            zlabel={MSE},
             samples=60,
             xtick={-3,0,3},
             ytick={-3,0,3},
             ztick={0, 1, 2},
-            view={30}{75},
-            title={Gaussian function}
+            view={30}{75}
         ]
             \addplot3 [
                 mesh,
@@ -960,6 +1065,8 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
             \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
         \end{axis}
     \end{tikzpicture}
+    \caption{Error-weight surface of the stripe problem with Gaussian activation.}
+    \label{fig:stripe_error_surface_gaussian}
     \begin{tikzpicture}[
         declare function={
             rbf(\x)= and(\x>=-1, \x<=1) * exp(1-1/(1-(\x^2)));
@@ -973,13 +1080,12 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
             zmin=0, zmax=2,
             xlabel={$w_1$},
             ylabel={$w_2$},
-            zlabel={mean squared error},
+            zlabel={MSE},
             samples=60,
             xtick={-3,0,3},
             ytick={-3,0,3},
             ztick={0, 1, 2},
-            view={30}{75},
-            title={Bump function}
+            view={30}{75}
         ]
             \addplot3 [
                 mesh,
@@ -990,8 +1096,8 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
             \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
         \end{axis}
     \end{tikzpicture}
-    \caption{The error-weight surface of the stripe problem.}
-    \label{fig:week6:stripe:errorsurface}
+    \caption{Error-weight surface of the stripe problem with bump activation.}
+    \label{fig:stripe_error_surface_bump}
 \end{figure}
 
 
