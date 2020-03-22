@@ -1,6 +1,7 @@
 \documentclass{report}
 \usepackage[utf8]{inputenc}
-\usepackage[english]{babel}
+\usepackage[british]{babel}
+\usepackage{csquotes}
 \usepackage[hidelinks]{hyperref}
 \usepackage{graphicx}
 \usepackage{amsmath}
@@ -8,21 +9,39 @@
 \usepackage{color}
 \usepackage{pgfplots}
 \usepackage{mathrsfs}
-\usepackage{natbib}
 \usepackage{xspace}
 \usepackage{amsthm}
 \usepackage{chngcntr}
+\usepackage[inline]{enumitem}
+\usepackage[
+    backend=biber,
+    style=apa,
+    citestyle=authoryear
+]{biblatex}
 
-\bibliographystyle{apalike}
-\setcitestyle{authoryear,open={[},close={]}}
+\makeatletter
+\newrobustcmd*{\parentexttrack}[1]{%
+  \begingroup
+  \blx@blxinit
+  \blx@setsfcodes
+  \blx@bibopenparen#1\blx@bibcloseparen
+  \endgroup}
+\AtEveryCite{%
+  \let\parentext=\parentexttrack%
+  \let\bibopenparen=\bibopenbracket%
+  \let\bibcloseparen=\bibclosebracket}
+\makeatother
+
+\addbibresource{bibliography.bib}
 
 \graphicspath{ {./images/} }
 \pgfplotsset{compat=1.16}
 \usepgfplotslibrary{external}
 \tikzexternalize[prefix=figures/]
+\usetikzlibrary{calc}
 
 \renewcommand\vec{\mathbf}
-\renewcommand\cite{\citep}
+\renewcommand\cite{\parencite}
 \newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 \newcommand*{\tran}{^{\mkern-1.5mu\mathsf{T}}}
 \newcommand*\elide{\textup{[\,\dots]}\xspace}
@@ -100,6 +119,6 @@ I retain the copyright in this work.''
 % \listoffigures
 
 \addcontentsline{toc}{chapter}{Bibliography}
-\bibliography{bibliography}
+\printbibliography
 
 \end{document}

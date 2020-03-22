@@ -269,11 +269,11 @@ This is all we need to formally define a SLN.
 
 Unlike the formula for a regression model, a SLN is a vector-valued function, due to the fact that there are multiple outputs. 
 Note that when $n=1$, we reach the same form as in (\ref{eq:reg_model}). 
-Moreover, if we additionally use the threshold activation function from (\ref{eq:thres_activation}), we arrive at the SLP model given by \citet{rosenblatt1958}.
+Moreover, if we additionally use the threshold activation function from (\ref{eq:thres_activation}), we arrive at the SLP model given by \textcite{rosenblatt1958}.
 
 \subsection{Multi-layer perceptron}
 \label{sec:multi_layer_perceptron}
-A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP as defined in literature does not necessarily need to be the binary threshold function $g_\text{thres}$; in fact, it is often one of the more modern activation functions explained in Section \ref{sec:ann} \cite{hastie2017,burkov2019}. Hence we can use the term `multi-layer perceptron'.} (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested functions as in \citet{burkov2019}.
+A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP as defined in literature does not necessarily need to be the binary threshold function $g_\text{thres}$; in fact, it is often one of the more modern activation functions explained in Section \ref{sec:ann} \cite{hastie2017,burkov2019}. Hence we can use the term `multi-layer perceptron'.} (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested functions as in \textcite{burkov2019}.
 \begin{definition}[Multi-layer perceptron]
     \label{def:mlp}
     A MLP $M$ with $m$ inputs and $L$ layers is the mathematical function
@@ -402,7 +402,60 @@ This will allow us to examine the so-called decision boundary in input space whi
     In this case we would set the decision threshold $t=\frac{1}{2}$.
 \end{remark}
 
-\begin{example}[Hyperplane decision boundary]
+\begin{lemma}[Single-layer sigmoidal decision boundary]
+    \label{lmm:sigmoid_decision_boundary}
+    A single-layer sigmoidal MLP with a decision threshold $t \in (0,1)$ will have only one hyperplane in input space.
+\end{lemma}
+\begin{proof}
+    Consider a single-layer MLP $M$ with $m$ inputs. 
+    By Definition \ref{def:mlp}, this is equivalent to SLN $S$ with $m$ inputs and one output as shown in Figure \ref{fig:sln_m_in_1_out}. 
+    \begin{figure}
+        \begin{center}
+            \begin{tikzpicture}
+                [
+                    neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+                ]
+                \node [neuron] (x1)  at (0,0) {$x_1$};
+                \node [neuron] (x2) at (0,-2) {$x_2$};
+                \node (dots) at (0,-3) {$\vdots$};
+                \node [neuron] (xm) at (0,-4) {$x_m$};
+                \node [neuron] (y) at (4,-2) {$\hat{y}$};
+                \node (b) at (4, -1) {$b$};
+                \draw[->] (x1) -- (y) node[midway, above, sloped] {$w_1$};
+                \draw[->] (x2) -- (y) node[midway, above, sloped] {$w_2$};
+                \draw[->] (xm) -- (y) node[midway, above, sloped] {$w_m$};
+                \draw[->] (b) -- (y);
+            \end{tikzpicture}
+        \end{center}
+        \caption{The DAG representing a SLN with $m$ inputs and one output unit.}
+        \label{fig:sln_m_in_1_out}
+    \end{figure}
+    The equation of decision boundary can be obtained by setting the output equal to the decision threshold, so
+    $t = S\left(\vec{x}\right)$
+    for the input feature vector
+    $\vec{x}= \begin{bmatrix}
+        x_1 & x_2 & \cdots & x_m
+    \end{bmatrix}\tran$.
+    We have
+    \begin{align*}
+        t &= S\left(\vec{x}\right) \\
+        &= g_\text{sig}\left(\vec{w}\tran \vec{x} + b\right) \\
+        &= \frac{1}{1+e^{-\vec{w}\tran \vec{x} - b}} \\
+        \frac{1}{t} - 1 &= e^{-\vec{w}\tran \vec{x} - b} \\
+        \ln \left(\frac{1}{t} - 1\right) &= -\vec{w}\tran \vec{x} - b.
+    \end{align*}
+    For $\ln \left(\frac{1}{t} - 1\right)$ to be real-valued, we must ensure that $\frac{1}{t} - 1 > 0$ which is the case because $0<t<1$.
+
+    We obtain only one linear equation of the form
+    \begin{equation}
+        \label{eq:sigmoid_hyperplane}
+        0=w_1 x_2 + w_2 x_2 + \dots + w_m x_m + b + \ln \left(\frac{1}{t} - 1\right)
+    \end{equation}
+    which means that there is only one hyperplane.
+\end{proof}
+
+\begin{example}
+    \label{ex:sln_2_in_1_out_sigmoid_hyperplane}
     Let us consider a MLP $M$ with only one layer and two inputs, as depicted in Figure \ref{fig:sln_2_in_1_out}.
     \begin{figure}
         \begin{center}
@@ -424,23 +477,16 @@ This will allow us to examine the so-called decision boundary in input space whi
         \label{fig:sln_2_in_1_out}
     \end{figure}
     We will consider the configuration where $w_1=w_2=1$ and $b=0$. 
-    The output unit will have the sigmoid activation function.
+    The output unit will have the sigmoid activation function, and we will choose the decision threshold $t=\frac{1}{2}$.
     
     The decision boundary will be a line because $\mathcal{I}_M$ has two dimensions, and a hyperplane in a two-dimensional space is simply a line.
-    The equation of this line can be obtained by setting the output equal to the decision threshold $t$.
-    We get
+    The equation of this line can be obtained from (\ref{eq:sigmoid_hyperplane}) as
     \begin{align*}
-        t &= M\left(\begin{bmatrix}
-            x_1 \\ x_2
-        \end{bmatrix}\right) \\
-        \frac{1}{2} &= g_\text{sig}\left(w_1 x_1 + w_2 x_2 + b\right) \\
-        &= g_\text{sig}\left(x_1 + x_2\right) \\
-        &= \frac{1}{1+e^{-x_1-x_2}} \\
-        2 &= 1+e^{-x_1-x_2} \\
-        \ln\left(1\right) &= -x_1-x_2 \\
-        x_1 &= -x_2.
+        0 &= w_1 x_1 + w_2 x_2 + b + \ln \left(\frac{1}{\left(\frac{1}{2}\right)} - 1\right) \\
+        &= x_1 + x_2 + \ln 1 \\
+        x_2 &= -x_1.
     \end{align*}
-    
+
     Figure \ref{fig:sigmoid_hyperplane} depicts this hyperplane along with some samples in input space to show how they would be classified. 
     The arrow on the hyperplane shows the direction of increasing output, i.e. what would be classified as $1$.
     \begin{figure}
@@ -462,7 +508,7 @@ This will allow us to examine the so-called decision boundary in input space whi
                 \addplot[black, ->] coordinates {(-2, 2) (-1.5, 2.5)};
             \end{axis}
         \end{tikzpicture}
-        \caption{Plot of the input space of a MLP from Figure \ref{fig:sln_2_in_1_out} with sigmoid activation where $w_1=w_2=1$ and $b=0$. Filled in dots represent a prediction of $\hat{y}>\frac{1}{2}$ whereas the empty circular dots represent $\hat{y}<\frac{1}{2}$.}
+        \caption{Plot of the input space of the MLP from Figure \ref{fig:sln_2_in_1_out} with sigmoid activation where $w_1=w_2=1$, $b=0$, and some sample data. Filled in dots represent a prediction of $\hat{y}>\frac{1}{2}$ whereas the empty circular dots represent $\hat{y}<\frac{1}{2}$.}
         \label{fig:sigmoid_hyperplane}
     \end{figure}
 \end{example}
@@ -590,28 +636,6 @@ Note that linear mappings can exist between spaces of different dimensionalities
 \end{theorem}
 \begin{proof}
     Let $S$ have $m$ inputs, as depicted in Figure \ref{fig:sln_m_in_1_out}.
-    \begin{figure}
-        \begin{center}
-            \begin{tikzpicture}
-                [
-                    neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
-                ]
-                
-                \node [neuron] (x1)  at (0,0) {$x_1$};
-                \node [neuron] (x2) at (0,-2) {$x_2$};
-                \node (dots) at (0,-3) {$\vdots$};
-                \node [neuron] (xm) at (0,-4) {$x_m$};
-                \node [neuron] (y) at (4,-2) {$\hat{y}$};
-                \node (b) at (4, -1) {$b$};
-                \draw[->] (x1) -- (y) node[midway, above, sloped] {$w_1$};
-                \draw[->] (x2) -- (y) node[midway, above, sloped] {$w_2$};
-                \draw[->] (xm) -- (y) node[midway, above, sloped] {$w_m$};
-                \draw[->] (b) -- (y);
-            \end{tikzpicture}
-        \end{center}
-        \caption{The DAG representing a SLN with $m$ inputs and one output unit.}
-        \label{fig:sln_m_in_1_out}
-    \end{figure}
     Modifying the formula for a SLN given in Definition \ref{def:sln} (\ref{eq:single_layer_perceptron}) for the case where there is only one output unit, we obtain
     $\hat{y} = f_\text{SLP}(\vec{x}; \vec{w}\tran, b) = g\left(\vec{w} \vec{x} + b\right)$
     where
@@ -674,10 +698,9 @@ Note that linear mappings can exist between spaces of different dimensionalities
             g(\vec{u}\tran \vec{x}_2 + b) + g(\vec{v}\tran \vec{x}_2 + b) \\
             \vdots \\
             g(\vec{u}\tran \vec{x}_N + b) + g(\vec{v}\tran \vec{x}_N + b) \\
-        \end{bmatrix}.
+        \end{bmatrix},
     \end{equation*}
-
-    We obtain
+    leaving
     \begin{equation*}
         \begin{bmatrix}
             g(\vec{u}\tran \vec{x}_1 + \vec{v}\tran \vec{x}_1 + b) \\
@@ -958,15 +981,17 @@ Let us look at a couple of examples of unrealizable regions.
 \chapter{Problems}
 \section{The stripe problem}
 \label{sec:stripe_problem}
+The stripe problem provides a practical example of the local minimum problem. 
+We will consider a two-dimensional input space with two (initially) parallel hyperplanes that form a stripe.
+The initial configuration will have the hyperplanes arranged horizontally and misclassify some of the samples. 
+Changing the weights in the neural network will allow the hyperplanes to rotate, but when they do so, they are forced to misclassify even more samples (thereby increasing the mean squared error) until eventually reaching the target configuration with zero error.
 
+The stripe problem can be achieved by a 2-2-1 sigmoidal MLP \cite{weir2019}. 
+Figure \ref{fig:stripe_original_hyperplanes} shows the initial and target configurations of the hyperplanes for this type of network.
+The hidden layer is required because without it, the sigmoid activation function will produce only one hyperplane, as proved in Lemma \ref{lmm:sigmoid_decision_boundary}.
 \begin{figure}
     \centering
-    \begin{tikzpicture}[
-        declare function={
-            gaussian(\x)= exp(-\x^2);
-            bump(\x)= and(\x>=-1, \x<=1) * exp(1-1/(1-(\x^2)));
-        }
-    ]
+    \begin{tikzpicture}
         \begin{axis}[
             x=1cm,
             y=1cm,
@@ -989,12 +1014,7 @@ Let us look at a couple of examples of unrealizable regions.
         \end{axis}
     \end{tikzpicture}
     \vspace{.05\textwidth}
-    \begin{tikzpicture}[
-        declare function={
-            gaussian(\x)= exp(-\x^2);
-            bump(\x)= and(\x>=-1, \x<=1) * exp(1-1/(1-(\x^2)));
-        }
-    ]
+    \begin{tikzpicture}
         \begin{axis}[
             x=1cm,
             y=1cm,
@@ -1016,41 +1036,45 @@ Let us look at a couple of examples of unrealizable regions.
             \addplot[black, ->] coordinates {(3,1) (2.65,1)};
         \end{axis}
     \end{tikzpicture}
-    \caption{Hyperplanes in input space for the stripe problem with eight samples.}
+    \caption{Hyperplanes in input space for the stripe problem with eight samples (adapted from \textcite{weir2019}).}
     \label{fig:stripe_original_hyperplanes}
 \end{figure}
 
-\todo: General intuition incl input space plot with hyperplanes.
+In this section, we will formulate a version of the stripe problem that requires no hidden layers and fewer input samples by using a different kind of activation function.
+The reduced number of parameters will lend itself better for analysis.
 
 \subsection{Radial basis activation functions}
-We will first introduce the concept of radial basis functions, as they exhibit some advantageous properties that will aid us to contrive an example of the stripe problem with a minimal number of neurons.
-\begin{definition}[Radial basis functions]
+We will first introduce the concept of radial basis functions. 
+When used as the activation function, they exhibit some advantageous properties that will aid us to contrive a simple version of the stripe problem.
+\begin{definition}[Radial basis function]
     A radial basis function (RBF) is a smooth continuous real-valued\footnote{We define RBFs has having a scalar domain and range because this suffices for our purposes. In actual fact, RBFs are defined more generally to map between suitable vector spaces \cite{buhmann2000}.} function $\phi : \mathbb{R} \rightarrow \mathbb{R}$ that satisfies the property $\phi(x) = \phi(\norm{x})$ \cite{buhmann2000}. 
     %RBFs are commonly used as a kernel in support vector machines (SVMs) \cite{burkov2019}.
-    Two commonly used RBFs, both infinitely differentiable, are the Gaussian function
-    \begin{equation}
-        \label{eq:sigmoid}
-        \phi(x) = e^{-x^2}
-    \end{equation}
-    and the bump function\footnote{We give a slightly modified version of the well-known $C_\infty$ ``bump'' function \cite{johnson2015} that is vertically scaled such that $\phi(0)=1$ for convenience.}
-    \begin{equation}
-        \label{eq:bump}
-        \phi(x) = 
-        \begin{cases}
-            e^{1-\frac{1}{1-x^2}} & \text{for $-1<x<1$} \\
-            0 & \text{otherwise}
-        \end{cases}.
-    \end{equation}
+    For RBFs to be useful activation functions, we three additional restrictions:
+    \begin{enumerate*}[label=(\roman*)]
+        \item $\phi(0)=1$;
+        \item $\phi(x)$ is strictly increasing for $x<0$ when $\phi(x) \neq 0$; and
+        \item that
+    \end{enumerate*}
+    \begin{equation*}
+        \lim_{x\rightarrow -\infty}{\phi(x)} = \lim_{x\rightarrow \infty}{\phi(x)} = 0.
+    \end{equation*}
 \end{definition}
 
+Two commonly used RBFs, both infinitely differentiable, are the Gaussian function
+\begin{equation}
+    \label{eq:sigmoid}
+    \phi(x) = e^{-x^2}
+\end{equation}
+and the bump function\footnote{We give a slightly modified version of the well-known $C_\infty$ ``bump'' function \cite{johnson2015} that is vertically scaled such that $\phi(0)=1$ for convenience.}
+\begin{equation}
+    \label{eq:bump}
+    \phi(x) = 
+    \begin{cases}
+        e^{1-\frac{1}{1-x^2}} & \text{for $-1<x<1$} \\
+        0 & \text{otherwise}
+    \end{cases}.
+\end{equation}
 These functions, graphed in Figure \ref{fig:rbfs}, exhibit slightly different properties.
-The Gaussian function never actually reaches zero which means that its derivative is never zero (except at the peak, i.e. $x=0$). 
-On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{dx}=0$ for $x \notin (-1, 1)$.
-
-\begin{lemma}[RBF hyperplanes]
-    
-\end{lemma}
-
 \begin{figure}
     \centering
     \begin{tikzpicture}[
@@ -1081,6 +1105,145 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
     \caption{Plots of the two most common radial basis functions.}
     \label{fig:rbfs}
 \end{figure}
+The Gaussian function never actually reaches zero and its derivative is never zero (except at the peak, i.e. $x=0$). 
+On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{dx}=0$ for $x \notin (-1, 1)$.
+
+\begin{lemma}[Single-layer RBF decision boundaries]
+    \label{lmm:single_layer_rbf_decision_boundaries}
+    A single-layer Gaussian RBF MLP with decision threshold $t\in (0,1)$ will have two hyperplanes in input space.
+\end{lemma}
+\begin{proof}
+    The proof is similar in method as in Lemma \ref{lmm:sigmoid_decision_boundary}.
+    Consider an equivalent SLN $S$ with $m$ inputs and one output as shown in Figure \ref{fig:sln_m_in_1_out}. 
+    To obtain the decision boundaries, we set the output equal to the decision threshold, so
+    \begin{align*}
+        t &= S\left(\vec{x}\right) \\
+        &= \phi\left(\vec{w}\tran \vec{x} + b\right) \\
+        &= e^{-\left(\vec{w}\tran \vec{x} + b \right)^2} \\
+        -\ln{t} &= \left(\vec{w}\tran \vec{x} + b \right)^2 \\
+        \pm \sqrt{-\ln{t}} &= \vec{w}\tran \vec{x} + b.
+    \end{align*}
+    Since $t\in (0,1)$, it follows that
+    \begin{align*}
+        0 < t &< 1 \\
+        \ln t &< \ln 1 \\
+        -\ln t &> 0 \\
+        \sqrt{-\ln{t}} &> 0
+    \end{align*}
+    which means that $\sqrt{-\ln{t}} \neq 0$. 
+    Hence
+    \begin{equation}
+        \label{eq:gaussian_hyperplanes}
+        \vec{w}\tran \vec{x} + b \pm \sqrt{-\ln{t}} = 0
+    \end{equation}
+    has two distinct solutions, no matter the values of $\vec{w}$, $\vec{x}$, and $b$.
+    Thus there will always be two hyperplanes.
+\end{proof}
+\begin{remark}
+    Although Lemma \ref{lmm:single_layer_rbf_decision_boundaries} proves the existence of two hyperplane decision boundaries for Gaussian RBFs, it is trivial to modify this proof for any other type of RBF, such as the bump function.
+    As a consequence, we know that unlike single-layer sigmoidal networks (see Lemma \ref{lmm:sigmoid_decision_boundary}), we can use single-layer RBF networks to generate a decision boundary in the form of a stripe which will allow us to use this type of network to provide a more simple example of the stripe problem.
+\end{remark}
+
+\begin{example}
+    \label{ex:sln_2_in_1_out_gaussian_hyperplanes}
+    Like in Example \ref{ex:sln_2_in_1_out_sigmoid_hyperplane}, let us consider once more a single-layered MLP $M$ with two inputs, depicted in Figure \ref{fig:sln_2_in_1_out}, where $w_1=w_2=1$ and $b=0$. 
+    Let the threshold be $t=\frac{1}{2}$ again, but this time, we will use the Gaussian RBF as the activation function.
+
+    From (\ref{eq:gaussian_hyperplanes}), we obtain the equations of the hyperplanes as
+    \begin{align*}
+        \vec{w}\tran \vec{x} + b \pm \sqrt{-\ln{\frac{1}{2}}} &= 0 \\
+        w_1 x_1 + w_2 x_2 + b &=  \pm \sqrt{-\ln{\frac{1}{2}}} \\
+        x_1 + x_2 &= \pm \sqrt{-\ln{\frac{1}{2}}},
+    \end{align*}
+    so the hyperplanes are at $x_2 = -x_1 - 0.8325\dots$ and $x_2 = -x_1 + 0.8325\dots$, as shown in Figure \ref{fig:gaussian_hyperplanes}.
+
+    \begin{figure}
+        \centering
+        \begin{tikzpicture}[
+            declare function={
+                hminus(\x)= -\x - sqrt(-ln(0.5));
+                hplus(\x)= -\x + sqrt(-ln(0.5));
+            }
+        ]
+            \begin{axis}[
+                x=1cm,
+                y=1cm,
+                axis lines=center,
+                xlabel={$x_1$}, xlabel style={anchor=west},
+                ylabel={$x_2$}, ylabel style={anchor=south},
+                ymin=-2.5, ymax=2.5,
+                xmin=-2.5, xmax=2.5,
+                samples=2
+            ]
+                \addplot[black,only marks,mark=*] coordinates {(0,0) (-1,1) (1,-1)};
+                \addplot[black,only marks,mark=o] coordinates {(1,1) (-1, 2.2) (1.5,0) (0,1.5) (2.2,1) (1,2.2) (2.2,-1) (-1,-1) (1, -2.2) (-1.5,0) (0,-1.5) (-2.2,-1) (-1,-2.2) (-2.2,1)};
+                \addplot[black, no marks] {hminus(x)};
+                \addplot[black, no marks] {hplus(x)};
+                \addplot[black, ->] coordinates {(-2,{hminus(-2)}) (-1.75, {2*hminus(-2)-hminus(-1.75)})};
+                \addplot[black, ->] coordinates {({-hminus(-2)},{hplus(-hminus(-2))}) ({-hminus(-2)-.25}, {2*hplus(-hminus(-2))-hplus(-hminus(-2)-.25)})};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Plot of the input space of the MLP from Figure \ref{fig:sln_2_in_1_out} with Gaussian RBF activation where $w_1=w_2=1$, $b=0$, and some sample data.}
+        \label{fig:gaussian_hyperplanes}
+    \end{figure}
+\end{example}
+
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[
+        declare function={
+            hminus(\x)= -\x - sqrt(-ln(0.5));
+            hplus(\x)= -\x + sqrt(-ln(0.5));
+        }
+    ]
+        \begin{axis}[
+            x=.9cm,
+            y=.9cm,
+            xlabel={$x_1$},
+            ylabel={$x_2$},
+            ymin=-2.5, ymax=2.5,
+            xmin=-2.5, xmax=2.5,
+            samples=2,
+            title={Initial configuration}
+        ]
+            \addplot[black,only marks,mark=*] coordinates {(0,0)};
+            \addplot[black,only marks,mark=o] coordinates {(0,2) (2,0) (2,2)};
+            \addplot[black, no marks] {hminus(x)};
+            \addplot[black, no marks] {hplus(x)};
+            \addplot[black, ->] coordinates {(-2,{hminus(-2)}) (-1.75, {2*hminus(-2)-hminus(-1.75)})};
+            \addplot[black, ->] coordinates {({-hminus(-2)},{hplus(-hminus(-2))}) ({-hminus(-2)-.25}, {2*hplus(-hminus(-2))-hplus(-hminus(-2)-.25)})};
+        \end{axis}
+    \end{tikzpicture}
+    \vspace{.05\textwidth}
+    \begin{tikzpicture}[
+        declare function={
+            hminus(\x)= \x + sqrt(-ln(0.5));
+            hplus(\x)= \x - sqrt(-ln(0.5));
+        }
+    ]
+        \begin{axis}[
+            x=.9cm,
+            y=.9cm,
+            xlabel={$x_1$},
+            ylabel={$x_2$},
+            ymin=-2.5, ymax=2.5,
+            xmin=-2.5, xmax=2.5,
+            samples=2,
+            title={Target configuration}
+        ]
+            \addplot[black,only marks,mark=*] coordinates {(0,0) (2,2)};
+            \addplot[black,only marks,mark=o] coordinates {(0,2) (2,0)};
+            \addplot[black, no marks] {hminus(x)};
+            \addplot[black, no marks] {hplus(x)};
+            \addplot[black, ->] coordinates {(-2,{hminus(-2)}) (-1.75, {2*hminus(-2)-hminus(-1.75)})};
+            \addplot[black, ->] coordinates {({hminus(-2)},{hplus(hminus(-2))}) ({hminus(-2)-.25}, {2*hplus(hminus(-2))-hplus(hminus(-2)-.25)})};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{The hyperplanes in the initial and target configurations of the RBF stripe problem.}
+    \label{fig:stripe_hyperplanes}
+\end{figure}
+
 
 \begin{figure}
     \centering
@@ -1091,7 +1254,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
     ]
         \begin{axis}[
             scale only axis,
-            width=.8\textwidth,
+            width=.75\textwidth,
             ymin=-3, ymax=3,
             xmin=-3, xmax=3,
             zmin=0, zmax=2,
@@ -1122,7 +1285,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
     ]
         \begin{axis}[
             scale only axis,
-            width=.8\textwidth,
+            width=.75\textwidth,
             ymin=-3, ymax=3,
             xmin=-3, xmax=3,
             zmin=0, zmax=2,
