@@ -515,8 +515,106 @@ This will allow us to examine the so-called decision boundary in input space whi
 
 \chapter{Neural network learning}
 \section{Gradient descent with mean squared error}
-\section{Local minimum problem}
+\begin{definition}[Loss function]
+    $\mathcal{W}_A \rightarrow \mathbb{R}$
+\end{definition}
+\begin{definition}[Error-weight surface]
+    
+\end{definition}
+
 \section{Simulated annealing}
+
+\chapter{The local minimum problem}
+
+\section{The mathematics of local and global minima}
+
+\begin{definition}[Global minimum]
+    The function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ has a \textit{global minimum} at point
+    $\vec{p} \in \mathbb{R}^n$
+    if and only if for all
+    $\vec{x} \in \mathbb{R}^n$
+    it is true that
+    $f(\vec{p}) \leq f(\vec{x})$.
+\end{definition}
+
+\begin{definition}[Local minimum]
+    The function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ has a \textit{local minimum} at point
+    $\vec{p} \in \mathbb{R}^n$
+    if there exists a ball with centre
+    $\vec{p}$
+    where
+    $f(\vec{p}) \leq f(\vec{x})$
+    for all points $\vec{x}$ in that ball.
+    A \textit{suboptimal local minimum} is a local minimum that is not a global minimum.
+\end{definition}
+
+\begin{definition}[Jacobian]
+    Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a continuously differentiable function of the form
+    $f=f\left(\vec{x}\right)$
+    where
+    $\vec{x} = \begin{bmatrix}
+        x_1 & x_2 & \cdots & x_n
+    \end{bmatrix}\tran$.
+    The Jacobian of $f$ (or simply \textit{derivative} of $f$) is a row vector of its first-order partial derivatives,
+    \begin{equation*}
+        \vec{J}_f
+        = \frac{\delta f}{\delta \vec{x}}
+        = \begin{bmatrix}
+            \frac{\delta f}{\delta x_1} &
+            \frac{\delta f}{\delta x_2} &
+            \cdots &
+            \frac{\delta f}{\delta x_n}
+        \end{bmatrix}.
+    \end{equation*}
+\end{definition}
+\begin{definition}[Hessian]
+    Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a function of the form
+    $f=f\left(\vec{x}\right)$
+    where
+    $\vec{x} = \begin{bmatrix}
+        x_1 & x_2 & \cdots & x_n
+    \end{bmatrix}\tran$
+    for which all second partial derivatives exist and are continuous over $\mathbb{R}^n$.
+    The Hessian of $f$ is a $n\times n$ matrix of the second-order partial derivatives, given by
+    \begin{equation*}
+        \vec{H}_f = \begin{bmatrix}
+            \frac{\delta^2 f}{\delta x_1^2} &
+            \frac{\delta^2 f}{\delta x_1 x_2} &
+            \cdots &
+            \frac{\delta^2 f}{\delta x_1 x_n} \\
+            \frac{\delta^2 f}{\delta x_2 x_1} &
+            \frac{\delta^2 f}{\delta x_2^2} &
+            \cdots &
+            \frac{\delta^2 f}{\delta x_2 x_n} \\
+            \vdots & \vdots & \ddots & \vdots \\
+            \frac{\delta^2 f}{\delta x_n x_1} &
+            \frac{\delta^2 f}{\delta x_n x_2} &
+            \cdots &
+            \frac{\delta^2 f}{\delta x_n^2}
+        \end{bmatrix}.
+    \end{equation*}
+\end{definition}
+\begin{definition}[Positive definite matrix]
+    A symmetric $n\times n$ matrix $\vec{M} \in \mathbb{R}^{n\times n}$ is said to be \textit{positive definite} if and only if
+    $\vec{x}\tran \vec{M} \vec{x} > 0$
+    for all $\vec{x} \in \mathbb{R}^n \setminus \vec{0}$.
+\end{definition}
+
+\begin{theorem}[Local minimum]
+    Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a continuously differentiable function, and let the point
+    $\vec{p} \in \mathbb{R}^n$
+    be such that
+    $\vec{J}_f(\vec{p}) = \vec{0}$
+    and
+    $\vec{H}_f(\vec{p})$ is positive definite.
+    Then $\vec{p}$ is a \textit{local minimum} of $f$.
+\end{theorem}
+We will require this theorem to prove that training converges to a local minimum in Section \ref{sec:stripe_problem}.
+However, the proof of this theorem exceeds the scope of this report.
+The interested reader may consult \textcite[p. 190]{loomis1990}.
+
+\section{The suboptimal local minimum problem}
+
 
 \chapter{Neural surfing theory}
 
@@ -809,7 +907,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
 \end{remark}
 
 \subsection{Gradient descent from the perspective of weight and output space}
-\todo: Write about how SGD with MSE usually gets viewed from the perspective of error-weight space. However, it is interesting to look at the perspective of weight and output space. It becomes apparent that MSE can be thought of as greedily trying to reduce the Euclidean distance from $\vec{\hat{y}}$ to $\vec{y}$ in output space.
+\todo: Write about how SGD with MSE usually gets viewed from the perspective of error-weight surface. However, it is interesting to look at the perspective of weight and output space. It becomes apparent that MSE can be thought of as greedily trying to reduce the Euclidean distance from $\vec{\hat{y}}$ to $\vec{y}$ in output space.
 
 \section{Unrealizable regions}
 \begin{definition}[Strongly unrealizable point]
@@ -979,6 +1077,7 @@ Let us look at a couple of examples of unrealizable regions.
 \end{remark}
 
 \chapter{Problems}
+
 \section{The stripe problem}
 \label{sec:stripe_problem}
 The stripe problem provides a practical example of the local minimum problem. 
@@ -1188,7 +1287,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
     \end{figure}
 \end{example}
 
-
+\subsection{Formulating the problem}
 \begin{figure}
     \centering
     \begin{tikzpicture}[
@@ -1310,6 +1409,10 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
     \caption{Error-weight surface of the stripe problem with bump activation.}
     \label{fig:stripe_error_surface_bump}
 \end{figure}
+
+\subsection{Global minima}
+
+\subsection{A suboptimal local minimum}
 
 
 
