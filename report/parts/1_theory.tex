@@ -23,6 +23,7 @@
 \end{definition}
 
 \begin{definition}[Labelled dataset]
+    \label{def:labelled_dataset}
     A labelled dataset consists of $N$ tuples of the form $\langle \vec{x}_i, y_i\rangle$ for $i=1,\dots,N$.
     For each feature vector $\vec{x}_i$ (a row vector), the corresponding $y_i$ represents the observed output, or \textit{label} \cite{burkov2019}.
     We use the vector
@@ -279,7 +280,7 @@ A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP 
     A MLP $M$ with $m$ inputs and $L$ layers is the mathematical function
     $M : \mathbb{R}^m \rightarrow \mathbb{R}$ defined as the nested function
     \begin{equation}
-        M(\vec{x}; \mathscr{W}, \mathscr{B})
+        M(\vec{x}; \mathscr{P})
             = \hat{y}
             = f_L \left(
                 \vec{f}_{L-1} \left(
@@ -291,9 +292,13 @@ A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP 
                 \right)
             \right)
     \end{equation}
-    where $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ are the weight matrices and $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ the bias vectors such that the nested functions are given by $\vec{f}_l(\vec{x}) = \vec{S}(\vec{x}; \vec{W}_l, \vec{b}_l)$ for $l = 1, \dots, L-1$. 
+    for the trainable parameters $\mathscr{P}=\langle\mathscr{W},\mathscr{B}\rangle$
+    consisting of the weight matrices
+    $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$
+    and bias vectors
+    $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$
+    such that the nested functions are given by $\vec{f}_l(\vec{x}) = \vec{S}(\vec{x}; \vec{W}_l, \vec{b}_l)$ for $l = 1, \dots, L-1$.
     The outermost function $f_L$ represents a SLN with only one output unit and is hence the scalar-valued function $f_L(\vec{x}) = S(\vec{x}; \vec{W}_L, \vec{b}_L)$.
-    
 \end{definition}
 
 Notice that for every $l < L$, $\vec{W}_l$ is a $n_l \times m_l$ matrix such that $n_l=m_{l+1}$ to esnure that the number of outputs of layer $l$ is the number of inputs to layer $l+1$.
@@ -513,18 +518,102 @@ This will allow us to examine the so-called decision boundary in input space whi
     \end{figure}
 \end{example}
 
-\chapter{Neural network learning}
-\section{Gradient descent with mean squared error}
+\chapter{Neural network training}
+This chapter will introduce two methods of training neural networks to provide an intuition on how this can be achieved.
+Later in this report, we will look at some issues related to these methods as a means of setting the scene for the neural surfing technique.
+
+In this context, \textit{training} refers to the process of changing the network's weights and biases with the goal of achieving an optimal configuration that reduces the error of the predictions, i.e. how far they are `off'. 
+We will use a simple loss function that uses mean squared error for this purpose.
+\begin{definition}[Mean squared error]
+    Let $\left\{\langle \vec{x}_i, y_i \rangle \right\}_{i=1}^N$ be a labelled dataset (see Definition \ref{def:labelled_dataset}).
+    The mean squared error of a set of predictions $\vec{\hat{y}}$ is given as an average over the sum of squared differences,
+    \begin{equation}
+        \label{eq:mean_squared_error}
+        E\left( \vec{y}, \vec{\hat{y}} \right) = \frac{1}{N} \sum_{i=1}^N{\left(\hat{y}_i - y_i\right)^2}.
+    \end{equation}
+\end{definition}
+
 \begin{definition}[Loss function]
-    $\mathcal{W}_A \rightarrow \mathbb{R}$
+    Given an MLP $M$ with $P$ trainable parameters (weights and biases), the loss function $L:\mathbb{R}^P\rightarrow \mathbb{R}$ is a function that maps weight (and bias) configurations to their associated error values.
+    Let $\vec{y} \in \mathbb{R}^N$ be the target outputs for training.
+    Then the loss function is defined as
+    \begin{equation}
+        L(\vec{p}) = \sum_{i=1}^N{\left(M\left(\vec{x}_i; \vec{p}\right) - y_i\right)^2}.
+    \end{equation}
+    Notice the similarity to (\ref{eq:mean_squared_error}). 
+    However, we have omitted the factor $\frac{1}{N}$ since the actual loss values are not as important as their relationship to each other, and multiplying by $N$ will retain that relationship.
+    We use the term \textit{error-weight surface} to refer to the graph of this function.
 \end{definition}
-\begin{definition}[Error-weight surface]
-    
-\end{definition}
+
+\section{Gradient descent with mean squared error}
+Gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum}\footnote{We will provide a formal discussion of this concept in Section \ref{sec:local_minimum_problem}.}.
+The main idea is as follows:
+\begin{enumerate}
+    \item Calculate the derivative of the loss function with respect to the current trainable parameters $\vec{p}$ as
+        $\vec{\Delta p} = \frac{\delta L}{\delta \vec{p}}\left(\vec{p}\right)$.
+    \item Take a step in the negative direction of this gradient, i.e. update the trainable parameters $\vec{p} \leftarrow \vec{p} - \alpha \vec{\Delta p}$ where $\alpha \in \mathbb{R}$ is the learning rate.
+    \item Repeat steps 1 and 2 until a predefined convergence criterion is met.
+\end{enumerate}
+
+\todo: 2d graph of gradient descent with local minimum
+
+Calculating the derivative of the loss function with respect to each of the trainable parameters is a core part of the gradient descent algorithm.
+Let us look at calculating this gradient for the example of a single-layer MLP. 
+We will come back to these results in Section \ref{sec:stripe_problem}.
+\begin{example}[Gradient in a single-layer MLP]
+    Let us revisit the SLN with $m$ inputs and one output from Figure \ref{fig:sln_m_in_1_out}.
+    The loss function will be in terms of the trainable parameters, i.e. the weights $\vec{w}$ and bias $b$, so
+    \begin{align}
+        L = L(\vec{w}, b)
+        &= \sum_{i=1}^N{\left(S\left(\vec{x}_i; \vec{w}, b\right) - y_i\right)^2} \nonumber \\
+        &= \sum_{i=1}^N{\left(g\left(\vec{w}\tran \vec{x}_i + b\right) - y_i\right)^2}.
+    \end{align}
+
+    We obtain the partial derivative of the loss with respect to the bias as
+    \begin{align}
+        \frac{\delta L}{\delta b}
+        &=2 \sum_{i=1}^N{
+            \left(g \left(\vec{w}\tran\vec{x}_i+b\right) - y_i \right)
+            \frac{\delta}{\delta b} \left(g \left(\vec{w}\tran\vec{x}_i+b\right) - y_i \right)
+        } \nonumber \\
+        &= 2 \sum_{i=1}^N{
+            \left(g \left(\vec{w}\tran\vec{x}_i+b\right) - y_i \right)
+            g' \left(\vec{w}\tran\vec{x}_i+b\right)
+        },
+    \end{align}
+    and similarly we can differentiate with respect to the weights
+    \begin{align}
+        \frac{\delta L}{\delta \vec{w}}
+        &= 2 \sum_{i=1}^N{
+            \left(g \left(\vec{w}\tran\vec{x}_i+b\right) - y_i \right)
+            \frac{\delta}{\delta \vec{w}} \left(g \left(\vec{w}\tran\vec{x}_i+b\right) - y_i \right)
+        } \nonumber \\
+        &= 2 \sum_{i=1}^N{
+            \left(g \left(\vec{w}\tran\vec{x}_i+b\right) - y_i \right)
+            g' \left(\vec{w}\tran\vec{x}_i+b\right)
+            \vec{x}_i
+        }.
+    \end{align}
+
+    Now we would denote the gradient of the loss with respect to the trainable parameters $\vec{p}$ as the row vector
+    \begin{equation*}
+        \frac{\delta L}{\delta \vec{p}} = \begin{bmatrix}
+            \frac{\delta L}{\delta w_1} &
+            \frac{\delta L}{\delta w_2} &
+            \cdots &
+            \frac{\delta L}{\delta w_m} &
+            \frac{\delta L}{\delta b}
+        \end{bmatrix}.
+    \end{equation*}
+\end{example}
+
+
+
 
 \section{Simulated annealing}
 
 \chapter{The local minimum problem}
+\label{sec:local_minimum_problem}
 
 \section{The mathematics of local and global minima}
 
@@ -538,6 +627,7 @@ This will allow us to examine the so-called decision boundary in input space whi
 \end{definition}
 
 \begin{definition}[Local minimum]
+    \label{def:local_minimum}
     The function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ has a \textit{local minimum} at point
     $\vec{p} \in \mathbb{R}^n$
     if there exists a ball with centre
