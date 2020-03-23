@@ -554,8 +554,41 @@ The main idea is as follows:
     \item Take a step in the negative direction of this gradient, i.e. update the trainable parameters $\vec{p} \leftarrow \vec{p} - \alpha \vec{\Delta p}$ where $\alpha \in \mathbb{R}$ is the learning rate.
     \item Repeat steps 1 and 2 until a predefined convergence criterion is met.
 \end{enumerate}
-
-\todo: 2d graph of gradient descent with local minimum
+Figure \ref{fig:gradient_descent_local_minimum} shows the steps that this algorithm would make on a simple error-weight surface with only one parameter.
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[
+        declare function={
+            f(\x) = \x^4 + 0.5*\x^3 - 2*\x^2;
+            g(\x) = f(.5*\x-2)+2;
+        }
+    ]
+        \begin{axis}[
+            x=1.5cm,
+            y=1.5cm,
+            axis lines=center,
+            xlabel={$p$}, xlabel style={anchor=west},
+            ylabel={$L(p)$}, ylabel style={anchor=south},
+            ymin=-0, ymax=4.2,
+            xmin=0, xmax=7.2,
+            samples=50,
+            domain=0.1:7.5,
+            ticks=none
+        ]
+            \addplot[black] {g(x)};
+            \addplot[-{Latex[length=2mm]},black,samples at={6.85,6.5},mark=*] {g(x)};
+            \addplot[-{Latex[length=2mm]},black,samples at={6.5,6.2},mark=*] {g(x)};
+            \addplot[-{Latex[length=2mm]},black,samples at={6.2,5.9},mark=*] {g(x)};
+            \addplot[-{Latex[length=2mm]},black,samples at={5.9,5.7},mark=*] {g(x)};
+            \node[left] at (6.85,{g(6.85)}) {initial position};
+            \node[below,align=center] at (5.7,{g(5.7)}) {final position\\(local minimum)};
+            \addplot[mark=*] coordinates {(1.6,{g(1.6)})};
+            \node[below,align=center] at (1.6,{g(1.6)}) {global minimum};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{An illustration gradient descent training on an error-weight surface with only one parameter (not drawn to scale).}
+    \label{fig:gradient_descent_local_minimum}
+\end{figure}
 
 Calculating the derivative of the loss function with respect to each of the trainable parameters is a core part of the gradient descent algorithm.
 Let us look at calculating this gradient for the example of a single-layer MLP. 
@@ -608,6 +641,7 @@ We will come back to these results in Section \ref{sec:stripe_problem}.
 \end{example}
 
 
+\section{Greedy probing}
 
 
 \section{Simulated annealing}
