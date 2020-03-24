@@ -42,7 +42,8 @@ class Experiment:
         buttons.callback = CustomJS(args=dict(buttons=buttons, lines=lines),
                                     code="""
                                     lines.forEach(plot => plot.forEach((line, index) => {
-                                        line.visible = buttons.active.includes(index);
+                                        line.visible = buttons.active.includes(
+                                            index);
                                     }));
                                     """)
 
@@ -52,8 +53,21 @@ class Experiment:
                             gridplot(plots, ncols=cols)))
 
         def run_blocking():
+
+            # Compile the agents
+            [agent.compile() for agent in self.agents]
+
+            # Plot initial point
+            agent_data = [{**{k: v[np.newaxis, ...]
+                              for(k, v)in agent.problem.evaluate_metrics(metrics=metrics).items()},
+                           "epoch": np.array([0])}
+                          for agent in self.agents]
+            for visualisation, plot in zip(visualisations, plots):
+                visualisation.plot(agent_data, plot, doc)
+
+            # Perform training and continually plot
             for epoch_batch in range(epoch_batches):
-                start_epoch = epoch_batch * epoch_batch_size
+                start_epoch = epoch_batch * epoch_batch_size + 1
                 agent_data = [{**agent.train(epochs=epoch_batch_size, metrics=metrics),
                                "epoch": np.arange(start_epoch, start_epoch + epoch_batch_size)}
                               for agent in self.agents]

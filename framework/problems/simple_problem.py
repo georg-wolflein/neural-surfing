@@ -1,18 +1,20 @@
 from .problem import Problem
 import numpy as np
 import tensorflow as tf
+from .util import DenseWithFixedBias
 
 
 class SimpleProblem(Problem):
 
     def __init__(self):
 
-        # Make sure the random seeds are the same for each run
-        np.random.seed(1)
-        tf.random.set_seed(2)
+        bias = 0
+        initial_weights = np.array([0., 0.])[..., np.newaxis]
 
         model = tf.keras.models.Sequential([
-            tf.keras.layers.Dense(1, input_shape=(2,))
+            tf.keras.layers.Input(shape=(2,)),
+            DenseWithFixedBias(1, bias, initial_weights)
+            # tf.keras.layers.Activation("sigmoid")
         ])
 
         super().__init__(
@@ -23,10 +25,10 @@ class SimpleProblem(Problem):
                 (1, 1)
             ]).astype(np.float64),
             y=np.array([
-                1,
-                1,
                 0,
-                0
+                0.5,
+                0.5,
+                1
             ]).astype(np.float64),
             model=model
         )

@@ -4,7 +4,7 @@ from functools import partial
 import typing
 
 from problems import Problem
-from .agent import Agent
+from .agent import GradientBasedAgent
 
 
 def get_subgoal(y_initial, y_true, progress: float):
@@ -20,7 +20,7 @@ def get_distance_to_line(point, a, b):
     return d
 
 
-class LossWithGoalLineDeviation(Agent):
+class LossWithGoalLineDeviation(GradientBasedAgent):
 
     def compile(self):
         model = self.problem.model
