@@ -42,7 +42,7 @@ class Experiment:
         buttons.callback = CustomJS(args=dict(buttons=buttons, lines=lines),
                                     code="""
                                     lines.forEach(plot => plot.forEach((line, index) => {
-                                        line.visible = index in buttons.active;
+                                        line.visible = buttons.active.includes(index);
                                     }));
                                     """)
 
