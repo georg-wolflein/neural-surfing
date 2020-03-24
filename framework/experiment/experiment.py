@@ -20,11 +20,10 @@ from .visualisations import Visualisation
 
 class Experiment:
 
-    def __init__(self, problem_factory: typing.Callable[[], Problem], agent_factories: typing.Sequence[typing.Callable[[Problem], Agent]]):
-        self.agent_factories = agent_factories
-        self.agents = [factory(problem_factory())
-                       for factory in agent_factories]
-        self.colors = cm.rainbow(np.linspace(0, 1, len(agent_factories)))[
+    def __init__(self, agents: typing.Dict[str, Agent]):
+        self.agent_names = list(agents.keys())
+        self.agents = list(agents.values())
+        self.colors = cm.rainbow(np.linspace(0, 1, len(agents)))[
             :, np.newaxis, :]
 
     def run(self, visualisations: typing.Sequence[Visualisation], epoch_batches: int = 100, epoch_batch_size: int = 50, cols: int = 2, title: str = "Experiment"):
@@ -36,8 +35,8 @@ class Experiment:
                              for visualisation in visualisations])
 
         buttons = CheckboxButtonGroup(
-            labels=[f.__name__ for f in self.agent_factories],
-            active=list(range(len(self.agent_factories))))
+            labels=self.agent_names,
+            active=list(range(len(self.agents))))
 
         buttons.callback = CustomJS(args=dict(buttons=buttons, lines=lines),
                                     code="""

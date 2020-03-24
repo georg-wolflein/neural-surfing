@@ -58,6 +58,7 @@ class SamplingBasedAgent(Agent, ABC):
         self.weights_shape = list(
             map(tf.shape, self.problem.model.get_weights()))
         self.num_weights = get_num_weights(self.problem.model)
+        sampler.initialize(self.num_weights)
 
     def compile(self):
         pass

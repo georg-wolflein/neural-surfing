@@ -9,22 +9,32 @@ def scale_to_length(x: tf.Tensor, length: float) -> tf.Tensor:
 
 
 class SamplingTechnique(ABC):
+
+    @abstractmethod
+    def initialize(self, num_weights: int):
+        pass
+
     @abstractmethod
     def __call__(self, weights: tf.Tensor) -> tf.Tensor:
         pass
 
 
 class ExhaustiveSamplingTechnique(SamplingTechnique):
-    def __init__(self, num_weights: int, learning_rate: float, uniform_radius: bool = True):
+    def __init__(self, learning_rate: float, uniform_radius: bool = True):
+        self.learning_rate = learning_rate
+        self.uniform_radius = uniform_radius
+
+    def initialize(self, num_weights: int):
         weight_changes = itertools.product([-1, 0, 1], repeat=num_weights)
         # Remove the entry with all zeros
         weight_changes = filter(lambda x: not all(
             map(int(0).__eq__, x)), weight_changes)
         weight_changes = tf.constant(list(weight_changes), dtype=tf.float32)
-        if uniform_radius:
-            weight_changes = scale_to_length(weight_changes, learning_rate)
+        if self.uniform_radius:
+            weight_changes = scale_to_length(
+                weight_changes, self.learning_rate)
         else:
-            weight_changes *= learning_rate
+            weight_changes *= self.learning_rate
         self.weight_changes = weight_changes
 
     def __call__(self, weights: tf.Tensor) -> tf.Tensor:
@@ -32,11 +42,13 @@ class ExhaustiveSamplingTechnique(SamplingTechnique):
 
 
 class RandomSamplingTechnique(SamplingTechnique):
-    def __init__(self, num_weights: int, learning_rate: float, num_samples: int, uniform_radius: bool = True):
-        self.num_weights = num_weights
+    def __init__(self, learning_rate: float, num_samples: int, uniform_radius: bool = True):
         self.learning_rate = learning_rate
         self.num_samples = num_samples
         self.uniform_radius = uniform_radius
+
+    def initialize(self, num_weights: int):
+        self.num_weights = num_weights
 
     def __call__(self, weights: tf.Tensor) -> tf.Tensor:
         # Get random samples in the interval (0, 1]
@@ -54,6 +66,3 @@ class RandomSamplingTechnique(SamplingTechnique):
         else:
             weight_changes *= self.learning_rate
         return weights + weight_changes
-
-
-RandomSamplingTechnique(2, .1, 5)([1, 2])
