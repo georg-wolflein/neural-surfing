@@ -22,6 +22,11 @@ def get_distance_to_line(point, a, b):
 
 class LossWithGoalLineDeviation(GradientBasedAgent):
 
+    def __init__(self, problem: Problem, learning_rate: float = 0.01, momentum: float = 0.0):
+        super().__init__(problem)
+        self.learning_rate = learning_rate
+        self.momentum = momentum
+
     def compile(self):
         model = self.problem.model
         y_initial = model.predict(self.problem.X)
@@ -29,4 +34,7 @@ class LossWithGoalLineDeviation(GradientBasedAgent):
         def loss(y_true, y_pred):
             return tf.losses.mean_squared_error(y_true, y_pred) + get_distance_to_line(y_pred, y_initial, y_true) ** 2
 
-        model.compile(loss=loss, optimizer="sgd", metrics=["accuracy"])
+        model.compile(loss=loss,
+                      optimizer=tf.keras.optimizers.SGD(learning_rate=self.learning_rate,
+                                                        momentum=self.momentum),
+                      metrics=["accuracy"])

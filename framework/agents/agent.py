@@ -95,6 +95,12 @@ class SamplingBasedAgent(Agent, ABC):
 
             callbacks.on_epoch_begin(epoch, {})
 
+            weights = self.get_weights()
+            outputs = self.problem.model.predict(X)
+
+            weight_history[epoch] = weights
+            output_history[epoch] = np.reshape(outputs, y.shape)
+
             weight_samples = self.sampler(self.get_weights())
             num_samples = weight_samples.shape[0]
             output_samples = tf.map_fn(functools.partial(self.predict_for_weights, X=X),
@@ -103,10 +109,8 @@ class SamplingBasedAgent(Agent, ABC):
                                        back_prop=False)
             output_samples = tf.reshape(output_samples, (num_samples, -1))
             new_weights = self.choose_best_weight_update(weight_samples, output_samples,
-                                                         weight_history[:epoch], output_history[:epoch], y)
-            weight_history[epoch] = new_weights
-            output_history[epoch] = np.reshape(
-                self.predict_for_weights(new_weights, X), y.shape)
+                                                         weight_history[:epoch+1], output_history[:epoch+1], y)
+            self.set_weights(new_weights)
 
             callbacks.on_epoch_end(epoch, {})
 

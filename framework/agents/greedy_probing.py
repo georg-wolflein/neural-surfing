@@ -5,8 +5,6 @@ import typing
 
 from problems import Problem
 from .agent import SamplingBasedAgent
-from .sampling import RandomSamplingTechnique
-from .util import get_num_weights
 
 
 class GreedyProbing(SamplingBasedAgent):
