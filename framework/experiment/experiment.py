@@ -32,7 +32,7 @@ class Experiment:
                                         for visualisation in visualisations]))
 
         # Create plots
-        plots, lines = zip(*[visualisation.setup(len(self.agents), palette=Category10[10])
+        plots, lines = zip(*[visualisation.setup(self.agent_names, palette=Category10[10])
                              for visualisation in visualisations])
 
         buttons = CheckboxButtonGroup(
@@ -40,7 +40,7 @@ class Experiment:
             active=list(range(len(self.agents))))
 
         buttons.callback = CustomJS(args=dict(buttons=buttons, lines=lines),
-                                    code="""
+                                    code="""console.log(buttons);
                                     lines.forEach(plot => plot.forEach((line, index) => {
                                         line.visible = buttons.active.includes(
                                             index);

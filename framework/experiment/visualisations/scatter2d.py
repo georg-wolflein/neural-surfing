@@ -35,18 +35,19 @@ class Scatter2D(Visualisation):
 
         super().__init__(required_metrics)
 
-    def setup(self, num_agents: int, palette: list) -> typing.Tuple[Figure, typing.List[Line]]:
+    def setup(self, agents: typing.List[str], palette: list) -> typing.Tuple[Figure, typing.List[Line]]:
         self._source = ColumnDataSource(data={
-            **{f"x{i}": [] for i in range(num_agents)},
-            **{f"y{i}": [] for i in range(num_agents)}
+            **{f"x{i}": [] for i in range(len(agents))},
+            **{f"y{i}": [] for i in range(len(agents))}
         })
         plot = figure(title=self.title,
                       x_axis_label=self.x_title,
                       y_axis_label=self.y_title)
         lines = [plot.line(x=f"x{i}", y=f"y{i}",
                            source=self._source,
-                           color=palette[i])
-                 for i in range(num_agents)]
+                           color=palette[i],
+                           legend_label=agent)
+                 for i, agent in enumerate(agents)]
         return plot, lines
 
     @gen.coroutine
