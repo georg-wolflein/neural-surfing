@@ -4,15 +4,17 @@ from functools import partial
 import typing
 
 from problems import Problem
-from .agent import SamplingBasedAgent
+from .agent import GradientFreeAgent
 from .util import get_num_weights
-from.sampling import SamplingTechnique
+from.sampling import RandomSamplingGenerator
 
 
-class SimulatedAnnealing(SamplingBasedAgent):
+class SimulatedAnnealing(GradientFreeAgent):
 
-    def __init__(self, problem: Problem, sampler: SamplingTechnique, energy_coefficient: float = 10000000., temperature: float = 10000., cooling_rate: float = .1):
-        super().__init__(problem, sampler)
+    def __init__(self, problem: Problem, learning_rate: float, max_attempts_per_iteration: int = 15, energy_coefficient: float = 10000., temperature: float = 10000., cooling_rate: float = .05):
+        super().__init__(problem, RandomSamplingGenerator(
+            sample_radius=learning_rate, uniform_radius=True))
+        self.max_attempts_per_iteration = max_attempts_per_iteration
         self.energy_coefficient = energy_coefficient
         self.temperature = temperature
         self.cooling_rate = cooling_rate
@@ -20,23 +22,29 @@ class SimulatedAnnealing(SamplingBasedAgent):
     def cost(self, current_output: tf.Tensor, target_output: tf.Tensor) -> tf.Tensor:
         return tf.norm(current_output - target_output, axis=-1)
 
-    def choose_best_weight_update(self, weight_samples: tf.Tensor, output_samples: tf.Tensor, weight_history: tf.Tensor, output_history: tf.Tensor, y: tf.Tensor) -> tf.Tensor:
-        costs = self.cost(output_samples, y)
+    def choose_best_weight_update(self, weight_samples: typing.Iterator[tf.Tensor], weight_history: tf.Tensor, output_history: tf.Tensor, X: tf.Tensor, y: tf.Tensor) -> tf.Tensor:
         current_cost = self.cost(output_history[-1], y)
         current_cost = tf.cast(current_cost, tf.float32)
 
-        # Calculate probabilities for accepting suboptimal state
-        probability = tf.exp(self.energy_coefficient *
-                             (current_cost - costs) / self.temperature)
-        print(tf.boolean_mask(probability, current_cost < costs))
+        fallback = weight_history[-1]
 
-        accepted_moves = (probability > tf.random.uniform(
-            probability.shape)) | (costs < current_cost)
-        weight_samples = tf.boolean_mask(weight_samples, accepted_moves)
+        for _, weight_sample in zip(range(self.max_attempts_per_iteration), weight_samples):
+            cost = self.cost(tf.reshape(
+                self.predict_for_weights(weight_sample, X), y.shape), y)
 
-        # Randomly choose one of the options
-        index = tf.random.uniform(
-            shape=[], minval=0, maxval=weight_samples.shape[0], dtype=tf.int32)
+            if cost < current_cost:
+                accepted = True
+            elif cost == current_cost:
+                fallback = weight_sample
+                continue
+            else:
+                # Calculate probability of accepting suboptimal state
+                probability = tf.exp(self.energy_coefficient *
+                                     (current_cost - cost) / self.temperature)
+                accepted = probability > tf.random.uniform(tuple())
 
-        self.temperature *= 1 - self.cooling_rate
-        return weight_samples[index]
+            if accepted:
+                self.temperature *= 1 - self.cooling_rate
+                return weight_sample
+
+        return fallback

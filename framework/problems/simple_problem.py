@@ -42,3 +42,7 @@ class SimpleProblem(Problem):
     @Problem.metric
     def output(self):
         return np.squeeze(self.model.predict(self.X))
+
+    @Problem.metric
+    def loss(self):
+        return .25 * ((np.squeeze(self.model.predict(self.X)) - self.y) ** 2).sum()

@@ -1,6 +1,7 @@
 import itertools
 import tensorflow as tf
 from abc import ABC, abstractmethod
+import typing
 
 
 def scale_to_length(x: tf.Tensor, length: float) -> tf.Tensor:
@@ -15,13 +16,13 @@ class SamplingTechnique(ABC):
         pass
 
     @abstractmethod
-    def __call__(self, weights: tf.Tensor) -> tf.Tensor:
+    def __call__(self, weights: tf.Tensor) -> typing.Union[tf.Tensor, typing.Iterator[tf.Tensor]]:
         pass
 
 
 class ExhaustiveSamplingTechnique(SamplingTechnique):
-    def __init__(self, learning_rate: float, uniform_radius: bool = True):
-        self.learning_rate = learning_rate
+    def __init__(self, sample_radius: float, uniform_radius: bool = True):
+        self.sample_radius = sample_radius
         self.uniform_radius = uniform_radius
 
     def initialize(self, num_weights: int):
@@ -32,9 +33,9 @@ class ExhaustiveSamplingTechnique(SamplingTechnique):
         weight_changes = tf.constant(list(weight_changes), dtype=tf.float32)
         if self.uniform_radius:
             weight_changes = scale_to_length(
-                weight_changes, self.learning_rate)
+                weight_changes, self.sample_radius)
         else:
-            weight_changes *= self.learning_rate
+            weight_changes *= self.sample_radius
         self.weight_changes = weight_changes
 
     def __call__(self, weights: tf.Tensor) -> tf.Tensor:
@@ -42,8 +43,8 @@ class ExhaustiveSamplingTechnique(SamplingTechnique):
 
 
 class RandomSamplingTechnique(SamplingTechnique):
-    def __init__(self, learning_rate: float, num_samples: int, uniform_radius: bool = True):
-        self.learning_rate = learning_rate
+    def __init__(self, sample_radius: float, num_samples: int, uniform_radius: bool = True):
+        self.sample_radius = sample_radius
         self.num_samples = num_samples
         self.uniform_radius = uniform_radius
 
@@ -56,13 +57,36 @@ class RandomSamplingTechnique(SamplingTechnique):
             tf.random.uniform(
                 shape=(self.num_samples, self.num_weights), minval=0, maxval=1, dtype=tf.float32)
         # Make some of these samples negative, so we get the range [-1,1], but excluding 0
-        weight_changes *= tf.cast(tf.random.uniform(shape=(self.num_samples,
-                                                           self.num_weights),
-                                                    minval=0, maxval=2, dtype=tf.int32) * 2 - 1,
-                                  tf.float32)
+        sign = tf.sign(weight_changes - 0.5)
+        weight_changes *= tf.where(sign != 0., sign, 1.)
         if self.uniform_radius:
             weight_changes = scale_to_length(
-                weight_changes, self.learning_rate)
+                weight_changes, self.sample_radius)
         else:
-            weight_changes *= self.learning_rate
+            weight_changes *= self.sample_radius
         return weights + weight_changes
+
+
+class RandomSamplingGenerator(SamplingTechnique):
+    def __init__(self, sample_radius: float, uniform_radius: bool = True):
+        self.sample_radius = sample_radius
+        self.uniform_radius = uniform_radius
+
+    def initialize(self, num_weights: int):
+        self.num_weights = num_weights
+
+    def __call__(self, weights: tf.Tensor) -> tf.Tensor:
+        while True:
+            # Get random samples in the interval (0, 1]
+            weight_changes = 1 - tf.random.uniform(shape=(self.num_weights,),
+                                                   minval=0, maxval=1, dtype=tf.float32)
+            # Make some of these samples negative, so we get the range [-1,1], but excluding 0
+            sign = tf.sign(weight_changes - 0.5)
+            weight_changes *= tf.where(sign == 0., 1., sign)
+
+            if self.uniform_radius:
+                weight_changes = scale_to_length(
+                    weight_changes, self.sample_radius)
+            else:
+                weight_changes *= self.sample_radius
+            yield weights + weight_changes

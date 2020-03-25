@@ -51,7 +51,7 @@ class GradientBasedAgent(Agent, ABC):
         self.problem.model.fit(*args, **kwargs)
 
 
-class SamplingBasedAgent(Agent, ABC):
+class GradientFreeAgent(Agent, ABC):
     def __init__(self, problem: Problem, sampler: SamplingTechnique):
         super().__init__(problem)
         self.sampler = sampler
@@ -59,13 +59,6 @@ class SamplingBasedAgent(Agent, ABC):
             map(tf.shape, self.problem.model.get_weights()))
         self.num_weights = get_num_weights(self.problem.model)
         sampler.initialize(self.num_weights)
-
-    def compile(self):
-        pass
-
-    @abstractmethod
-    def choose_best_weight_update(self, weight_samples: tf.Tensor, output_samples: tf.Tensor, weight_history: tf.Tensor, output_history: tf.Tensor, y: tf.Tensor) -> tf.Tensor:
-        pass
 
     def get_weights(self) -> tf.Tensor:
         return tf.concat([tf.reshape(x, [-1]) for x in self.problem.model.get_weights()], axis=0)
@@ -80,6 +73,20 @@ class SamplingBasedAgent(Agent, ABC):
     def predict_for_weights(self, weights: tf.Tensor, X: tf.Tensor) -> tf.Tensor:
         self.set_weights(weights)
         return self.problem.model.predict(X)
+
+    def predict_for_multiple_weights(self, weights: tf.Tensor, X: tf.Tensor) -> tf.Tensor:
+        outputs = tf.map_fn(functools.partial(self.predict_for_weights, X=X),
+                            weights,
+                            parallel_iterations=1,
+                            back_prop=False)
+        return tf.reshape(outputs, (weights.shape[0], -1))
+
+    def compile(self):
+        pass
+
+    @abstractmethod
+    def choose_best_weight_update(self, weight_samples: tf.Tensor, weight_history: tf.Tensor, output_history: tf.Tensor, X: tf.Tensor, y: tf.Tensor) -> tf.Tensor:
+        pass
 
     def fit(self, X: tf.Tensor, y: tf.Tensor, epochs: int, callbacks: typing.List[tf.keras.callbacks.Callback]):
         callbacks = configure_callbacks(callbacks, self.problem.model,
@@ -102,14 +109,10 @@ class SamplingBasedAgent(Agent, ABC):
             output_history[epoch] = np.reshape(outputs, y.shape)
 
             weight_samples = self.sampler(self.get_weights())
-            num_samples = weight_samples.shape[0]
-            output_samples = tf.map_fn(functools.partial(self.predict_for_weights, X=X),
-                                       weight_samples,
-                                       parallel_iterations=1,
-                                       back_prop=False)
-            output_samples = tf.reshape(output_samples, (num_samples, -1))
-            new_weights = self.choose_best_weight_update(weight_samples, output_samples,
-                                                         weight_history[:epoch+1], output_history[:epoch+1], y)
+            new_weights = self.choose_best_weight_update(weight_samples,
+                                                         weight_history[:epoch+1],
+                                                         output_history[:epoch+1],
+                                                         X, y)
             self.set_weights(new_weights)
 
             callbacks.on_epoch_end(epoch, {})

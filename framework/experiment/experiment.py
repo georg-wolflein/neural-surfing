@@ -6,6 +6,7 @@ import matplotlib.cm as cm
 import typing
 import itertools
 from threading import Thread
+import time
 from bokeh.plotting import curdoc
 from bokeh.layouts import gridplot, row, column
 from bokeh.palettes import Category10
@@ -59,7 +60,8 @@ class Experiment:
             # Plot initial point
             agent_data = [{**{k: v[np.newaxis, ...]
                               for(k, v)in agent.problem.evaluate_metrics(metrics=metrics).items()},
-                           "epoch": np.array([0])}
+                           "epoch": np.array([0]),
+                           "run_time": np.array([0])}
                           for agent in self.agents]
             for visualisation, plot in zip(visualisations, plots):
                 visualisation.plot(agent_data, plot, doc)
@@ -67,11 +69,21 @@ class Experiment:
             # Perform training and continually plot
             for epoch_batch in range(epoch_batches):
                 start_epoch = epoch_batch * epoch_batch_size + 1
-                agent_data = [{**agent.train(epochs=epoch_batch_size, metrics=metrics),
-                               "epoch": np.arange(start_epoch, start_epoch + epoch_batch_size)}
-                              for agent in self.agents]
+
+                def get_agent_data():
+                    for agent in self.agents:
+                        start = time.perf_counter()
+                        data = agent.train(epochs=epoch_batch_size,
+                                           metrics=metrics)
+                        end = time.perf_counter()
+                        data["epoch"] = np.arange(
+                            start_epoch, start_epoch + epoch_batch_size)
+                        data["run_time"] = np.repeat(
+                            end-start, epoch_batch_size) / epoch_batch_size
+                        yield data
+                data = list(get_agent_data())
                 for visualisation, plot in zip(visualisations, plots):
-                    visualisation.plot(agent_data, plot, doc)
+                    visualisation.plot(data, plot, doc)
 
         thread = Thread(target=run_blocking)
         thread.start()
