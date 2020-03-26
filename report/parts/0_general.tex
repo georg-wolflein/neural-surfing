@@ -9,6 +9,28 @@ report.}
 
 \chapter{Context survey}
 \section{Neural networks}
+
+\paragraph{Backpropagation}
+(BP)
+
+\paragraph{Derivative-free optimisation}
+The class of derivative-free optimisation (DFO) algorithms are optimisation techniques that attempt to find a global optimum, requiring only an objective function, but no gradient information.
+One example of such an algorithm is simulated annealing (SA), proposed by \citeauthor{kirkpatrick1983}, that mimics the motion of atoms in the physical process of a slowly cooling material \cite*{kirkpatrick1983}.
+Originally employed in discrete optimisation problems such as the combinatorial travelling salesman problem \cite{cerny1985}, it was later generalized and applied to problems with continuous domains \cite{belisle1993}.
+However, in a comparative study of derivative-free optimisation algorithms, \citeauthor{rios2009} found that SA performed relatively poorly in comparison to more modern DFOs on general optimisation problems\footnote{It is important to note that \citeauthor{rios2009} did not assess DFOs for the purpose of neural network optimisation, but rather compared their performances on general convex and non-convex optimisation problems.} \cite*{rios2009}.
+
+The concept of applying DFO as a means of training neural networks is not unique to this project.
+In the 1990s, several training regimes for neural networks were proposed that did not rely on derivative calculations, employing variants of random and local search \cite{hirasawa1998,battiti1995}.
+These approaches seemed to find better minima and did not get stuck in local minima as BP did. 
+More recently, random search was affirmed in outperforming BP in the context of deep neural networks for reinforcement learning, although a different family of DFO algorithms, so-called genetic algorithms were proposed as a superior alternative \cite{such2017}.
+
+The most recent and most similar work is a DFO for neural networks using a variant of local search belonging in the family of random search algorithms \cite{aly2019}.
+This technique parallels the general finding that DFOs are often able to escape local minima and thus produce better training results; however, they require more iterations and computational resources than BP. 
+
+\citeauthor{aly2019}, \citeauthor{such2017}, and many other recent works studied the effectiveness of  
+\todo: say they focus on networks with order of $10^6$ parameters where it is impossible to effecticely study the loss surface analytically, and local minima might not be as `bad' 
+
+\paragraph{The local minimum problem}
 \begin{itemize}
     \item ``In practice, poor local minima are rarely a problem with large networks'' \cite{lecun2015}.
     \item ``The apparent scarcity of poor local minima has lead practitioners to develop the intuition that bad local minima (`bad' meaning high loss value and suboptimal training performance) are practically non-existent'' \cite{goldblum2019}.
@@ -33,8 +55,7 @@ Primary objectives:
     \item For a simple case of this framework (when the dimensionality of the control space
     and output space are suitably low), implement a visualisation tool that shows the
     algorithm’s steps.
-    \item Implement a particular training algorithm for the framework that uses potential field
-    techniques.
+    \item Design and implement the neural surfing technique.
     \item Evaluate the performance of this and other algorithms on tasks of differing
     complexity, especially with regard to the local minimum problem and similar issues.
 \end{enumerate}

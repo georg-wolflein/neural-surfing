@@ -75,7 +75,7 @@ The unit $i$'s activation is its excitation applied to a non-linear \textit{acti
 \end{equation}
 
 \paragraph{Activation functions}
-In its original form, \citeauthor{mcculloch1943} defined the neuron as having only binary activation \cite{mcculloch1943}. 
+In its original form, \citeauthor{mcculloch1943} defined the neuron as having only binary activation \cite*{mcculloch1943}. 
 This means that in our model from (\ref{eq:ann_activation}), we would require $a_i \in \{0, 1\}$ and hence an activation function of the form $g_\text{thres}: \mathbb{R} \rightarrow \{0, 1\}$ which would be defined\footnote{In fact, \citeauthor{mcculloch1943} defined the activation to be zero when $x<\theta$ for a threshold parameter $\theta \in \mathbb{R}$ and one otherwise, but in our model the bias term $b_i$ acts as the threshold.} as
 \begin{equation}
     \label{eq:thres_activation}
@@ -645,6 +645,7 @@ We will come back to these results in Section \ref{sec:stripe_problem}.
 
 
 \section{Simulated annealing}
+
 
 \chapter{The local minimum problem}
 \label{sec:local_minimum_problem}
