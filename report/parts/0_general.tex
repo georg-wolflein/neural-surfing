@@ -11,6 +11,7 @@ report.}
 \section{Neural networks}
 
 \paragraph{Backpropagation}
+\todo
 (BP)
 
 \paragraph{Derivative-free optimisation}
@@ -24,21 +25,19 @@ In the 1990s, several training regimes for neural networks were proposed that di
 These approaches seemed to find better minima and did not get stuck in local minima as BP did. 
 More recently, random search was affirmed in outperforming BP in the context of deep neural networks for reinforcement learning, although a different family of DFO algorithms, so-called genetic algorithms were proposed as a superior alternative \cite{such2017}.
 
-The most recent and most similar work is a DFO for neural networks using a variant of local search belonging in the family of random search algorithms \cite{aly2019}.
-This technique parallels the general finding that DFOs are often able to escape local minima and thus produce better training results; however, they require more iterations and computational resources than BP. 
+The most recent and most similar work is a DFO technique for neural networks using a variant of local search belonging in the family of random search algorithms \cite{aly2019}.
+This technique parallels the finding from other works that DFOs are often able to escape local minima and thus produce better training results; however, they require more iterations and computational resources than BP. 
 
-\citeauthor{aly2019}, \citeauthor{such2017}, and many other recent works studied the effectiveness of  
-\todo: say they focus on networks with order of $10^6$ parameters where it is impossible to effecticely study the loss surface analytically, and local minima might not be as `bad' 
+\citeauthor{aly2019}, \citeauthor{such2017}, and similar works studied the performance of their respective DFO algorithms for training neural networks with a large parameter space (in the order of $10^6$ parameters) which, while providing valuable practical insight, made it impossible to examine the structure of the loss surface analytically in order to assess issues such as severely suboptimal local minima.
 
 \paragraph{The local minimum problem}
-\begin{itemize}
-    \item ``In practice, poor local minima are rarely a problem with large networks'' \cite{lecun2015}.
-    \item ``The apparent scarcity of poor local minima has lead practitioners to develop the intuition that bad local minima (`bad' meaning high loss value and suboptimal training performance) are practically non-existent'' \cite{goldblum2019}.
-    \item Other works proved the nonexistence of suboptimal local minima, but making various assumptions about the underlying neural networks \cite{kawaguchi2016,nguyen2018,laurent2018}.
-\end{itemize}
+The local minimum problem that arises when neural network training converges to a suboptimal local minimum with a comparatively high loss value, has been extensively studied as a phenomenon in optimisation problems.
+However, with regards to neural networks, there seems to be different opinions on the severity of this issue. 
+One frequently cited article claims that ``In practice, poor local minima are rarely a problem with large networks'' \cite{lecun2015}.
+This is underpinned in theory by other works which proved the nonexistence of suboptimal local minima, although they make varying assumptions on the structure of the underlying neural networks \cite{kawaguchi2016,nguyen2018,laurent2018}.
+On the other hand, a recent article asserts that ``The apparent scarcity of poor local minima has lead practitioners to develop the intuition that bad local minima \elide are practically non-existent'' \cite{goldblum2019}.
+Therefore, it can be said that the local minimum problem is still an active area of research.
 
-
-\todo
 \section{Implementation tools}
 \begin{itemize}
     \item TensorFlow

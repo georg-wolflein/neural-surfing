@@ -545,8 +545,8 @@ We will use a simple loss function that uses mean squared error for this purpose
     We use the term \textit{error-weight surface} to refer to the graph of this function.
 \end{definition}
 
-\section{Gradient descent with mean squared error}
-Gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum}\footnote{We will provide a formal discussion of this concept in Section \ref{sec:local_minimum_problem}.}.
+\section{Backpropagation}
+Backpropagation (BP) via gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum}\footnote{We will provide a formal discussion of this concept in Section \ref{sec:local_minimum_problem}.}.
 The main idea is as follows:
 \begin{enumerate}
     \item Calculate the derivative of the loss function with respect to the current trainable parameters $\vec{p}$ as
@@ -642,6 +642,41 @@ We will come back to these results in Section \ref{sec:stripe_problem}.
 
 
 \section{Greedy probing}
+Unlike BP, greedy probing is a simple derivative-free optimisation (DFO) technique. 
+At each iteration, the algorithm will sample a predefined number of configurations in the local neighbourhood of the current parameter configuration $\vec{p}$. 
+The loss is calculated at each of these samples, and the best (i.e. lowest value) is chosen as the new parameter configuration. 
+In this sense, greedy probing is similar to gradient descent, except that the gradient is manually calculated instead of using the partial derivative.
+As a result, greedy probing will suffer similar issues as gradient descent, but depending on the sampling radius $r \in \mathbb{R}$ it is conjectured that it might be less sensitive to local pertubations (`noise') on the error-weight surface.
+
+The sampling technique may either be \textit{exhaustive} or \textit{random}.
+In the exhaustive case, the samples are given by
+\begin{equation*}
+    \left\{
+        \vec{p} + r
+        \frac{
+            \begin{bmatrix}
+                p_1 & p_2 & \cdots & p_P
+            \end{bmatrix}\tran
+        }{
+            \norm{
+                \begin{bmatrix}
+                    p_1 & p_2 & \cdots & p_P
+                \end{bmatrix}
+            }
+        }
+        : \begin{array}{l}
+            \text{$p_1, p_2, \dots, p_P \in \left\{-1,0,1\right\}$ and} \\
+            \norm{
+                \begin{bmatrix}
+                    p_1 & p_2 & \cdots & p_P
+                \end{bmatrix}
+            } \neq 0
+        \end{array}
+    \right\}
+\end{equation*}
+which means that $3^P-1$ samples are generated at each iteration.
+On the other hand, the random sampling technique will generate $n$ random samples in weight space with the condition that for every sample $\vec{p}_i$, it must be true that
+$\norm{\vec{p} - \vec{p}_i} = r$.
 
 
 \section{Simulated annealing}
