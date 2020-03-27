@@ -1,3 +1,10 @@
 \chapter{Evaluation and critical appraisal}
 
+\subsection{Simulated annealing}
+\label{sec:eval_sim_annealing}
+More complex implementations of SA may combine the so-called downhill simplex algorithm \cite{nelder1965} with SA such as in \textcite[p. 444-455]{press1992}, thereby introducing three additional hyperparameters.
+In fact, \citeauthor{press1992} remark that ``there can be quite a lot of problem-dependent subtlety'' in choosing the hyperparameters, and that ``success or failure is quite often determined by the choice of annealing schedule'' \cite*[p. 452]{press1992}.
+\todo: generic framework, so could not implement custom annealing schedules with restarts, etc.
+Furthermore, at what point is the algorithm `adjusted too much' to the problem?
+
 \chapter{Conclusions and future work}

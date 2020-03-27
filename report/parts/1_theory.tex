@@ -649,10 +649,10 @@ In this sense, greedy probing is similar to gradient descent, except that the gr
 As a result, greedy probing will suffer similar issues as gradient descent, but depending on the sampling radius $r \in \mathbb{R}$ it is conjectured that it might be less sensitive to local pertubations (`noise') on the error-weight surface.
 
 The sampling technique may either be \textit{exhaustive} or \textit{random}.
-In the exhaustive case, the samples are given by
-\begin{equation*}
+In the exhaustive case, the samples around point $\vec{p}_i$ are given by
+\begin{equation}
     \left\{
-        \vec{p} + r
+        \vec{p}_i + r
         \frac{
             \begin{bmatrix}
                 p_1 & p_2 & \cdots & p_P
@@ -673,13 +673,37 @@ In the exhaustive case, the samples are given by
             } \neq 0
         \end{array}
     \right\}
-\end{equation*}
+\end{equation}
 which means that $3^P-1$ samples are generated at each iteration.
-On the other hand, the random sampling technique will generate $n$ random samples in weight space with the condition that for every sample $\vec{p}_i$, it must be true that
-$\norm{\vec{p} - \vec{p}_i} = r$.
+On the other hand, the random sampling technique will generate a predefined number of random samples in weight space with the condition that given the current configuration $\vec{p}_i$, for every candidate sample $\vec{\hat{p}}$, it must be true that
+$\norm{\vec{p}_i - \vec{\hat{p}}} = r$.
 
 
 \section{Simulated annealing}
+The rationale of the simulated annealing (SA) algorithm lies in its analogy to the behaviour that atoms exhibit in a substance that is slowly cooling down \cite{kirkpatrick1983}.
+At high temperatures, the atoms move around with high kinetic energy, but as the temperature cools down, they begin to move more slowly until completely losing thermal mobility. 
+When this process is carried out sufficiently slowly, the atoms will settle in a perfectly aligned crystal structure with minimum energy. 
+However, if the cooling process is too fast, the final structure will be chaotic and hence not be at the minimum energy state \cite[p. 444]{press1992}.
+
+At each iteration, the algorithm will explore random sample points one after another in the local neighbourhood of the current configuration $\vec{p}_i$ until one is accepted. 
+The probability of accepting a candidate sample point $\vec{\hat{p}}$ at the $i$th iteration is given by the probability distribution
+\begin{equation}
+    P(\vec{\hat{p}}|\vec{p}_i) = \begin{cases}
+        \exp{\left(-\frac{k}{T_i} \left(L(\vec{\hat{p}}) - L(\vec{p}_i)\right) \right)} & L(\vec{\hat{p}}) > L(\vec{p}_i) \\
+        1 & L(\vec{\hat{p}}) \leq L(\vec{p}_i)
+    \end{cases}
+\end{equation}
+for an energy coefficient $k\in \mathbb{R}$ \cite{rios2009}.
+This means that the SA algorithm will always accept a better location, but, with a certain probability, might take a suboptimal step.
+
+The temperature at the $i$ iteration is determined according to a \textit{cooling schedule}. 
+We will employ a simple approach as a proof of concept that calculates $T_i$ as the geometric sequence
+\begin{equation}
+    T_i = \left(1 - c\right) T_{i-1} = \left(1 - c\right)^i T_0
+\end{equation}
+where $c$ is a cooling rate typically of the order of $10^{-1}$ or $10^{-2}$.
+Already, this simple SA algorithm has three hyperparameters: the energy coefficient $k$, the initial temperature $T_0$, and the cooling rate $c$. 
+More sophisticated implementations will require even more hyperparameters (such as \textcite{press1992} as remarked in Section \ref{sec:eval_sim_annealing}) that makes it increasingly difficult to design SA in a generic fashion to suit the training of neural networks. 
 
 
 \chapter{The local minimum problem}
