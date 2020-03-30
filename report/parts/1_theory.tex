@@ -546,7 +546,7 @@ We will use a simple loss function that uses mean squared error for this purpose
 \end{definition}
 
 \section{Backpropagation}
-Backpropagation (BP) via gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum}\footnote{We will provide a formal discussion of this concept in Section \ref{sec:local_minimum_problem}.}.
+Backpropagation (BP) via gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum} (see Section \ref{sec:local_minimum_problem}).
 The main idea is as follows:
 \begin{enumerate}
     \item Calculate the derivative of the loss function with respect to the current trainable parameters $\vec{p}$ as
