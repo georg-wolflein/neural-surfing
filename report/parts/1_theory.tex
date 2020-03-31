@@ -783,10 +783,70 @@ More sophisticated implementations will require even more hyperparameters (such 
     \end{equation*}
 \end{definition}
 \begin{definition}[Positive definite matrix]
+    \label{def:positive_definite}
     A symmetric $n\times n$ matrix $\vec{M} \in \mathbb{R}^{n\times n}$ is said to be \textit{positive definite} if and only if
     $\vec{x}\tran \vec{M} \vec{x} > 0$
     for all $\vec{x} \in \mathbb{R}^n \setminus \vec{0}$.
 \end{definition}
+We will prove a simple technique for showing that a $2 \times 2$ matrix is positive definite, as this will help us prove the existence of local minima later.
+\begin{theorem}[$2\times 2$ positive definite matrix]
+    \label{thm:positive_definite_2_by_2}
+    The matrix $\vec{M} = \begin{bmatrix}
+        a & b \\ b & c
+    \end{bmatrix}$
+    is positive definite if
+    $a > 0$ and 
+    $ac - b^2>0$.
+\end{theorem}
+\begin{proof}
+    Let $\vec{x} = \begin{bmatrix}
+        x_1 & x_2
+    \end{bmatrix}\tran$
+    and $f(x_1, x_2) = \vec{x}\tran \vec{M} \vec{x}$.
+    Performing the multiplication,
+    \begin{align*}
+        f(x_1, x_2)
+        &= 
+        \begin{bmatrix}
+            x_1 & x_2
+        \end{bmatrix}
+        \begin{bmatrix}
+            a & b \\
+            b & c
+        \end{bmatrix}
+        \begin{bmatrix}
+            x_1 \\ x_2
+        \end{bmatrix} \\
+        &=
+        \begin{bmatrix}
+            x_1 a + x_2 b & x_1 b + x_2 c
+        \end{bmatrix}
+        \begin{bmatrix}
+            x_1 \\ x_2
+        \end{bmatrix} \\
+        &=
+            x_1^2 a + 2 x_1 x_2 b + x_2^2 c.
+    \end{align*}
+
+    We will now discuss under what conditions
+    $f(x_1, x_2) > 0$
+    holds.
+    When $x_2=0$, it must necessarily be the case that $a>0$.
+    Otherwise, dividing by $x_2^2$, we can write
+    \begin{align*}
+        \left(\frac{x_1}{x_2}\right)^2 a + \frac{2 x_1 b}{x_2} + c > 0,
+    \end{align*}
+    and substituting $p = \frac{x_1}{x_2}$ we get
+    \begin{align*}
+        p^2 a + 2pb + c > 0.
+    \end{align*}
+    Treating this as a quadratic function in terms of $p$, we realize that since $a>0$, the parabola opens up.
+    The discriminant $D=4b^2 - 4ac$ is negative if $ac-b^2>0$ which means that the parabola has no roots. 
+    Thus its range is positive.
+
+    We have shown that $f(x_1, x_2)>0$ if $a>0$ and $ac-b^2>0$ for all $x_1,x_2\in \mathbb{R}$ except $x_1=x_2=0$.
+    By Definition \ref{def:positive_definite}, $\vec{M}$ must be positive definite.
+\end{proof}
 
 \begin{theorem}[Local minimum]
     Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a continuously differentiable function, and let the point
@@ -1339,6 +1399,7 @@ The reduced number of parameters will lend itself better for analysis.
 We will first introduce the concept of radial basis functions. 
 When used as the activation function, they exhibit some advantageous properties that will aid us to contrive a simple version of the stripe problem.
 \begin{definition}[Radial basis function]
+    \label{def:rbf}
     A radial basis function (RBF) is a smooth continuous real-valued\footnote{We define RBFs has having a scalar domain and range because this suffices for our purposes. In actual fact, RBFs are defined more generally to map between suitable vector spaces \cite{buhmann2000}.} function $\phi : \mathbb{R} \rightarrow \mathbb{R}$ that satisfies the property $\phi(x) = \phi(\norm{x})$ \cite{buhmann2000}. 
     %RBFs are commonly used as a kernel in support vector machines (SVMs) \cite{burkov2019}.
     For RBFs to be useful activation functions, we three additional restrictions:
@@ -1354,7 +1415,7 @@ When used as the activation function, they exhibit some advantageous properties 
 
 Two commonly used RBFs, both infinitely differentiable, are the Gaussian function
 \begin{equation}
-    \label{eq:sigmoid}
+    \label{eq:gaussian}
     \phi(x) = e^{-x^2}
 \end{equation}
 and the bump function\footnote{We give a slightly modified version of the well-known $C_\infty$ ``bump'' function \cite{johnson2015} that is vertically scaled such that $\phi(0)=1$ for convenience.}
@@ -1601,8 +1662,29 @@ However, since we established that the hyperplanes will always remain parallel i
 Figure \ref{fig:stripe_hyperplanes} depicts the initial and target configurations of this simplified version. 
 It is obvious that whichever direction the stripe rotates, it will need to misclassify one of the samples before achieving the target configuration.
 
-
-
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{c|c|c}
+        input ($\vec{x}$) & target output ($y$) & initial output ($\hat{y}$) \\
+        \hline
+        $\begin{bmatrix} 0 & 0 \end{bmatrix}$
+        & 1 & 1
+        \\
+        $\begin{bmatrix} 2 & 2 \end{bmatrix}$
+        & 1 & $\phi\left( 4 \right)$
+        \\
+        $\begin{bmatrix} 0 & 2 \end{bmatrix}$
+        & $\phi\left( 2 \right)$ & $\phi\left( 2 \right)$
+        \\
+        $\begin{bmatrix} 2 & 0 \end{bmatrix}$
+        & $\phi\left(2 \right)$ & $\phi\left( 2 \right)$
+    \end{tabular}
+    \caption{The dataset for the RBF stripe problem.}
+    \label{table:stripe_dataset}
+\end{table}
+We give the dataset for the stripe problem in Table \ref{table:stripe_dataset}.
+Notice that the third and fourth samples do not have a target output of zero, but rather $\phi(2)$ which is close to zero (for the Gaussian RBF, $\phi(2) \approx 0.018$, and for the bump function $\phi(2) = 0$).
+This will make some calculations later more convenient because it guarantees that there exists at least one weight configuration with a MSE of zero.
 
 \begin{figure}
     \centering
@@ -1630,9 +1712,10 @@ It is obvious that whichever direction the stripe rotates, it will need to miscl
                 mesh,
                 domain=-3:3,
                 y domain=-3:3
-            ] {(rbf(2*x))^2 + (rbf(2*y))^2 + (1 - rbf(2*x + 2*y))^2};
+            ] {(rbf(2*x) - rbf(2))^2 + (rbf(2*y) - rbf(2))^2 + (rbf(2*x + 2*y) - 1)^2};
             \node[label={360:{$\vec{w}_0$}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
             \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
+            \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
         \end{axis}
     \end{tikzpicture}
     \caption{Error-weight surface of the stripe problem with Gaussian activation.}
@@ -1661,49 +1744,289 @@ It is obvious that whichever direction the stripe rotates, it will need to miscl
                 mesh,
                 domain=-3:3,
                 y domain=-3:3
-            ] {(rbf(2*x))^2 + (rbf(2*y))^2 + (1 - rbf(2*x + 2*y))^2};
+            ] {(rbf(2*x) - rbf(2))^2 + (rbf(2*y) - rbf(2))^2 + (rbf(2*x + 2*y) - 1)^2};
             \node[label={360:{$\vec{w}_0$}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
             \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
+            \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
         \end{axis}
     \end{tikzpicture}
     \caption{Error-weight surface of the stripe problem with bump activation.}
     \label{fig:stripe_error_surface_bump}
 \end{figure}
+Let us examine the error-weight surface of the stripe problem. 
+It is depicted in Figures \ref{fig:stripe_error_surface_gaussian} and \ref{fig:stripe_error_surface_bump} for the Gaussian and bump activation functions, respectively.
+The graphs are quite similar, showing that the initial weight configuration $\vec{w}_0$ has a MSE of around $1$.
+Most importantly, we see that in order to get to any of the goal weight states $\vec{w}_S$ in the region where the MSE is close to zero, we must first overcome a `hill'.
 
+For the remainder of this project, we will consider only the Gaussian RBF function, but let it be noted that in principle, any type of RBF that satisfies the criteria given in Definition \ref{def:rbf} is suitable.
+The Gaussian RBF, however, lends itself better for the purposes of analysis because it is not a piecewise defined function, and it does not have a derivative of zero anywhere except at $x=0$. 
+In addition, gradient descent fails immediately with the bump function because the initial weight configuration is at an area where the gradient is exactly zero.
+Henceforth the term `stripe problem' shall be used to refer to the Gaussian RBF version of the stripe problem. 
 
-\begin{figure}
-    \centering
-    \begin{tikzpicture}[
-        declare function={
-            rbf(\x)= exp(-\x^2);
-        }
-    ]
-        \begin{axis}[
-            scale only axis,
-            width=.75\textwidth,
-            ymin=-3, ymax=3,
-            xmin=-3, xmax=3,
-            zmin=0, zmax=2,
-            xlabel={$w_1$},
-            ylabel={$w_2$},
-            zlabel={MSE},
-            samples=60,
-            xtick={-3,0,3},
-            ytick={-3,0,3},
-            ztick={0, 1, 2},
-            view={30}{75}
-        ]
-            \addplot3 [
-                mesh,
-                domain=-3:3,
-                y domain=-3:3
-            ] {(rbf(2*x))^2 + (rbf(2*y))^2 + (1 - rbf(2*x + 2*y))^2};
-            \node[label={360:{$\vec{w}_0$}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
-            \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Error-weight surface of the stripe problem with Gaussian activation.}
-\end{figure}
+\subsection{Local minima}
+We will now attempt to find the local minima in the error-weight surface analytically. 
+From Table \ref{table:stripe_dataset} we obtain the input matrix
+\begin{equation*}
+    \vec{X} = \begin{bmatrix}
+        0 & 0 \\
+        2 & 2 \\
+        0 & 2 \\
+        2 & 0
+    \end{bmatrix}
+\end{equation*}
+and target output vector
+$\vec{y} = \begin{bmatrix}
+    1 & 1 & \phi(2) & \phi(2)
+\end{bmatrix}\tran$.
+Modifying the SLN function from Definition \ref{def:sln} for the case of our 2-1 RBF network without bias, we have $S(\vec{x}) = \phi(\vec{w}\tran \vec{x})$.
+This means that our loss function is given by
+\begin{align*}
+    L(\vec{w}) = L
+    &= \sum_{i=1}^4{\left(\phi\left(\vec{w}\tran \vec{x}_i\right) - y_i\right)^2} \\
+    &= \left(\phi(\vec{w}\tran\vec{x}_1) - 1\right)^2
+     + \left(\phi(\vec{w}\tran\vec{x}_2) - 1\right)^2 \\
+    &\qquad+ \left(\phi(\vec{w}\tran\vec{x}_3) - \phi(2)\right)^2
+     + \left(\phi(\vec{w}\tran\vec{x}_4) - \phi(2)\right)^2 \\
+    &= \left(\phi(0) - 1\right)^2
+     + \left(\phi(2 w_1 + 2 w_2) - 1\right)^2 \\
+    &\qquad+ \left(\phi(2 w_2) - \phi(2)\right)^2
+     + \left(\phi(2 w_1) - \phi(2)\right)^2.
+\end{align*}
+Substituting (\ref{eq:gaussian}), we obtain
+\begin{equation}
+    L
+     = \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right)^2
+     + \left(e^{-(2 w_2)^2} - e^{-4}\right)^2
+     + \left(e^{-(2 w_1)^2} - e^{-4}\right)^2.
+\end{equation}
+
+\begin{lemma}
+    The three critical points of the error-weight surface given by $L$ are 
+    $\vec{w}_1 = \begin{bmatrix}
+        -1 & 1
+    \end{bmatrix}\tran$,
+    $\vec{w}_2 = \begin{bmatrix}
+        1 & -1
+    \end{bmatrix}\tran$, and
+    $\vec{w}_3 = \begin{bmatrix}
+        0 & 0
+    \end{bmatrix}\tran$.
+\end{lemma}
+
+\begin{proof}
+    We need to find the Jacobian, $\vec{J}_L$. 
+    Differentiating $L$ with respect to $w_1$ gives
+    \begin{align*}
+        \frac{\delta L}{\delta w_1}
+        &= 2 \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right) \frac{\delta}{\delta w_1} e^{-(2 w_1 + 2 w_2)^2} \\
+        &\qquad + 2 \left(e^{-(2 w_1)^2} - e^{-4}\right) \frac{\delta}{\delta w_1} e^{-(2 w_1)^2} \\
+        &= -16 \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right) \left(w_1 + w_2 \right) e^{-(2 w_1 + 2 w_2)^2} \\
+        &\qquad -16 w_1 \left(e^{-4 w_1^2} - e^{-4}\right) e^{-4 w_1^2},
+    \end{align*}
+    and for $w_2$ we have
+    \begin{align*}
+        \frac{\delta L}{\delta w_2}
+        &= 2 \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right) \frac{\delta}{\delta w_2} e^{-(2 w_1 + 2 w_2)^2} \\
+        &\qquad + 2 \left(e^{-(2 w_2)^2} - e^{-4}\right) \frac{\delta}{\delta w_2} e^{-(2 w_2)^2} \\
+        &= -16 \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right) \left(w_1 + w_2 \right) e^{-(2 w_1 + 2 w_2)^2} \\
+        &\qquad -16 w_2 \left(e^{-4 w_2^2} - e^{-4}\right) e^{-4 w_2^2}.
+    \end{align*}
+    This allows us to express the Jacobian as
+    \begin{align*}
+        \vec{J}_L
+        &= \begin{bmatrix}
+            \frac{\delta L}{\delta w_1} &
+            \frac{\delta L}{\delta w_2}
+        \end{bmatrix} \\
+        &= -16 \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right) \left(w_1 + w_2 \right) e^{-(2 w_1 + 2 w_2)^2} \\
+        &\qquad - 16
+        \begin{bmatrix}
+            w_1 \left(e^{-4 w_1^2} - e^{-4}\right) e^{-4 w_1^2} \\
+            w_2 \left(e^{-4 w_2^2} - e^{-4}\right) e^{-4 w_2^2}
+        \end{bmatrix}\tran \\
+        &= -16 (q^2 - q) (w_1 + w_2) 
+        - 16
+        \begin{bmatrix}
+            w_1 \left(e^{-4 w_1^2} - e^{-4}\right) e^{-4 w_1^2} \\
+            w_2 \left(e^{-4 w_2^2} - e^{-4}\right) e^{-4 w_2^2}
+        \end{bmatrix}\tran \numberthis \label{eq:stripe_jacobian}
+    \end{align*}
+    where $q = e^{-(2 w_1 + 2 w_2)^2}$.
+    To find the critical points, we set
+    $\vec{J}_L = \vec{0}$.
+
+    % Is it possible to prove that
+    % \begin{align*}
+    % \begin{bmatrix}
+    %     0 \\ 0
+    % \end{bmatrix}
+    %     = (a^2 - a) (x + y) 
+    %      +
+    %     \begin{bmatrix}
+    %         b(x) \\
+    %         b(y)
+    %     \end{bmatrix}
+    % \end{align*}
+    % where $a = e^{-(2 x + 2 y)^2}$ and $b(x) = x \left(e^{-4 x^2} - e^{-4}\right) e^{-4 x^2}$
+    % only has the following solutions?
+    % \begin{itemize}
+    %     \item $x=y=0$
+    %     \item $x=-1,y=1$
+    %     \item $x=1,y=-1$
+    % \end{itemize}
+    \todo: prove that $\vec{w}_1$, $\vec{w}_2$, and $\vec{w}_3$ are the only solutions
+\end{proof}
+
+\begin{lemma}
+    The only local minima on the error-weight surface given by $L$ are $\vec{w}_1$ and $\vec{w}_2$.
+\end{lemma}
+\begin{proof}
+    We have previously shown that $\vec{J}_L=\vec{0}$ for the three critical points $\vec{w}_1$, $\vec{w}_2$, and $\vec{w}_3$.
+    Let us now compute the Hessian.
+    We will express the Jacobian from (\ref{eq:stripe_jacobian}) as
+    \begin{align*}
+        \vec{J}_L &= -16 \left( r
+        +
+        \begin{bmatrix}
+            s(w_1) \\
+            s(w_2)
+        \end{bmatrix}\tran \right) \numberthis \label{eq:stripe_jacobian_short}
+    \end{align*}
+    where
+    \begin{align*}
+        q &= e^{-(2w_1 + 2w_2)^2} \\
+        r &= (q^2-q)(w_1+w_2) \\
+        s(x) &= x \left(e^{-8 x^2} - e^{-4-4x^2}\right).
+    \end{align*}
+    Let us first compute the derivatives of $q$ with respect to $w_1$ and $w_2$, which, interestingly enough, are equal:
+    \begin{equation*}
+        \frac{\delta q}{\delta w_1}
+        = \frac{\delta q}{\delta w_2}
+        = -8 q (w_1 + w_2).
+    \end{equation*}
+    The derivative of $r$ with respect to $w_1$ is
+    \begin{align*}
+        \frac{\delta r}{\delta w_1}
+        &= q^2 - q + (w_1 + w_2) \frac{\delta}{\delta w_1} (q^2-q) \\
+        &= q^2 - q + (w_1 + w_2) (2q - 1) \frac{\delta q}{\delta w_1} \\
+        &= q^2 - q - 8q(w_1 + w_2)^2 (2q - 1).
+    \end{align*}
+    Here, it can be shown that $\frac{\delta r}{\delta w_1}=\frac{\delta r}{\delta w_2}$.
+    The exact derivation is left as an exercise to the reader.
+
+    It remains to find the derivative of $s$,
+    \begin{align*}
+        s'(x)
+        &= e^{-4 x^2} - e^{-4}
+        + x \frac{\delta}{\delta x} \left(e^{-8 x^2} - e^{-4-4 x^2}\right)\\
+        &= e^{-4 x^2} - e^{-4}
+        + x \left(-16 x e^{-8 x^2} + 8 x e^{-4-4 x^2}\right)\\
+        &= e^{-4 x^2} - e^{-4}
+        - 8 x^2 \left(e^{-4-4 x^2} - 2 e^{-8 x^2}\right).
+    \end{align*}
+
+    Calculating all the second derivatives of (\ref{eq:stripe_jacobian_short}), we get
+    \begin{align*}
+        \frac{\delta^2 L}{\delta w_1^2}
+        &= -16 \frac{\delta}{\delta w_1} \left( r + s(w_1) \right) \\
+        &= -16 \left( \frac{\delta r}{\delta w_1} + s'(w_1) \right),
+        % &= -16 \left( a^2 - a - 8a(w_1 + w_2)^2 (2a - 1) + 
+        % e^{-4 x^2} - e^{-4} - 8 w_1^2 \left(e^{-4-4 w_1^2} - 2 e^{-8 w_1^2}\right) \right).
+    \end{align*}
+    \begin{align*}
+        \frac{\delta^2 L}{\delta w_1 w_2}
+        &= -16 \frac{\delta}{\delta w_2} \left( r + s(w_1) \right) \\
+        &= -16 \frac{\delta r}{\delta w_2} \\
+        &= -16 \frac{\delta r}{\delta w_1},
+    \end{align*}
+    \begin{align*}
+        \frac{\delta^2 L}{\delta w_2 w_1}
+        &= -16 \frac{\delta}{\delta w_1} \left( r + s(w_2) \right) \\
+        &= -16 \frac{\delta r}{\delta w_1},
+    \end{align*}
+    and
+    \begin{align*}
+        \frac{\delta^2 L}{\delta w_2^2}
+        &= -16 \frac{\delta}{\delta w_2} \left( r + s(w_2) \right) \\
+        &= -16 \left( \frac{\delta r}{\delta w_2} + s'(w_2) \right) \\
+        &= -16 \left( \frac{\delta r}{\delta w_1} + s'(w_2) \right).
+    \end{align*}
+    This allows us to write an expression for the Hessian matrix in the form
+    \begin{align}
+        \label{eq:stripe_hessian}
+        \vec{H}_L
+        &=
+            \begin{bmatrix}
+                16 s'(w_1) & 0 \\
+                0 & 16 s'(w_2)
+            \end{bmatrix}
+            -16 \frac{\delta r}{\delta w_1}.
+    \end{align}
+
+    \paragraph{First critical point ($w_1=-1, w_2=1$)}
+    By Theorem \ref{thm:positive_definite_2_by_2}, $\vec{H}_L$ is positive definite if and only if $a>0$ and $ac-b^2>0$ when expressing the matrix in the form
+    $\vec{H}_L = \begin{bmatrix}
+        a & b \\ b & c
+    \end{bmatrix}$.
+    We will begin by showing $a = \frac{\delta ^2 L}{\delta w_1^2}>0$.
+    To do that, we must first evaluate $q$,$r$,$s'(w_1)$, and $\frac{\delta r}{\delta w_1}$ for the current weight configuration.
+    \begin{align*}
+        q &= e^{-(2w_1+2w_2)^2} = 1 \\
+        r &= (q^2-q)(w_1+w_2) = 0 \\
+        s'(w_1) &= e^{-4 w_1^2} - e^{-4} - 8 w_1^2 \left(e^{-4-4 w_1^2} - 2 e^{-8 w_1^2}\right) = 8e^{-8} \\
+        \frac{\delta r}{\delta w_1} &= q^2 - q - 8q(w_1 + w_2)^2 (2q - 1) = 0.
+    \end{align*}
+
+    We get
+    \begin{align*}
+        a &= 16s'(w_1) - 16 \frac{\delta r}{\delta w_1} \\
+        &= 128 e^{-8} > 0.
+    \end{align*}
+
+    It remains to show that $ac - b^2 > 0$. 
+    Noticing that $s'(1) = s'(-1)$, we realise that in fact $a=c$.
+    So,
+    \begin{align*}
+        ac - b^2
+        &= a^2 - b^2 \\
+        &= 128^2e^{-16} - \left(-16 \frac{\delta r}{\delta w_1}\right)^2 \\
+        &= 128^2e^{-16} > 0.
+    \end{align*}
+    Hence, we showed that the point $\vec{w}_1$ forms a local minimum.
+
+    \paragraph{Second critical point ($w_1=1, w_2=-1$)}
+    Notice that this point can be obtained simply by switching $w_1$ and $w_2$ from the previous critical point.
+    We have showed previously that $s'(-1)=s'(1)$ and furthermore we established earlier that $\frac{\delta r}{\delta w_1} =\frac{\delta r}{\delta w_2}$.
+    Hence the Hessian from (\ref{eq:stripe_hessian}) will be positive definite too, thus proving that the second critical point is a local minimum, too.
+
+    \paragraph{Third critical point ($w_1=w_2=0$)}
+    Using the same notation as (\ref{eq:stripe_hessian}), we evaluate 
+    $q$,$r$,$s'(w_1)$, and $\frac{\delta r}{\delta w_1}$ for this weight configuration.
+    \begin{align*}
+        q &= e^{-(2w_1+2w_2)^2} = 1 \\
+        r &= (q^2-q)(w_1+w_2) = 0 \\
+        s'(w_1) &= e^{-4 w_1^2} - e^{-4} - 8 w_1^2 \left(e^{-4-4 w_1^2} - 2 e^{-8 w_1^2}\right) = 1 - e^{-4} \\
+        \frac{\delta r}{\delta w_1} &= q^2 - q - 8q(w_1 + w_2)^2 (2q - 1) = 0.
+    \end{align*}
+
+    We get
+    \begin{align*}
+        a &= 16s'(w_1) - 16 \frac{\delta r}{\delta w_1} \\
+        &= 16 (1 - e^{-4}) > 0.
+    \end{align*}
+    \todo: value of $a$ is incorrect, should be $-15.7$
+
+    Now, we will attempt to show that $ac - b^2 > 0$. 
+    Again, $a=c$ because $s'(w_1) = s'(w_2)$ since $w_1=w_2=0$.
+    So,
+    \begin{align*}
+        ac - b^2
+        &= a^2 - b^2 \\
+        &= 128^2e^{-16} - \left(-16 \frac{\delta r}{\delta w_1}\right)^2 \\
+        &= 128^2e^{-16} > 0.
+    \end{align*}
+
+\end{proof}
 
 \subsection{Global minima}
 
