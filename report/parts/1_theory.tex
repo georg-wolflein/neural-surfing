@@ -87,6 +87,7 @@ This means that in our model from (\ref{eq:ann_activation}), we would require $a
 
 Commonly used activation functions in modern neural networks include the sigmoid
 \begin{equation}
+    \label{eq:sigmoid}
     g_\text{sig}(x) = \frac{1}{1 + e^{-x}}
 \end{equation}
 and the rectified linear unit (ReLU)
@@ -682,7 +683,6 @@ which means that $3^P-1$ samples are generated at each iteration.
 On the other hand, the random sampling technique will generate a predefined number of random samples in weight space with the condition that given the current configuration $\vec{p}_i$, for every candidate sample $\vec{\hat{p}}$, it must be true that
 $\norm{\vec{p}_i - \vec{\hat{p}}} = r$.
 
-
 \section{Simulated annealing}
 The rationale of the simulated annealing (SA) algorithm lies in its analogy to the behaviour that atoms exhibit in a substance that is slowly cooling down \cite{kirkpatrick1983}.
 At high temperatures, the atoms move around with high kinetic energy, but as the temperature cools down, they begin to move more slowly until completely losing thermal mobility. 
@@ -709,6 +709,16 @@ where $c$ is a cooling rate typically of the order of $10^{-1}$ or $10^{-2}$.
 Already, this simple SA algorithm has three hyperparameters: the energy coefficient $k$, the initial temperature $T_0$, and the cooling rate $c$. 
 More sophisticated implementations will require even more hyperparameters (such as \textcite{press1992} as remarked in Section \ref{sec:eval_sim_annealing}) that makes it increasingly difficult to design SA in a generic fashion to suit the training of neural networks. 
 
+\section{Issues}
+\paragraph{Suboptimal local minima}
+\todo: explain
+\paragraph{Efficiency}
+\todo: both BP and SA have efficiency drawbacks (see Figure \ref{fig:gradient_descent_narrow_valley})
+\begin{figure}
+    \includegraphics[width=\textwidth]{press_steepest_gradient_descent.png}
+    \caption{The method of steepest gradient descent in a long narrow valley \cite[p. 421]{press1992}.}
+    \label{fig:gradient_descent_narrow_valley}
+\end{figure}
 
 \chapter{The local minimum problem}
 \label{sec:local_minimum_problem}
@@ -1715,7 +1725,7 @@ This will make some calculations later more convenient because it guarantees tha
             ] {(rbf(2*x) - rbf(2))^2 + (rbf(2*y) - rbf(2))^2 + (rbf(2*x + 2*y) - 1)^2};
             \node[label={360:{$\vec{w}_0$}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
             \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
-            \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
+            % \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
         \end{axis}
     \end{tikzpicture}
     \caption{Error-weight surface of the stripe problem with Gaussian activation.}
@@ -1747,7 +1757,7 @@ This will make some calculations later more convenient because it guarantees tha
             ] {(rbf(2*x) - rbf(2))^2 + (rbf(2*y) - rbf(2))^2 + (rbf(2*x + 2*y) - 1)^2};
             \node[label={360:{$\vec{w}_0$}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
             \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
-            \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
+            % \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
         \end{axis}
     \end{tikzpicture}
     \caption{Error-weight surface of the stripe problem with bump activation.}
@@ -1917,12 +1927,12 @@ Substituting (\ref{eq:gaussian}), we obtain
     It remains to find the derivative of $s$,
     \begin{align*}
         s'(x)
-        &= e^{-4 x^2} - e^{-4}
+        &= e^{-8 x^2} - e^{-4-4x^2}
         + x \frac{\delta}{\delta x} \left(e^{-8 x^2} - e^{-4-4 x^2}\right)\\
-        &= e^{-4 x^2} - e^{-4}
+        &= e^{-8 x^2} - e^{-4-4x^2}
         + x \left(-16 x e^{-8 x^2} + 8 x e^{-4-4 x^2}\right)\\
-        &= e^{-4 x^2} - e^{-4}
-        - 8 x^2 \left(e^{-4-4 x^2} - 2 e^{-8 x^2}\right).
+        &= e^{-8 x^2} - e^{-4-4x^2}
+        - 8 x^2 \left(2 e^{-8 x^2} - e^{-4-4 x^2}\right).
     \end{align*}
 
     Calculating all the second derivatives of (\ref{eq:stripe_jacobian_short}), we get
@@ -1957,8 +1967,8 @@ Substituting (\ref{eq:gaussian}), we obtain
         \vec{H}_L
         &=
             \begin{bmatrix}
-                16 s'(w_1) & 0 \\
-                0 & 16 s'(w_2)
+                -16 s'(w_1) & 0 \\
+                0 & -16 s'(w_2)
             \end{bmatrix}
             -16 \frac{\delta r}{\delta w_1}.
     \end{align}
@@ -1973,13 +1983,13 @@ Substituting (\ref{eq:gaussian}), we obtain
     \begin{align*}
         q &= e^{-(2w_1+2w_2)^2} = 1 \\
         r &= (q^2-q)(w_1+w_2) = 0 \\
-        s'(w_1) &= e^{-4 w_1^2} - e^{-4} - 8 w_1^2 \left(e^{-4-4 w_1^2} - 2 e^{-8 w_1^2}\right) = 8e^{-8} \\
+        s'(w_1) &= e^{-8 w_1^2} - e^{-4 -4w_1^2} - 8 w_1^2 \left(2 e^{-8 w_1^2} - e^{-4-4 w_1^2}\right) = -8e^{-8} \\
         \frac{\delta r}{\delta w_1} &= q^2 - q - 8q(w_1 + w_2)^2 (2q - 1) = 0.
     \end{align*}
 
     We get
     \begin{align*}
-        a &= 16s'(w_1) - 16 \frac{\delta r}{\delta w_1} \\
+        a &= -16s'(w_1) - 16 \frac{\delta r}{\delta w_1} \\
         &= 128 e^{-8} > 0.
     \end{align*}
 
@@ -2005,34 +2015,33 @@ Substituting (\ref{eq:gaussian}), we obtain
     \begin{align*}
         q &= e^{-(2w_1+2w_2)^2} = 1 \\
         r &= (q^2-q)(w_1+w_2) = 0 \\
-        s'(w_1) &= e^{-4 w_1^2} - e^{-4} - 8 w_1^2 \left(e^{-4-4 w_1^2} - 2 e^{-8 w_1^2}\right) = 1 - e^{-4} \\
+        s'(w_1) &= e^{-8 w_1^2} - e^{-4 - 4 w_1^2} - 8 w_1^2 \left(2 e^{-8 w_1^2} - e^{-4-4 w_1^2}\right) = 1 - e^{-4} \\
         \frac{\delta r}{\delta w_1} &= q^2 - q - 8q(w_1 + w_2)^2 (2q - 1) = 0.
     \end{align*}
 
     We get
     \begin{align*}
-        a &= 16s'(w_1) - 16 \frac{\delta r}{\delta w_1} \\
-        &= 16 (1 - e^{-4}) > 0.
+        a &= -16s'(w_1) - 16 \frac{\delta r}{\delta w_1} \\
+        &= 16 e^{-4} - 16 \ngtr 0.
     \end{align*}
-    \todo: value of $a$ is incorrect, should be $-15.7$
-
-    Now, we will attempt to show that $ac - b^2 > 0$. 
-    Again, $a=c$ because $s'(w_1) = s'(w_2)$ since $w_1=w_2=0$.
-    So,
-    \begin{align*}
-        ac - b^2
-        &= a^2 - b^2 \\
-        &= 128^2e^{-16} - \left(-16 \frac{\delta r}{\delta w_1}\right)^2 \\
-        &= 128^2e^{-16} > 0.
-    \end{align*}
-
+    
+    This violates the first condition of Theorem \ref{thm:positive_definite_2_by_2}, so this point is not a local minimum.
+    In summary, we have shown that $\vec{w}_1$ and $\vec{w}_2$ are local minima, but not $\vec{w}_3$.
 \end{proof}
 
+
+
 \subsection{Global minima}
+\todo: prove that $\vec{w}_1$ and $\vec{w}_2$ are global minima
 
-\subsection{A suboptimal local minimum}
+\subsection{Behaviour as the weights approach infinity}
+\todo: show that there is a ``local minimum'' at infinity
 
+\subsection{Ideal goal line}
 
+\subsection{Failure of backpropagation}
+
+\chapter{The neural surfing technique}
 
 \chapter{Generalising neural surfing}
-Generalize to classification as regression with multiple output variables
+\todo: generalize to classification as regression with multiple output variables
