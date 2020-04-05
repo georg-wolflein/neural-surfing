@@ -32,8 +32,8 @@ class StripeProblem(Problem):
             y=np.array([
                 1,
                 1,
-                0,
-                0
+                rbf(2.),
+                rbf(2.)
             ]).astype(np.float64),
             model=model
         )

@@ -1415,7 +1415,7 @@ When used as the activation function, they exhibit some advantageous properties 
     For RBFs to be useful activation functions, we three additional restrictions:
     \begin{enumerate*}[label=(\roman*)]
         \item $\phi(0)=1$;
-        \item $\phi(x)$ is strictly increasing for $x<0$ when $\phi(x) \neq 0$; and
+        \item $\phi(x)$ is strictly decreasing for the domain $[0, \infty)$ when $\phi(x) \neq 0$; and
         \item that
     \end{enumerate*}
     \begin{equation*}
@@ -1811,7 +1811,7 @@ Substituting (\ref{eq:gaussian}), we obtain
 \end{equation}
 
 \begin{lemma}
-    The three critical points of the error-weight surface given by $L$ are 
+    Three critical points of the error-weight surface given by $L$ are 
     $\vec{w}_1 = \begin{bmatrix}
         -1 & 1
     \end{bmatrix}\tran$,
@@ -1848,7 +1848,7 @@ Substituting (\ref{eq:gaussian}), we obtain
             \frac{\delta L}{\delta w_1} &
             \frac{\delta L}{\delta w_2}
         \end{bmatrix} \\
-        &= -16 \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right) \left(w_1 + w_2 \right) e^{-(2 w_1 + 2 w_2)^2} \\
+        &= -16 \left(e^{-4(w_1 + w_2)^2} - 1\right) \left(w_1 + w_2 \right) e^{-4(w_1 + w_2)^2} \\
         &\qquad - 16
         \begin{bmatrix}
             w_1 \left(e^{-4 w_1^2} - e^{-4}\right) e^{-4 w_1^2} \\
@@ -1859,36 +1859,18 @@ Substituting (\ref{eq:gaussian}), we obtain
         \begin{bmatrix}
             w_1 \left(e^{-4 w_1^2} - e^{-4}\right) e^{-4 w_1^2} \\
             w_2 \left(e^{-4 w_2^2} - e^{-4}\right) e^{-4 w_2^2}
-        \end{bmatrix}\tran \numberthis \label{eq:stripe_jacobian}
+        \end{bmatrix}\tran. \numberthis \label{eq:stripe_jacobian}
     \end{align*}
     where $q = e^{-(2 w_1 + 2 w_2)^2}$.
     To find the critical points, we set
     $\vec{J}_L = \vec{0}$.
-
-    % Is it possible to prove that
-    % \begin{align*}
-    % \begin{bmatrix}
-    %     0 \\ 0
-    % \end{bmatrix}
-    %     = (a^2 - a) (x + y) 
-    %      +
-    %     \begin{bmatrix}
-    %         b(x) \\
-    %         b(y)
-    %     \end{bmatrix}
-    % \end{align*}
-    % where $a = e^{-(2 x + 2 y)^2}$ and $b(x) = x \left(e^{-4 x^2} - e^{-4}\right) e^{-4 x^2}$
-    % only has the following solutions?
-    % \begin{itemize}
-    %     \item $x=y=0$
-    %     \item $x=-1,y=1$
-    %     \item $x=1,y=-1$
-    % \end{itemize}
-    \todo: prove that $\vec{w}_1$, $\vec{w}_2$, and $\vec{w}_3$ are the only solutions
+    It is trivial to see that $\vec{w}_1$, $\vec{w}_2$, and $\vec{w}_3$ are solutions to this equation.
 \end{proof}
+For the remainder of this project, we will assume that these three solutions are the only ones. 
+Analysing the graph from Figure \ref{fig:stripe_error_surface_gaussian} does suggest so.
 
 \begin{lemma}
-    The only local minima on the error-weight surface given by $L$ are $\vec{w}_1$ and $\vec{w}_2$.
+    The local minima on the error-weight surface given by $L$ are $\vec{w}_1$ and $\vec{w}_2$.
 \end{lemma}
 \begin{proof}
     We have previously shown that $\vec{J}_L=\vec{0}$ for the three critical points $\vec{w}_1$, $\vec{w}_2$, and $\vec{w}_3$.
@@ -1904,7 +1886,7 @@ Substituting (\ref{eq:gaussian}), we obtain
     \end{align*}
     where
     \begin{align*}
-        q &= e^{-(2w_1 + 2w_2)^2} \\
+        q &= e^{-4(w_1 + w_2)^2} \\
         r &= (q^2-q)(w_1+w_2) \\
         s(x) &= x \left(e^{-8 x^2} - e^{-4-4x^2}\right).
     \end{align*}
@@ -1981,7 +1963,7 @@ Substituting (\ref{eq:gaussian}), we obtain
     We will begin by showing $a = \frac{\delta ^2 L}{\delta w_1^2}>0$.
     To do that, we must first evaluate $q$,$r$,$s'(w_1)$, and $\frac{\delta r}{\delta w_1}$ for the current weight configuration.
     \begin{align*}
-        q &= e^{-(2w_1+2w_2)^2} = 1 \\
+        q &= e^{-4(w_1+w_2)^2} = 1 \\
         r &= (q^2-q)(w_1+w_2) = 0 \\
         s'(w_1) &= e^{-8 w_1^2} - e^{-4 -4w_1^2} - 8 w_1^2 \left(2 e^{-8 w_1^2} - e^{-4-4 w_1^2}\right) = -8e^{-8} \\
         \frac{\delta r}{\delta w_1} &= q^2 - q - 8q(w_1 + w_2)^2 (2q - 1) = 0.
@@ -2013,7 +1995,7 @@ Substituting (\ref{eq:gaussian}), we obtain
     Using the same notation as (\ref{eq:stripe_hessian}), we evaluate 
     $q$,$r$,$s'(w_1)$, and $\frac{\delta r}{\delta w_1}$ for this weight configuration.
     \begin{align*}
-        q &= e^{-(2w_1+2w_2)^2} = 1 \\
+        q &= e^{-4(w_1+w_2)^2} = 1 \\
         r &= (q^2-q)(w_1+w_2) = 0 \\
         s'(w_1) &= e^{-8 w_1^2} - e^{-4 - 4 w_1^2} - 8 w_1^2 \left(2 e^{-8 w_1^2} - e^{-4-4 w_1^2}\right) = 1 - e^{-4} \\
         \frac{\delta r}{\delta w_1} &= q^2 - q - 8q(w_1 + w_2)^2 (2q - 1) = 0.
