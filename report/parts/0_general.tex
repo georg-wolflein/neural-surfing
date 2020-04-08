@@ -8,14 +8,18 @@ report.}
 \todo
 
 \chapter{Context survey}
-\section{Neural networks}
+\section{Artificial neural networks}
+The first mathematical model representing neurons in the human brain, so-called \textit{perceptons}, was formulated by \textcite{mcculloch1943} (see Section \ref{sec:ann}).
+In 1958, the psychologist Frank Rosenblatt published the first percepton learning algorithm \cite{rosenblatt1958}, but this type of network lacked the ability to learn mappings that were not \textit{linearly separable}.
+It was not until the 1980s with the introduction of the backpropagation algorithm capable of training networks with hidden layers, that neural networks experienced a substantial rise in popularity.
 
 \paragraph{Backpropagation}
-The backpropagation (BP) algorithm, attributed to \textcite{rumelhart1986}, is the classical method of training neural networks.
+To this date, the backpropagation (BP) algorithm, attributed to \textcite{rumelhart1986}, remains the prominent method of training neural networks.
 It involves computing the gradient of the loss function with respect to the weights and then using some gradient-based optimisation technique such as gradient descent to update the weights.
 With the rise in popularity of deep neural networks, methods have been developed to increase the speed of converging to a minimum. 
 The two main approaches are parallelising the computation and using adaptive learning rates like in the `Adam optimizer' \cite{kingma2014}.
-It is well-established that BP is guaranteed to converge to local (but likely not global) minima.
+It is well-established that BP, provided a suitable choice of hyperparameters, is guaranteed to converge to a local (but likely not global) minimum.
+A common technique to subdue the effect of this issue is to run BP multiple times with different random initialisations.
 
 \paragraph{Derivative-free optimisation}
 The class of derivative-free optimisation (DFO) algorithms are optimisation techniques that attempt to find a global optimum, requiring only an objective function, but no gradient information.
