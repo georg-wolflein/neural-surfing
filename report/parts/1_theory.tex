@@ -2028,5 +2028,207 @@ Analysing the graph from Figure \ref{fig:stripe_error_surface_gaussian} does sug
 
 \chapter{The neural surfing technique}
 
+\section{Clothoids}
+Consider a scenario in two-dimensional output space, as is shown in Figure \ref{fig:clothoid_motivation_scenario}.
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            x=1cm,
+            y=1cm,
+            xlabel={$y_1$},
+            ylabel={$y_2$},
+            xmin=-1, xmax=7,
+            ymin=-1, ymax=2.5,
+            ticks=none,
+            clip=false
+        ]
+            \coordinate (A) at (6.0, 0.0);
+            \coordinate (B) at (2.0, 1.5);
+            \coordinate (C) at (0.0, 0.0);
+            
+            \draw (A) -- (B) -- (C);
+            \draw[dashed] (A) -- (C);
+
+            \fill (A) circle (2pt) node[below,align=center] {goal\\(or subgoal)};
+            \fill (B) circle (2pt) node[above,align=center] {candidate\\sample point};
+            \fill (C) circle (2pt) node[below,align=center] {current\\point};
+            \node[below] at (3,0) {ideal goal line};
+
+            \pic[draw, "$\gamma_1$", angle eccentricity=1.5] {angle = C--B--A};
+            \pic[draw, "$\gamma_2$", angle eccentricity=1.5] {angle = A--C--B};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{A secenario in two-dimensional output space.}
+    \label{fig:clothoid_motivation_scenario}
+\end{figure}
+The current weight configuration produces a point $C$ in output space. 
+How do we evaluate the effectiveness of a candidate sample point $B$ in achieving the goal (or subgoal), $A$?
+We would like to analyse the properties of a curve that originates at $C$, passes through $B$, and ends at $A$.
+This curve should undergo a linear decrease in curvature until reaching a curvature of zero at the goal.
+We call this type of curve \textit{clothoid}, and there can only be one clothoid that passes through all three points and has a curvature of zero at $A$.
+In fact, this clothoid will be a segment of the \textit{Euler spiral} (up to some affine transformation).
+
+
+\subsection{Euler spiral}
+The Euler spiral is a special curve with an interesting property: its curvature increases linearly with the curve length from the origin.
+As a consequence, the Euler spiral never forms a complete loop (or circle), a trait that will become useful for the neural surfing technique. 
+Figure \ref{fig:euler_spiral} depicts the normalised Euler spiral.
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            x=3cm,
+            y=3cm,
+            axis lines=center,
+            xmin=-1.1, xmax=1.1,
+            ymin=-1.1, ymax=1.1,
+            xlabel={$x=F_C(t)$}, xlabel style={anchor=west},
+            ylabel={$y=F_S(t)$}, ylabel style={anchor=south}
+        ]
+            \addplot[mark=none] table {data/clothoid.dat};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Plot of the Euler spiral.}
+    \label{fig:euler_spiral}
+\end{figure}
+It can be defined using the Fresnel sine and cosine integrals
+\begin{equation*}
+    F_S(t) = \int_0^t{\sin\frac{\pi s^2}{2} \ ds}
+\end{equation*}
+and
+\begin{equation*}
+    F_C(t) = \int_0^t{\cos\frac{\pi s^2}{2} \ ds}
+\end{equation*}
+with the parametric equations $x=F_C(t)$ and $y=F_S(t)$.
+The derivative at a specific point $(x, y)$ in terms of $t$ is calculated as
+\begin{equation*}
+    \frac{dy}{dx}
+    = \frac{\displaystyle\left(\frac{dy}{dt}\right)}{\displaystyle\left(\frac{dx}{dt}\right)}
+    = \frac{\displaystyle\sin\frac{\pi t^2}{2}}{\displaystyle\cos\frac{\pi t^2}{2}}
+    = \tan \frac{\pi t^2}{2},
+\end{equation*}
+so the angle $\theta$ of the gradient can be expressed in terms of $t$ as
+\begin{equation*}
+    \theta(t) = \tan^{-1} \left( \tan \frac{\pi t^2}{2} \right)
+    = \frac{\pi t^2}{2}.
+\end{equation*}
+
+\subsection{Construction}
+Figure \ref{fig:clothoid_segment} shows how the three points $A,B,C$ from the scenario in Figure \ref{fig:clothoid_motivation_scenario} can be mapped to the Euler spiral. 
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            x=6cm,
+            y=6cm,
+            xmin=0, xmax=1.3,
+            ymin=0, ymax=.9,
+            xlabel={$x$},
+            ylabel={$y$},
+            axis lines=center,
+            ticks=none,
+            clip=false
+        ]
+            \addplot[mark=none] table {data/clothoid_small.dat};
+
+            % points:
+            % (0.0, 0.0)
+            % (0.6426319002419629, 0.15645360764497362)
+            % (0.7678990298634281, 0.5235679855547407)
+            % angle at t2 (°):
+            % 106.23101915253352
+            % vector of gradient at t2:
+            % (0.7678990298634281, 0.5235679855547407) + -3.4350800416021467*lambda
+            % x-intercept of gradient:
+            % 0.9203170169885678
+
+            \coordinate (A) at (0, 0);
+            \coordinate (B) at (0.6426319002419629, 0.15645360764497362);
+            \coordinate (C) at (0.7678990298634281, 0.5235679855547407);
+            \coordinate (intercept) at (0.9203170169885678, 0);
+            \coordinate (dummy) at (1.2, 0);
+            \coordinate (C_extended) at ($(C)-(A)+($(A)!2cm!(C)$)$);
+            \coordinate (intercept_extended) at ($(C)-(intercept)+($(intercept)!2cm!(C)$)$);
+            
+            \draw (A) -- (B) -- (C);
+            \draw (A) -- (C_extended);
+            \draw[dashed] (intercept_extended) -- (intercept);
+
+            \fill (A) circle (2pt) node[below,align=center] {$A$\\(goal/subgoal)};
+            \fill (B) circle (2pt) node[below,align=center] {$B$\\(sample)};
+            \fill (C) circle (2pt) node[right] {$C$ (current point)};
+
+            \pic[draw, "$\theta$", angle eccentricity=1.5] {angle = dummy--intercept--C};
+            \pic[draw, "$\gamma_1$", angle eccentricity=1.5] {angle = C--B--A};
+            \pic[draw, "$\gamma_2$", angle eccentricity=1.5] {angle = A--C--B};
+            \pic[draw, "$\beta$", angle radius=1.5cm, angle eccentricity=1.2] {angle = intercept--A--C};
+            \pic[draw, "$\alpha$", angle eccentricity=1.5] {angle = C_extended--C--intercept_extended};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Plot of a clothoid segment with three points of interest: $C$ is the initial point, $B$ is the sample point and $A$ is the goal/subgoal (at the origin of the clothoid). The dashed line is tangential to the clothoid at $C$.}
+    \label{fig:clothoid_segment}
+\end{figure}
+$A$ must be at the origin of the spiral in order to ensure that the curvature is zero at the goal point.
+Then the two points $B$ and $C$ must be found along the curve such that the triangle formed by these points, $\triangle{ABC}$, has angles $\measuredangle{ABC}=\gamma_1$ and $\measuredangle{ACB}=\gamma_2$.
+
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            x=1cm,
+            y=1cm,
+            xlabel={$y_1$},
+            ylabel={$y_2$},
+            xmin=-1, xmax=7,
+            ymin=-1, ymax=5,
+            ticks=none,
+            clip=false
+        ]
+            \addplot[mark=none] table {data/clothoid_for_points_1.dat};
+        
+            % File: clothoid_for_points_1.dat
+            %   p0: (6.0, 0.0)
+            %   p1: (2.0, 1.5)
+            %   p2: (0.0, 0.0)
+            %   t1: 0.6768535219958538
+            %   t2: 1.086436678895909
+            %   gamma1: 2.1393209 (122.57405090332031°)
+            %   gamma2: 0.6435011 (36.869895935058594°)
+            %   alpha: 1.2556617449320218 (71.94411848063733°)
+            %   beta: 0.5984193070288445 (34.28690067189619°)
+
+            \coordinate (A) at (6.0, 0.0);
+            \coordinate (B) at (2.0, 1.5);
+            \coordinate (C) at (0.0, 0.0);
+            \coordinate (C_tangent) at ($(C)!1!71.94411848063733:(A)$);
+            \coordinate (A_tangent) at ($(A)!1!-34.28690067189619:(C)$);
+            
+            \path [name path=CD] (C) -- (C_tangent);
+            \path [name path=AD] (A) -- (A_tangent);
+            \path [name intersections={of=CD and AD,by=D}];
+
+            \draw (A) -- (B) -- (C) -- (A);
+            \draw[dashed, shorten >= -1cm] (C) -- (D);
+            \draw[dashed, shorten >= -1cm] (A) -- (D);
+
+            \fill (A) circle (2pt) node[below right] {$A$};
+            \fill (B) circle (2pt) node[above] {$B$};
+            \fill (C) circle (2pt) node[below left] {$C$};
+
+            \pic[draw, "", angle radius=1.2cm, angle eccentricity=1.2] {angle = A--C--C_tangent};
+            \node at (1.35, .45) {$\alpha$};
+            \pic[draw, "",  angle radius=1.2cm, angle eccentricity=1.2] {angle = A_tangent--A--C};
+            \node at (4.6, .25) {$\beta$};
+            \pic[draw, "$\theta$", angle eccentricity=1.5] {angle = A--D--C_tangent};
+            \pic[draw, "$\gamma_1$", angle eccentricity=1.5] {angle = C--B--A};
+            \pic[draw, "$\gamma_2$", angle eccentricity=1.5] {angle = A--C--B};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{A scenario in two-dimensional output space. The sizes of the angles $\alpha,\beta,\gamma_1,\gamma_2$ are identical to \ref{fig:clothoid_motivation_scenario,fig:clothoid_segment}. The dotted lines are the tangents of the clothoid at $A$ and $C$.}
+    \label{fig:clothoid_in_output_space}
+\end{figure}
+
 \chapter{Generalising neural surfing}
 \todo: generalize to classification as regression with multiple output variables

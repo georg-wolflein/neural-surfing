@@ -14,6 +14,7 @@
 \usepackage{chngcntr}
 \usepackage[inline]{enumitem}
 \usepackage{subcaption}
+\usepackage{cleveref} % should be loaded last
 \usepackage[
     backend=biber,
     style=apa,
@@ -39,7 +40,7 @@
 \pgfplotsset{compat=1.16}
 \usepgfplotslibrary{external}
 \tikzexternalize[prefix=figures/]
-\usetikzlibrary{calc,arrows.meta}
+\usetikzlibrary{calc,arrows.meta,angles,quotes,intersections}
 
 \renewcommand\vec{\mathbf}
 \renewcommand\cite{\parencite}
@@ -64,29 +65,35 @@
 
 \counterwithout{footnote}{chapter}
 
+% \makeatletter
+% \AtBeginDocument{%
+%   \renewcommand*{\ref}{\Cref}%
+% }
+% \makeatother
+
 \pgfdeclarelayer{pre main}
 \begin{document}
 
 \begin{titlepage}
     \centering
     
-	{\scshape\LARGE Senior Honours Project\par}
-	\vspace{0.25cm}
-	{\includegraphics[width=0.8\textwidth]{logo.png} \par}
+    {\scshape\LARGE Senior Honours Project\par}
     \vspace{0.25cm}
-	{\huge\bfseries Freeing Neural Training Through Surfing\par}
-	\vspace{0.5cm}
-	
+    {\includegraphics[width=0.8\textwidth]{logo.png} \par}
+    \vspace{0.25cm}
+    {\huge\bfseries Freeing Neural Training Through Surfing\par}
+    \vspace{0.5cm}
+
     \vfill
     {\large \textit{Georg Wölflein\\170011885} \par}
-	{\large \textit{Supervisor: Dr. Mike Weir} \par}
-    
+    {\large \textit{Supervisor: Dr. Mike Weir} \par}
+
     \vspace{0.5cm}
 
     {April 13, 2020\par}
 
     \vfill
-    
+
     Word count: \quickwordcount{report}
 \end{titlepage}
 
