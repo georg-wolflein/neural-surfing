@@ -108,8 +108,9 @@ which are depicted in \ref{fig:activation_functions}.
                 axis lines=center,
                 xlabel={$x$}, xlabel style={anchor=west},
                 ylabel={$g_\text{sig}(x)$}, ylabel style={anchor=south},
-                ymin=0, ymax=1.2,
-                xmin=-3.3, xmax=3.3,
+                ymin=0, ymax=1,
+                xmin=-3, xmax=3,
+                enlargelimits,
                 samples=100,
                 xtick={-3,...,3},
                 ytick={0, 0.5, 1},
@@ -129,8 +130,9 @@ which are depicted in \ref{fig:activation_functions}.
                 axis lines=center,
                 xlabel={$x$}, xlabel style={anchor=west},
                 ylabel={$g_{\text{ReLU}}(x)$}, ylabel style={anchor=south},
-                ymin=0, ymax=1.2,
-                xmin=-1.1, xmax=1.1,
+                ymin=0, ymax=1,
+                xmin=-1, xmax=1,
+                enlargelimits,
                 samples=100,
                 xtick={-1, -0.5, 0, 0.5, 1},
                 ytick={0, 0.5, 1},
@@ -508,8 +510,9 @@ This will allow us to examine the so-called decision boundary in input space whi
                 axis lines=center,
                 xlabel={$x_1$}, xlabel style={anchor=west},
                 ylabel={$x_2$}, ylabel style={anchor=south},
-                ymin=-3.2, ymax=3.2,
-                xmin=-3.2, xmax=3.2,
+                ymin=-3, ymax=3,
+                xmin=-3, xmax=3,
+                enlargelimits,
                 samples=2
             ]
                 \addplot[black,only marks,mark=*] coordinates {(1,1) (-2,3) (2,0) (3,-2) (2,3) (-1,2) (3,1)};
@@ -850,7 +853,7 @@ We will prove a simple technique for showing that a $2 \times 2$ matrix is posit
     \begin{align*}
         p^2 a + 2pb + c > 0.
     \end{align*}
-    Treating this as a quadratic function in terms of $p$, we realize that since $a>0$, the parabola opens up.
+    Treating this as a quadratic function in terms of $p$, we realise that since $a>0$, the parabola opens up.
     The discriminant $D=4b^2 - 4ac$ is negative if $ac-b^2>0$ which means that the parabola has no roots. 
     Thus its range is positive.
 
@@ -1168,38 +1171,38 @@ Note that linear mappings can exist between spaces of different dimensionalities
 \subsection{Gradient descent from the perspective of weight and output space}
 \todo: Write about how SGD with MSE usually gets viewed from the perspective of error-weight surface. However, it is interesting to look at the perspective of weight and output space. It becomes apparent that MSE can be thought of as greedily trying to reduce the Euclidean distance from $\vec{\hat{y}}$ to $\vec{y}$ in output space.
 
-\section{Unrealizable regions}
-\begin{definition}[Strongly unrealizable point]
-    \label{def:unrealizable_point}
-    Given an artificial neural network $A$, a point $\vec{p} \in \mathcal{O}_A$ in output space is \textit{strongly unrealizable} if and only if there exists no weight configuration $\vec{w} \in \mathcal{W}_A$ such that $h_A(\vec{w}) = \vec{p}$.
+\section{Unrealisable regions}
+\begin{definition}[Strongly unrealisable point]
+    \label{def:unrealisable_point}
+    Given an artificial neural network $A$, a point $\vec{p} \in \mathcal{O}_A$ in output space is \textit{strongly unrealisable} if and only if there exists no weight configuration $\vec{w} \in \mathcal{W}_A$ such that $h_A(\vec{w}) = \vec{p}$.
     In order words, it is impossible to attain $\vec{p}$.
 \end{definition}
-\begin{definition}[Strongly unrealizable region]
-    \label{def:unrealizable_region}
-    Given an artificial neural network $A$, a \textit{strongly} unrealizable region $\mathcal{U} \subset \mathcal{O}_A$ is a subspace of the output space where every point $\vec{p} \in \mathcal{U}$ is strongly unrealizable.
+\begin{definition}[Strongly unrealisable region]
+    \label{def:unrealisable_region}
+    Given an artificial neural network $A$, a \textit{strongly} unrealisable region $\mathcal{U} \subset \mathcal{O}_A$ is a subspace of the output space where every point $\vec{p} \in \mathcal{U}$ is strongly unrealisable.
     
-    It is apparent that there exists no neural learning algorithm that can elicit a change in weight space that will attain a point in a strongly unrealizable region in output space.
-    Hence we define a \textit{weakly} unrealizable region for a particular neural learning algorithm as a region in output space that cannot be attained by a particular algorithm.
+    It is apparent that there exists no neural learning algorithm that can elicit a change in weight space that will attain a point in a strongly unrealisable region in output space.
+    Hence we define a \textit{weakly} unrealisable region for a particular neural learning algorithm as a region in output space that cannot be attained by a particular algorithm.
 \end{definition}
 
 \begin{lemma}
-    A strongly unrealizable region cannot encompass the whole output space.
+    A strongly unrealisable region cannot encompass the whole output space.
 \end{lemma}
 \begin{proof}
     Let us consider an artifical neural network $A$. 
-    We will show that for every unrealizable region, $\mathcal{U} \subsetneq \mathcal{O}_A$.
-    By Definition \ref{def:unrealizable_region}, $\mathcal{U} \subset \mathcal{O}_A$, so it remains to prove that every unrealizable region $\mathcal{U} \neq \mathcal{O}_A$.
+    We will show that for every unrealisable region, $\mathcal{U} \subsetneq \mathcal{O}_A$.
+    By Definition \ref{def:unrealisable_region}, $\mathcal{U} \subset \mathcal{O}_A$, so it remains to prove that every unrealisable region $\mathcal{U} \neq \mathcal{O}_A$.
 
     Choose any weight configuration $\vec{w} \in \mathcal{W}_A$. 
     Let the point $\vec{p}=h_A(\vec{w})$. 
-    We know that $\vec{p}$ is \textit{not} strongly unrealizable because $\vec{w}$ achieves $\vec{p}$. 
-    Hence no unrealizable region can contain $\vec{p}$, so $\vec{p} \notin \mathcal{U}$ but $\vec{p} \in \mathcal{O}_A$. 
+    We know that $\vec{p}$ is \textit{not} strongly unrealisable because $\vec{w}$ achieves $\vec{p}$. 
+    Hence no unrealisable region can contain $\vec{p}$, so $\vec{p} \notin \mathcal{U}$ but $\vec{p} \in \mathcal{O}_A$. 
     It follows that $\mathcal{U} \neq \mathcal{O}_A$.
 \end{proof}
 
-Let us look at a couple of examples of unrealizable regions.
+Let us look at a couple of examples of unrealisable regions.
 \begin{example}
-    A trivial example of an unrealizable region is predicting two different outputs for the same training sample.
+    A trivial example of an unrealisable region is predicting two different outputs for the same training sample.
     Consider again an MLP $M$ with one layer and two inputs, as shown in \ref{fig:sln_2_in_1_out}.
     Let $\vec{x}\in \mathbb{R}^2$ be any point in input space.
     For this example, let the training data be the matrix
@@ -1208,7 +1211,7 @@ Let us look at a couple of examples of unrealizable regions.
             \vec{x} & \vec{x}
         \end{bmatrix}\tran
     $.
-    Now we can define an unrealizable region
+    Now we can define an unrealisable region
     \begin{equation*}
         \mathcal{U} = \left\{
             \begin{bmatrix}
@@ -1276,22 +1279,22 @@ Let us look at a couple of examples of unrealizable regions.
             0 & 1 & 1 & 0
         \end{bmatrix}\tran
     $
-    in output space is strongly unrealizable.
-    So $\mathcal{U} = \{\vec{p}\}$ is an example of an unrealizable region.    
+    in output space is strongly unrealisable.
+    So $\mathcal{U} = \{\vec{p}\}$ is an example of an unrealisable region.    
 \end{example}
 
 
 
 
 
-\todo: Explain significance if target is unrealizable (XOR example demonstrates that)
+\todo: Explain significance if target is unrealisable (XOR example demonstrates that)
 
 \section{Goal-connecting paths}
 \begin{definition}[Goal-connecting path]
     For an artificial neural network $A$ with current weight configuration $\vec{w}_0 \in \mathcal{W}_A$, a goal-connecting path in output space to the goal $\vec{g}\in \mathcal{O}_A$ is a sequence of points $\vec{s}_0, \vec{s}_1,\dots,\vec{s}_{S} \in \mathcal{O}_A$ where the initial state $\vec{s}_0 = h_A(\vec{w}_0)$ and final state $\vec{s}_S=\vec{g}$.
     The points $\vec{s}_1,\vec{s}_2,\dots,\vec{s}_S$ are referred to as \textit{subgoals}, hence $S$ is the number of subgoals in the goal-connecting path. 
 
-    The goal-connecting path is \textit{realizable} if and only if no subgoal is a strongly unrealizable point (Definition \ref{def:unrealizable_point}).
+    The goal-connecting path is \textit{realizable} if and only if no subgoal is a strongly unrealisable point (Definition \ref{def:unrealisable_point}).
     This means that a realizable goal-connecting path can equivalently be defined by the weight configurations $\vec{w}_0, \vec{w_1},\dots,\vec{w}_S \in \mathcal{W}_A$ such that $h_A(\vec{w}_i) = \vec{s}_i$ for $i \leq S$.
 \end{definition}
 
@@ -1332,7 +1335,7 @@ Let us look at a couple of examples of unrealizable regions.
     Lemma \ref{lmm:ideal_subgoal_construction} shows a construction for achieving the ideal goal-connecting path, given knowledge of the target weight configuration $\vec{w}_S$.
     Of course, this is not known to the neural learning algorithm while it is learning, only once it finished and was able to actually achieve the goal. 
     However, we can use the ideal goal-connecting path in retrospect to evaluate the performance of the neural learning algorithm in comparison to the ideal path.
-    Furthermore, we can plot the ideal goal-connecting path in output space in order to find unrealizable regions.
+    Furthermore, we can plot the ideal goal-connecting path in output space in order to find unrealisable regions.
 \end{remark}
 
 \chapter{Problems}
@@ -1357,8 +1360,9 @@ The hidden layer is required because without it, the sigmoid activation function
                 axis lines=center,
                 xlabel={$x_1$}, xlabel style={anchor=west},
                 ylabel={$x_2$}, ylabel style={anchor=south},
-                ymin=0, ymax=4.2,
-                xmin=0, xmax=4.2,
+                ymin=0, ymax=4,
+                xmin=0, xmax=4,
+                enlargelimits={upper},
                 grid=none,
                 samples=100,
                 ticks=none
@@ -1382,8 +1386,9 @@ The hidden layer is required because without it, the sigmoid activation function
                 axis lines=center,
                 xlabel={$x_1$}, xlabel style={anchor=west},
                 ylabel={$x_2$}, ylabel style={anchor=south},
-                ymin=0, ymax=4.2,
-                xmin=0, xmax=4.2,
+                ymin=0, ymax=4,
+                xmin=0, xmax=4,
+                enlargelimits={upper},
                 grid=none,
                 samples=100,
                 ticks=none
@@ -1452,8 +1457,10 @@ These functions, graphed in \ref{fig:rbfs}, exhibit slightly different propertie
             axis lines=center,
             xlabel={$x$}, xlabel style={anchor=west},
             ylabel={$\phi(x)$}, ylabel style={anchor=south},
-            ymin=0, ymax=2.2,
-            xmin=-3.2, xmax=3.2,
+            ymin=0, ymax=2,
+            xmin=-3, xmax=3,
+            enlarge x limits={true,abs value=.2},
+            enlarge y limits={upper,abs value=.2},
             grid,
             samples=100,
             xtick={-3,...,3},
@@ -1609,7 +1616,8 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
 \subsection{Formulating the problem}
 Example \ref{ex:sln_2_in_1_out_gaussian_hyperplanes} showed that a simple 2-1 network with radial basis activation constructs a scenario where the hyperplanes form a stripe that can be rotated by adjusting the weights.
 This means that we could easily contrive the stripe problem from \ref{fig:stripe_original_hyperplanes}.
-However, since we established that the hyperplanes will always remain parallel in our RBF network and since they rotate around the origin when $b$ is fixed, we can create a much simplified version of the stripe problem using only four samples.
+However, since we established that the hyperplanes will always remain parallel in our RBF network and since they rotate around the origin\footnote{More precisely, when changing $w_1$, the hyperplanes rotate around their respective $x_2$ intercepts, and similarly when altering $w_2$ the centre of rotation are the $x_1$-intercepts in input space.} when $b$ is fixed, we can create a much simplified version of the stripe problem using only four samples.
+
 
 \begin{figure}
     \centering
@@ -1629,12 +1637,13 @@ However, since we established that the hyperplanes will always remain parallel i
                 xmin=-2.5, xmax=2.5,
                 samples=2
             ]
-                \addplot[black,only marks,mark=*] coordinates {(0,0)};
-                \addplot[black,only marks,mark=o] coordinates {(0,2) (2,0) (2,2)};
+                \addplot[black, only marks,mark=*] coordinates {(0,0)};
+                \addplot[black, only marks,mark=o] coordinates {(0,2) (2,0) (2,2)};
                 \addplot[black, no marks] {hminus(x)};
                 \addplot[black, no marks] {hplus(x)};
                 \addplot[black, ->] coordinates {(-2,{hminus(-2)}) (-1.75, {2*hminus(-2)-hminus(-1.75)})};
                 \addplot[black, ->] coordinates {({-hminus(-2)},{hplus(-hminus(-2))}) ({-hminus(-2)-.25}, {2*hplus(-hminus(-2))-hplus(-hminus(-2)-.25)})};
+                \addplot[black, dashed] {-x};
             \end{axis}
         \end{tikzpicture}
         \caption{Initial configuration}
@@ -1656,30 +1665,31 @@ However, since we established that the hyperplanes will always remain parallel i
                 xmin=-2.5, xmax=2.5,
                 samples=2
             ]
-                \addplot[black,only marks,mark=*] coordinates {(0,0) (2,2)};
-                \addplot[black,only marks,mark=o] coordinates {(0,2) (2,0)};
+                \addplot[black, only marks,mark=*] coordinates {(0,0) (2,2)};
+                \addplot[black, only marks,mark=o] coordinates {(0,2) (2,0)};
                 \addplot[black, no marks] {hminus(x)};
                 \addplot[black, no marks] {hplus(x)};
                 \addplot[black, ->] coordinates {(-2,{hminus(-2)}) (-1.75, {2*hminus(-2)-hminus(-1.75)})};
                 \addplot[black, ->] coordinates {({hminus(-2)},{hplus(hminus(-2))}) ({hminus(-2)-.25}, {2*hplus(hminus(-2))-hplus(hminus(-2)-.25)})};
+                \addplot[black, dashed] {x};
             \end{axis}
         \end{tikzpicture}
         \caption{Target configuration}
     \end{subfigure}
-    \caption{The hyperplanes in the initial and target configurations of the RBF stripe problem.}
+    \caption{The hyperplanes in the initial and target configurations of the RBF stripe problem. The dashed line represents the zero-excitation line.}
     \label{fig:stripe_hyperplanes}
 \end{figure}
 \ref{fig:stripe_hyperplanes} depicts the initial and target configurations of this simplified version. 
 It is obvious that whichever direction the stripe rotates, it will need to misclassify one of the samples before achieving the target configuration.
+On the other hand, the zero-excitation line must always pass through the origin (because we have no bias term) which means that the sample at the origin will always have maximal activation.
+Hence we can discard this sample, leaving only three samples to consider. 
+This will lend itself comfortably for analysis later, as the output space can be visualised in a three-dimensional plot.
 
 \begin{table}[h!]
     \centering
     \begin{tabular}{c|c|c}
         input ($\vec{x}$) & target output ($y$) & initial output ($\hat{y}$) \\
         \hline
-        $\begin{bmatrix} 0 & 0 \end{bmatrix}$
-        & 1 & 1
-        \\
         $\begin{bmatrix} 2 & 2 \end{bmatrix}$
         & 1 & $\phi\left( 4 \right)$
         \\
@@ -1693,7 +1703,7 @@ It is obvious that whichever direction the stripe rotates, it will need to miscl
     \label{table:stripe_dataset}
 \end{table}
 We give the dataset for the stripe problem in \ref{table:stripe_dataset}.
-Notice that the third and fourth samples do not have a target output of zero, but rather $\phi(2)$ which is close to zero (for the Gaussian RBF, $\phi(2) \approx 0.018$, and for the bump function $\phi(2) = 0$).
+Notice that the second and third samples do not have a target output of zero, but rather $\phi(2)$ which is close to zero (for the Gaussian RBF, $\phi(2) \approx 0.018$, and for the bump function $\phi(2) = 0$).
 This will make some calculations later more convenient because it guarantees that there exists at least one weight configuration with a MSE of zero.
 
 \begin{figure}
@@ -1778,7 +1788,6 @@ We will now attempt to find the local minima in the error-weight surface analyti
 From \ref{table:stripe_dataset} we obtain the input matrix
 \begin{equation*}
     \vec{X} = \begin{bmatrix}
-        0 & 0 \\
         2 & 2 \\
         0 & 2 \\
         2 & 0
@@ -1786,20 +1795,18 @@ From \ref{table:stripe_dataset} we obtain the input matrix
 \end{equation*}
 and target output vector
 $\vec{y} = \begin{bmatrix}
-    1 & 1 & \phi(2) & \phi(2)
+    1 & \phi(2) & \phi(2)
 \end{bmatrix}\tran$.
 Modifying the SLN function from Definition \ref{def:sln} for the case of our 2-1 RBF network without bias, we have $S(\vec{x}) = \phi(\vec{w}\tran \vec{x})$.
 This means that our loss function is given by
 \begin{align*}
     L(\vec{w}) = L
-    &= \sum_{i=1}^4{\left(\phi\left(\vec{w}\tran \vec{x}_i\right) - y_i\right)^2} \\
+    &= \sum_{i=1}^3{\left(\phi\left(\vec{w}\tran \vec{x}_i\right) - y_i\right)^2} \\
     &= \left(\phi(\vec{w}\tran\vec{x}_1) - 1\right)^2
-     + \left(\phi(\vec{w}\tran\vec{x}_2) - 1\right)^2 \\
-    &\qquad+ \left(\phi(\vec{w}\tran\vec{x}_3) - \phi(2)\right)^2
-     + \left(\phi(\vec{w}\tran\vec{x}_4) - \phi(2)\right)^2 \\
-    &= \left(\phi(0) - 1\right)^2
-     + \left(\phi(2 w_1 + 2 w_2) - 1\right)^2 \\
-    &\qquad+ \left(\phi(2 w_2) - \phi(2)\right)^2
+     + \left(\phi(\vec{w}\tran\vec{x}_2) - \phi(2)\right)^2
+     + \left(\phi(\vec{w}\tran\vec{x}_3) - \phi(2)\right)^2 \\
+    &= \left(\phi(2 w_1 + 2 w_2) - 1\right)^2
+     + \left(\phi(2 w_2) - \phi(2)\right)^2
      + \left(\phi(2 w_1) - \phi(2)\right)^2.
 \end{align*}
 Substituting \ref{eq:gaussian}, we obtain
@@ -2014,12 +2021,13 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
 
 
 \subsection{Global minima}
-\todo: prove that $\vec{w}_1$ and $\vec{w}_2$ are global minima
+\todo: prove that $\vec{w}_1$ and $\vec{w}_2$ are global minima (plug in loss function and observe $L=0$)
 
 \subsection{Behaviour as the weights approach infinity}
-\todo: show that there is a ``local minimum'' at infinity
+\todo: show that there is a ``local minimum'' when both weights tend to infinity (or negative infinity)
 
 \subsection{Ideal goal line}
+\todo: graph of ideal goal line in output space + analysis of unrealisable region
 
 \subsection{Backpropagation applied to the stripe problem}
 \todo: BP performance on stripe problem without subgoals, then with 10 subgoals and finally with 25
@@ -2038,14 +2046,17 @@ Consider a scenario in two-dimensional output space, as is shown in \ref{fig:clo
             y=1cm,
             xlabel={$y_1$},
             ylabel={$y_2$},
-            xmin=-1, xmax=7,
-            ymin=-1, ymax=2.5,
+            xlabel style={at={(axis description cs:1,0)},anchor=west},
+            ylabel style={at={(axis description cs:0,1)},anchor=south,rotate=-90},
+            xmin=-0, xmax=9,
+            ymin=-0, ymax=3.5,
             ticks=none,
-            clip=false
+            clip=false,
+            axis lines=left
         ]
-            \coordinate (A) at (6.0, 0.0);
-            \coordinate (B) at (2.0, 1.5);
-            \coordinate (C) at (0.0, 0.0);
+            \coordinate (A) at (7.0, 1.0);
+            \coordinate (B) at (3.0, 2.5);
+            \coordinate (C) at (1.0, 1.0);
             
             \draw (A) -- (B) -- (C);
             \draw[dashed] (A) -- (C);
@@ -2053,13 +2064,13 @@ Consider a scenario in two-dimensional output space, as is shown in \ref{fig:clo
             \fill (A) circle (2pt) node[below,align=center] {goal\\(or subgoal)};
             \fill (B) circle (2pt) node[above,align=center] {candidate\\sample point};
             \fill (C) circle (2pt) node[below,align=center] {current\\point};
-            \node[below] at (3,0) {ideal goal line};
+            \node[below] at (4,1) {ideal goal line};
 
             \pic[draw, "$\gamma_1$", angle eccentricity=1.5] {angle = C--B--A};
             \pic[draw, "$\gamma_2$", angle eccentricity=1.5] {angle = A--C--B};
         \end{axis}
     \end{tikzpicture}
-    \caption{A secenario in two-dimensional output space.}
+    \caption{A secenario in two-dimensional output space. Note that the ideal goal line need not beparallel to the $y_1$ axis.}
     \label{fig:clothoid_motivation_scenario}
 \end{figure}
 The current weight configuration produces a point $C$ in output space. 
@@ -2081,8 +2092,7 @@ As a consequence, the Euler spiral never forms a complete loop (or circle), a tr
             x=3cm,
             y=3cm,
             axis lines=center,
-            xmin=-1.1, xmax=1.1,
-            ymin=-1.1, ymax=1.1,
+            enlargelimits,
             xlabel={$x=F_C(t)$}, xlabel style={anchor=west},
             ylabel={$y=F_S(t)$}, ylabel style={anchor=south}
         ]
@@ -2093,13 +2103,15 @@ As a consequence, the Euler spiral never forms a complete loop (or circle), a tr
     \label{fig:euler_spiral}
 \end{figure}
 It can be defined using the Fresnel sine and cosine integrals
-\begin{equation*}
+\begin{equation}
+    \label{eq:fresnel_sine}
     F_S(t) = \int_0^t{\sin\frac{\pi s^2}{2} \ ds}
-\end{equation*}
+\end{equation}
 and
-\begin{equation*}
+\begin{equation}
+    \label{eq:fresnel_cosine}
     F_C(t) = \int_0^t{\cos\frac{\pi s^2}{2} \ ds}
-\end{equation*}
+\end{equation}
 with the parametric equations $x=F_C(t)$ and $y=F_S(t)$.
 The derivative at a specific point $(x, y)$ in terms of $t$ is calculated as
 \begin{equation*}
@@ -2108,14 +2120,16 @@ The derivative at a specific point $(x, y)$ in terms of $t$ is calculated as
     = \frac{\displaystyle\sin\frac{\pi t^2}{2}}{\displaystyle\cos\frac{\pi t^2}{2}}
     = \tan \frac{\pi t^2}{2},
 \end{equation*}
-so the angle $\theta$ of the gradient can be expressed in terms of $t$ as
-\begin{equation*}
-    \theta(t) = \tan^{-1} \left( \tan \frac{\pi t^2}{2} \right)
+so the angle $\omega$ of the clothoid's tangent at $\left(F_C(t),F_S(t)\right)$ can be expressed in terms of $t$ as
+\begin{equation}
+    \label{eq:clothoid_tangent_angle}
+    \omega(t) = \tan^{-1} \left( \tan \frac{\pi t^2}{2} \right)
     = \frac{\pi t^2}{2}.
-\end{equation*}
+\end{equation}
 
 \subsection{Construction}
-\ref{fig:clothoid_segment} shows how the three points $A,B,C$ from the scenario in \ref{fig:clothoid_motivation_scenario} can be mapped to the Euler spiral. 
+\ref{fig:clothoid_segment} shows how the three points $A,B,C$ from the scenario in \ref{fig:clothoid_motivation_scenario} can be mapped to the Euler spiral.
+Let us use the notation $\mathcal{A},\mathcal{B},\mathcal{C}$ to denote the corresponding points in two-dimensional Cartesian coordinate plane of the Euler spiral. 
 \begin{figure}
     \centering
     \begin{tikzpicture}
@@ -2123,10 +2137,12 @@ so the angle $\theta$ of the gradient can be expressed in terms of $t$ as
             x=6cm,
             y=6cm,
             xmin=0, xmax=1.3,
-            ymin=0, ymax=.9,
+            ymin=0, ymax=.85,
             xlabel={$x$},
             ylabel={$y$},
-            axis lines=center,
+            xlabel style={at={(axis description cs:1,0)},anchor=west},
+            ylabel style={at={(axis description cs:0,1)},anchor=south,rotate=-90},
+            axis lines=left,
             ticks=none,
             clip=false
         ]
@@ -2155,9 +2171,9 @@ so the angle $\theta$ of the gradient can be expressed in terms of $t$ as
             \draw (A) -- (C_extended);
             \draw[dashed] (intercept_extended) -- (intercept);
 
-            \fill (A) circle (2pt) node[below,align=center] {$A$\\(goal/subgoal)};
-            \fill (B) circle (2pt) node[below,align=center] {$B$\\(sample)};
-            \fill (C) circle (2pt) node[right] {$C$ (current point)};
+            \fill (A) circle (2pt) node[below,align=center] {$\mathcal{A}$\\(goal/subgoal)};
+            \fill (B) circle (2pt) node[below,align=center] {$\mathcal{B}$\\(sample)};
+            \fill (C) circle (2pt) node[right] {$\mathcal{C}$ (current point)};
 
             \pic[draw, "$\theta$", angle eccentricity=1.5] {angle = dummy--intercept--C};
             \pic[draw, "$\gamma_1$", angle eccentricity=1.5] {angle = C--B--A};
@@ -2166,12 +2182,38 @@ so the angle $\theta$ of the gradient can be expressed in terms of $t$ as
             \pic[draw, "$\alpha$", angle eccentricity=1.5] {angle = C_extended--C--intercept_extended};
         \end{axis}
     \end{tikzpicture}
-    \caption{Plot of a clothoid segment with three points of interest: $C$ is the initial point, $B$ is the sample point and $A$ is the goal/subgoal (at the origin of the clothoid). The dashed line is tangential to the clothoid at $C$.}
+    \caption{Plot of a clothoid segment with three points of interest: $\mathcal{C}$ is the initial point, $\mathcal{B}$ is the sample point and $\mathcal{A}$ is the goal/subgoal (at the origin of the clothoid). The dashed line is tangential to the clothoid at $\mathcal{C}$.}
     \label{fig:clothoid_segment}
 \end{figure}
-$A$ must be at the origin of the spiral in order to ensure that the curvature is zero at the goal point.
-Then the two points $B$ and $C$ must be found along the curve such that the triangle formed by these points, $\triangle{ABC}$, has angles $\measuredangle{ABC}=\gamma_1$ and $\measuredangle{ACB}=\gamma_2$.
+$\mathcal{A}$ must be at the origin of the spiral in order to ensure that the curvature is zero at the goal point.
+Then the two points $\mathcal{B}$ and $\mathcal{C}$ must be found along the curve such that the triangle formed by these points, $\triangle{\mathcal{ABC}}$, has angles $\measuredangle{\mathcal{ABC}}=\gamma_1$ and $\measuredangle{\mathcal{ACB}}=\gamma_2$.
 
+The problem of finding $\triangle{\mathcal{ABC}}$ is equivalent to finding the values $t_\mathcal{A},t_\mathcal{B},t_\mathcal{C}$ that produce the points $\mathcal{A},\mathcal{B},\mathcal{C}$ when plugged into \ref{eq:fresnel_sine,eq:fresnel_cosine}. 
+We have established previously that $\mathcal{A} = (0, 0)$; thus $t_\mathcal{A}=0$ but it remains to find $t_\mathcal{B}$ and $t_\mathcal{C}$.
+
+Let us constrain $t_\mathcal{A}$ and $t_\mathcal{B}$ to be in the interval $(0, \sqrt{3}]$ to ensure that the resulting clothoid will not wind too tight\footnote{In fact, the clothoid from \ref{fig:clothoid_segment} was plotted for $0 \leq t \leq \sqrt{3}$. At $t=\sqrt{3}$, the clothoid `points' downwards.}.
+Furthermore, it must be the case that $t_\mathcal{A}<t_\mathcal{B}<t_\mathcal{C}$ which is also why the interval above does not include zero.
+The steps below can be used to find $t_\mathcal{B}$ and $t_\mathcal{C}$.
+\begin{enumerate}
+    \item Create a sequence of $n$ sample values of $t$ such that $t_i = \frac{i}{n}\sqrt{3}$ for $i=1,2,\dots,n$.
+    \item Calculate the points $P_1,P_2,\dots,P_n$ along the Euler spiral where the $i$th point is given by $P_i = (F_C(t_i),F_S(t_i))$.
+    \item For $b,c \in \mathbb{Z}^+$ subject to $b<c\leq n$, find the pair of values $b,c$ that minimises
+        \begin{equation*}
+            \left(\measuredangle{AP_bP_c} - \gamma_1\right)^2 + \left(\measuredangle{AP_cP_b} - \gamma_2\right)^2.
+        \end{equation*}
+        In other words, find the triangle formed by the points $P_b$, $P_c$, and $\mathcal{A}$ which is the most similar\footnote{Two triangles are \textit{similar} if their side lengths are proportional and hence angles are identical.} to $\triangle{ABC}$. 
+        When $n\to\infty$, we find $t_b=t_\mathcal{B}$ and $t_c=t_\mathcal{C}$ (equivalently, $P_b=\mathcal{B}$ and $P_c=\mathcal{C}$), but values of $n$ in the order of $1000$ will be suitable for practical purposes.
+\end{enumerate}
+
+Once we have determined $t_\mathcal{B}$ and $t_\mathcal{C}$ and thus also know the coordinates of $\mathcal{B}$ and $\mathcal{C}$, we can find $\beta$ as the angle that $\mathcal{C}$ makes with the $x$-axis, giving
+\begin{equation}
+    \beta = \tan^{-1} \left( \frac{\mathcal{C}_y}{\mathcal{C}_x} \right).
+\end{equation}
+Since $\theta$ is the angle of the tangent at $\mathcal{C}$, we obtain from \ref{eq:clothoid_tangent_angle} that $\theta=\frac{\pi}{2} \left(t_\mathcal{C}\right)^2$.
+Furthermore, we can deduce from  \ref{fig:clothoid_segment} that $\theta=\alpha+\beta$, so
+\begin{equation}
+    \alpha = \theta - \beta = \frac{\pi}{2} \left(t_\mathcal{C}\right)^2 - \beta.
+\end{equation}
 
 \begin{figure}
     \centering
@@ -2181,6 +2223,9 @@ Then the two points $B$ and $C$ must be found along the curve such that the tria
             y=1cm,
             xlabel={$y_1$},
             ylabel={$y_2$},
+            xlabel style={at={(axis description cs:1,0)},anchor=west},
+            ylabel style={at={(axis description cs:0,1)},anchor=south,rotate=-90},
+            axis lines=left,
             xmin=-1, xmax=7,
             ymin=-1, ymax=5,
             ticks=none,
@@ -2231,4 +2276,4 @@ Then the two points $B$ and $C$ must be found along the curve such that the tria
 \end{figure}
 
 \chapter{Generalising neural surfing}
-\todo: generalize to classification as regression with multiple output variables
+\todo: generalize to classification as regression with multiple output variables (this can be done by concatenating all output variables' dimensions into the output vector/space)
