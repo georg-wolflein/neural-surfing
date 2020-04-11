@@ -44,7 +44,7 @@
 \end{definition}
 
 \begin{definition}[Supervised learning]
-    A supervised learning algorithm for a regression task infers the function $f$ given in (\ref{eq:reg_model}) from a set of \textit{labelled training data} of the form explained previously. 
+    A supervised learning algorithm for a regression task infers the function $f$ given in \ref{eq:reg_model} from a set of \textit{labelled training data} of the form explained previously. 
     We use the vector
     \begin{equation}
         \label{eq:sup_learn_prediction}
@@ -76,7 +76,7 @@ The unit $i$'s activation is its excitation applied to a non-linear \textit{acti
 
 \paragraph{Activation functions}
 In its original form, \citeauthor{mcculloch1943} defined the neuron as having only binary activation \cite*{mcculloch1943}. 
-This means that in our model from (\ref{eq:ann_activation}), we would require $a_i \in \{0, 1\}$ and hence an activation function of the form $g_\text{thres}: \mathbb{R} \rightarrow \{0, 1\}$ which would be defined\footnote{In fact, \citeauthor{mcculloch1943} defined the activation to be zero when $x<\theta$ for a threshold parameter $\theta \in \mathbb{R}$ and one otherwise, but in our model the bias term $b_i$ acts as the threshold.} as
+This means that in our model from \ref{eq:ann_activation}, we would require $a_i \in \{0, 1\}$ and hence an activation function of the form $g_\text{thres}: \mathbb{R} \rightarrow \{0, 1\}$ which would be defined\footnote{In fact, \citeauthor{mcculloch1943} defined the activation to be zero when $x<\theta$ for a threshold parameter $\theta \in \mathbb{R}$ and one otherwise, but in our model the bias term $b_i$ acts as the threshold.} as
 \begin{equation}
     \label{eq:thres_activation}
     g_\text{thres}(x) = \begin{cases} 
@@ -97,7 +97,7 @@ and the rectified linear unit (ReLU)
         x & x \geq 0
     \end{cases}
 \end{equation}
-which are depicted in Figure \ref{fig:activation_functions}.
+which are depicted in \ref{fig:activation_functions}.
 \begin{figure}
     \centering
     \begin{subfigure}{.45\textwidth}
@@ -156,18 +156,18 @@ Much of the work in this report can easily be generalized to designs with multpl
 This is because the algorithms explained in this report do not concern themselves with the specifics of the activation functions, as long as they are non-linear.
 
 \paragraph{ANNs as regression models}
-We can employ an ANN to model a regression problem of the form given in (\ref{eq:reg_model}). 
+We can employ an ANN to model a regression problem of the form given in \ref{eq:reg_model}. 
 To do so, we need at least $D+1$ neurons in the network. 
 We consider the first $D$ units to be the \textit{input} neurons, and the last neuron, $n$, is the output unit.
 Furthermore, we require $w_{j,k}=0$ for $j,k \in \mathbb{Z}^+$ where $j \leq n$ and $k \leq D$ to ensure that there are no links feeding into the input neurons.
 
 To obtain the prediction $\hat{y}$ given the $D$-dimensional feature vector $\vec{x}$, we set the activation of the $i$th unit to the value the $i$th element in $\vec{x}$ for $i=1,\dots,D$.
-Then, we propagate the activations using (\ref{eq:ann_activation}) until finally the prediction is the activation of the last neuron, $\hat{y}=a_n$.
+Then, we propagate the activations using \ref{eq:ann_activation} until finally the prediction is the activation of the last neuron, $\hat{y}=a_n$.
 This process is often called \textit{forward propagation} or \textit{forward pass} \cite{burkov2019}.
 
 \subsection{Single-layer network}
 We introduce a single-layer network (SLN) as a type of ANN which consists of two conceptual layers, an input and an output layer.
-Every input node is connected to every output node, but there are no intra-layer links (i.e. there are no links between any two input nodes or any two output nodes), as shown in Figure \ref{fig:single_layer_perceptron}. 
+Every input node is connected to every output node, but there are no intra-layer links (i.e. there are no links between any two input nodes or any two output nodes), as shown in \ref{fig:single_layer_perceptron}. 
 This is what we call a \textit{fully-connected feedforward} architecture.
 SLN architectures will always form a \textit{directed acyclic graph} (DAG) because there are no intra-layer or backwards connections.
 
@@ -211,13 +211,13 @@ SLN architectures will always form a \textit{directed acyclic graph} (DAG) becau
 \end{figure}
 
 We purposefully use the term SLN instead of single-layer perceptron (SLP) to avoid confusion. 
-A SLP has only one output unit and uses the threshold activation function given in (\ref{eq:thres_activation}) \cite{rosenblatt1958}.
+A SLP has only one output unit and uses the threshold activation function given in \ref{eq:thres_activation} \cite{rosenblatt1958}.
 In our definition of a SLN we allow more than one output and impose no restrictions on $g$, except that the same activation function is used for every output neuron.
 We still use the term `single layer' because the input layer, lacking any incoming weight or bias connections, is not considered to be a `proper' layer.
 
 Let us consider a SLN with $m$ inputs and $n$ outputs. 
 Since every output unit $i$ only has connections from every input unit $j$,
-we can adapt (\ref{eq:ann_activation}) to give the activation of a particular output neuron $i$ as
+we can adapt \ref{eq:ann_activation} to give the activation of a particular output neuron $i$ as
 \begin{equation}
     a_i = y_i = g\left(z_i\right) = g\left(\sum_{j=1}^m{w_{j,i} x_j} + b_i\right)
     = g\left( \vec{w}_i\tran \vec{x}_i + b_i\right)
@@ -274,8 +274,8 @@ This is all we need to formally define a SLN.
 \end{definition}
 
 Unlike the formula for a regression model, a SLN is a vector-valued function, due to the fact that there are multiple outputs. 
-Note that when $n=1$, we reach the same form as in (\ref{eq:reg_model}). 
-Moreover, if we additionally use the threshold activation function from (\ref{eq:thres_activation}), we arrive at the SLP model given by \textcite{rosenblatt1958}.
+Note that when $n=1$, we reach the same form as in \ref{eq:reg_model}. 
+Moreover, if we additionally use the threshold activation function from \ref{eq:thres_activation}, we arrive at the SLP model given by \textcite{rosenblatt1958}.
 
 \subsection{Multi-layer perceptron}
 \label{sec:multi_layer_perceptron}
@@ -310,7 +310,7 @@ Notice that for every $l < L$, $\vec{W}_l$ is a $n_l \times m_l$ matrix such tha
 This means that the MLP has $m_1$ input neurons.
 Since the final layer has only one output unit, $\vec{W}_L$ has only one row, and finally $n_L=1$
 
-The graph representing this type of network consists of connecting the outputs of the SLN representing layer $l$ with the inputs of the SLN representing layer $l+1$, as shown in Figure \ref{fig:multi_layer_perceptron}. 
+The graph representing this type of network consists of connecting the outputs of the SLN representing layer $l$ with the inputs of the SLN representing layer $l+1$, as shown in \ref{fig:multi_layer_perceptron}. 
 The layers between the input and output layers are referred to as \textit{hidden} layers.
 
 \begin{figure}
@@ -378,7 +378,7 @@ The layers between the input and output layers are referred to as \textit{hidden
 \end{figure}
 
 Since MLPs are simply nested SLNs, it follows that MLPs retain the DAG property and are therefore \textit{feedforward} networks as well.
-In the forward pass, the activations are propagated from layer to layer (i.e. nested function to nested function) as in (\ref{eq:single_layer_perceptron}).
+In the forward pass, the activations are propagated from layer to layer (i.e. nested function to nested function) as in \ref{eq:single_layer_perceptron}.
 
 \section{The decision boundary in input space}
 We will briefly introduce the concept of binary classification and show how it fits in the framework of the already defined regression model.
@@ -401,14 +401,14 @@ This will allow us to examine the so-called decision boundary in input space whi
 \end{lemma}
 \begin{proof}
     We are looking define an equivalent classification model $C$ that outputs $0$ if $R\left(\vec{x}\right)<t$ and $1$ otherwise. 
-    This can be achieved using the threshold activation function $g_\text{thres}$ from (\ref{eq:thres_activation}) in the form
+    This can be achieved using the threshold activation function $g_\text{thres}$ from \ref{eq:thres_activation} in the form
     \begin{equation}
         C(\vec{x}) = g_\text{thres}\left(R\left(\vec{x}\right) - t\right).
     \end{equation}
 \end{proof}
 \begin{remark}
     What we have shown is that we can repurpose any regression model for a binary classification task, including for example MLPs.
-    When using a MLP, the sigmoid activation function (\ref{eq:sigmoid}) naturally lends itself to be used on the output unit because its range, the interval $(0,1)$, can be interpreted as a probability.
+    When using a MLP, the sigmoid activation function \ref{eq:sigmoid} naturally lends itself to be used on the output unit because its range, the interval $(0,1)$, can be interpreted as a probability.
     In this case we would set the decision threshold $t=\frac{1}{2}$.
 \end{remark}
 
@@ -418,7 +418,7 @@ This will allow us to examine the so-called decision boundary in input space whi
 \end{lemma}
 \begin{proof}
     Consider a single-layer MLP $M$ with $m$ inputs. 
-    By Definition \ref{def:mlp}, this is equivalent to SLN $S$ with $m$ inputs and one output as shown in Figure \ref{fig:sln_m_in_1_out}. 
+    By Definition \ref{def:mlp}, this is equivalent to SLN $S$ with $m$ inputs and one output as shown in \ref{fig:sln_m_in_1_out}. 
     \begin{figure}
         \begin{center}
             \begin{tikzpicture}
@@ -466,7 +466,7 @@ This will allow us to examine the so-called decision boundary in input space whi
 
 \begin{example}
     \label{ex:sln_2_in_1_out_sigmoid_hyperplane}
-    Let us consider a MLP $M$ with only one layer and two inputs, as depicted in Figure \ref{fig:sln_2_in_1_out}.
+    Let us consider a MLP $M$ with only one layer and two inputs, as depicted in \ref{fig:sln_2_in_1_out}.
     \begin{figure}
         \begin{center}
             \begin{tikzpicture}
@@ -490,14 +490,14 @@ This will allow us to examine the so-called decision boundary in input space whi
     The output unit will have the sigmoid activation function, and we will choose the decision threshold $t=\frac{1}{2}$.
     
     The decision boundary will be a line because $\mathcal{I}_M$ has two dimensions, and a hyperplane in a two-dimensional space is simply a line.
-    The equation of this line can be obtained from (\ref{eq:sigmoid_hyperplane}) as
+    The equation of this line can be obtained from \ref{eq:sigmoid_hyperplane} as
     \begin{align*}
         0 &= w_1 x_1 + w_2 x_2 + b + \ln \left(\frac{1}{\left(\frac{1}{2}\right)} - 1\right) \\
         &= x_1 + x_2 + \ln 1 \\
         x_2 &= -x_1.
     \end{align*}
 
-    Figure \ref{fig:sigmoid_hyperplane} depicts this hyperplane along with some samples in input space to show how they would be classified. 
+    \ref{fig:sigmoid_hyperplane} depicts this hyperplane along with some samples in input space to show how they would be classified. 
     The arrow on the hyperplane shows the direction of increasing output, i.e. what would be classified as $1$.
     \begin{figure}
         \centering
@@ -518,7 +518,7 @@ This will allow us to examine the so-called decision boundary in input space whi
                 \addplot[black, ->] coordinates {(-2, 2) (-1.5, 2.5)};
             \end{axis}
         \end{tikzpicture}
-        \caption{Plot of the input space of the MLP from Figure \ref{fig:sln_2_in_1_out} with sigmoid activation where $w_1=w_2=1$, $b=0$, and some sample data. Filled in dots represent a prediction of $\hat{y}>\frac{1}{2}$ whereas the empty circular dots represent $\hat{y}<\frac{1}{2}$.}
+        \caption{Plot of the input space of the MLP from \ref{fig:sln_2_in_1_out} with sigmoid activation where $w_1=w_2=1$, $b=0$, and some sample data. Filled in dots represent a prediction of $\hat{y}>\frac{1}{2}$ whereas the empty circular dots represent $\hat{y}<\frac{1}{2}$.}
         \label{fig:sigmoid_hyperplane}
     \end{figure}
 \end{example}
@@ -545,7 +545,7 @@ We will use a simple loss function that uses mean squared error for this purpose
     \begin{equation}
         L(\vec{p}) = \sum_{i=1}^N{\left(M\left(\vec{x}_i; \vec{p}\right) - y_i\right)^2}.
     \end{equation}
-    Notice the similarity to (\ref{eq:mean_squared_error}). 
+    Notice the similarity to \ref{eq:mean_squared_error}. 
     However, we have omitted the factor $\frac{1}{N}$ since the actual loss values are not as important as their relationship to each other, and multiplying by $N$ will retain that relationship.
     We use the term \textit{error-weight surface} to refer to the graph of this function.
 \end{definition}
@@ -559,7 +559,7 @@ The main idea is as follows:
     \item Take a step in the negative direction of this gradient, i.e. update the trainable parameters $\vec{p} \leftarrow \vec{p} - \alpha \vec{\Delta p}$ where $\alpha \in \mathbb{R}$ is the learning rate.
     \item Repeat steps 1 and 2 until a predefined convergence criterion is met.
 \end{enumerate}
-Figure \ref{fig:gradient_descent_local_minimum} shows the steps that this algorithm would make on a simple error-weight surface with only one parameter.
+\ref{fig:gradient_descent_local_minimum} shows the steps that this algorithm would make on a simple error-weight surface with only one parameter.
 \begin{figure}
     \centering
     \begin{tikzpicture}[
@@ -599,7 +599,7 @@ Calculating the derivative of the loss function with respect to each of the trai
 Let us look at calculating this gradient for the example of a single-layer MLP. 
 We will come back to these results in Section \ref{sec:stripe_problem}.
 \begin{example}[Gradient in a single-layer MLP]
-    Let us revisit the SLN with $m$ inputs and one output from Figure \ref{fig:sln_m_in_1_out}.
+    Let us revisit the SLN with $m$ inputs and one output from \ref{fig:sln_m_in_1_out}.
     The loss function will be in terms of the trainable parameters, i.e. the weights $\vec{w}$ and bias $b$, so
     \begin{align}
         L = L(\vec{w}, b)
@@ -713,7 +713,7 @@ More sophisticated implementations will require even more hyperparameters (such 
 \paragraph{Suboptimal local minima}
 \todo: explain
 \paragraph{Efficiency}
-\todo: both BP and SA have efficiency drawbacks (see Figure \ref{fig:gradient_descent_narrow_valley})
+\todo: both BP and SA have efficiency drawbacks (see \ref{fig:gradient_descent_narrow_valley})
 \begin{figure}
     \includegraphics[width=\textwidth]{press_steepest_gradient_descent.png}
     \caption{The method of steepest gradient descent in a long narrow valley \cite[p. 421]{press1992}.}
@@ -895,7 +895,7 @@ These parameters will be useful for defining the weight and ouput spaces.
 \begin{definition}[Output space]
     \label{def:output_space}
     The output space $\mathcal{O}_A$ of an artificial neural network $A$ with one output neuron spans the space of all possible output predictions on the training set.
-    From (\ref{eq:sup_learn_prediction}), the vector $\vec{\hat{y}}$ represents the prediction $\hat{y}$ for all $N$ training samples.
+    From \ref{eq:sup_learn_prediction}, the vector $\vec{\hat{y}}$ represents the prediction $\hat{y}$ for all $N$ training samples.
     The output space spans all possible assignments of $\vec{\hat{y}}$, so
     \begin{equation}
         \mathcal{O_A}=\mathbb{R}^N.
@@ -907,7 +907,7 @@ These parameters will be useful for defining the weight and ouput spaces.
     The weight space for a SLN $S$ with $m$ inputs and $n$ outputs is $\mathcal{W}_S = \mathbb{R}^{n(m+1)}$.
 \end{lemma}
 \begin{proof}
-    $S$'s trainable parameters are the weight matrix $\vec{W} \in \mathbb{R}^{m\times n}$ from (\ref{eq:sln_weight_matrix}) and bias vector $\vec{b} \in \mathbb{R}^n$ from (\ref{eq:sln_bias}).
+    $S$'s trainable parameters are the weight matrix $\vec{W} \in \mathbb{R}^{m\times n}$ from \ref{eq:sln_weight_matrix} and bias vector $\vec{b} \in \mathbb{R}^n$ from \ref{eq:sln_bias}.
     By Definition \ref{def:weight_space}, the weight space encompasses all values of $\vec{W}$ and $\vec{b}$, so
     \begin{equation*}
         \mathcal{W}_S = \mathbb{R}^{m \times n} \times \mathbb{R}^{n} = \mathbb{R}^{m n + n} = \mathbb{R}^{(m + 1) n}.
@@ -992,8 +992,8 @@ Note that linear mappings can exist between spaces of different dimensionalities
     For a SLN $S$ with one output unit, the function $h_S: \mathcal{W}_S \rightarrow \mathcal{O}_S$ is not a linear mapping.
 \end{theorem}
 \begin{proof}
-    Let $S$ have $m$ inputs, as depicted in Figure \ref{fig:sln_m_in_1_out}.
-    Modifying the formula for a SLN given in Definition \ref{def:sln} (\ref{eq:single_layer_perceptron}) for the case where there is only one output unit, we obtain
+    Let $S$ have $m$ inputs, as depicted in \ref{fig:sln_m_in_1_out}.
+    Modifying the formula for a SLN given in Definition \ref{def:sln} \ref{eq:single_layer_perceptron} for the case where there is only one output unit, we obtain
     $\hat{y} = f_\text{SLP}(\vec{x}; \vec{w}\tran, b) = g\left(\vec{w} \vec{x} + b\right)$
     where
     $\vec{x} = \begin{bmatrix}
@@ -1005,7 +1005,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
     $\vec{X} = \begin{bmatrix}
         \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_N
     \end{bmatrix}\tran$
-    as in (\ref{eq:sup_learn_input_matrix}).
+    as in \ref{eq:sup_learn_input_matrix}.
     By Definition \ref{def:weight_output_space_mapping}, the mapping from weight to output space $h_S: \mathcal{W}_S \rightarrow \mathcal{O}_S$ is
     \begin{equation*}
         h_S \left( \vec{w} \right)
@@ -1089,7 +1089,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
     We will generalize the results from Theorem \ref{thm:sln_one_output} to SLNs with multiple outputs.
     Let $S$ have $m$ inputs and $n$ outputs.
     We construct $n$ smaller SLNs, $S_1,S_2,\dots,S_n$ where each $S_i$ has all $m$ input units, but only the $i$th output unit. 
-    The DAG representing $S_i$ will only contain links from the input nodes to output node $\hat{y}_i$ (and, of course, the associated bias term $b_i$) as depicted in Figure \ref{fig:sln_m_in_n_out_construction}.
+    The DAG representing $S_i$ will only contain links from the input nodes to output node $\hat{y}_i$ (and, of course, the associated bias term $b_i$) as depicted in \ref{fig:sln_m_in_n_out_construction}.
     \begin{figure}
         \begin{center}
             \begin{tikzpicture}
@@ -1200,7 +1200,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
 Let us look at a couple of examples of unrealizable regions.
 \begin{example}
     A trivial example of an unrealizable region is predicting two different outputs for the same training sample.
-    Consider again an MLP $M$ with one layer and two inputs, as shown in Figure \ref{fig:sln_2_in_1_out}.
+    Consider again an MLP $M$ with one layer and two inputs, as shown in \ref{fig:sln_2_in_1_out}.
     Let $\vec{x}\in \mathbb{R}^2$ be any point in input space.
     For this example, let the training data be the matrix
     $
@@ -1224,7 +1224,7 @@ Let us look at a couple of examples of unrealizable regions.
     single-layer networks with non-decreasing activation functions can only learn a Boolean mapping that is \textit{linearly separable} \cite[p. 723]{russell2010}.
     A linearly separable mapping has a linear decision boundary which means that there is only one linear hyperplane separating the two classes (true and false).
     
-    The XOR function is not linearly separable because it requires at least two linear decision boundaries, as shown in Figure \ref{fig:xor}.
+    The XOR function is not linearly separable because it requires at least two linear decision boundaries, as shown in \ref{fig:xor}.
     \begin{figure}
         \centering
         \begin{tikzpicture}
@@ -1257,7 +1257,7 @@ Let us look at a couple of examples of unrealizable regions.
         \caption{The locations of the two hyperplanes in input space acting as decision boundaries required to learn an XOR mapping. The filled-in dot represents an activation of 1 (true) and the circle represents 0 activation (false).}
         \label{fig:xor}
     \end{figure}
-    We will consider the same single-layer architecture from Figure \ref{fig:sln_2_in_1_out} again, using the sigmoid activation function.
+    We will consider the same single-layer architecture from \ref{fig:sln_2_in_1_out} again, using the sigmoid activation function.
     The sigmoid is a non-decreasing function.
     Since we only have one unit (the output neuron) with this non-decreasing non-linear activation function, it follows that we can only have one decision boundary.
     We just showed that the XOR mapping requires two decision boundaries.
@@ -1345,7 +1345,7 @@ The initial configuration will have the hyperplanes arranged horizontally and mi
 Changing the weights in the neural network will allow the hyperplanes to rotate, but when they do so, they are forced to misclassify even more samples (thereby increasing the mean squared error) until eventually reaching the target configuration with zero error.
 
 The stripe problem can be achieved by a 2-2-1 sigmoidal MLP \cite{weir2019}. 
-Figure \ref{fig:stripe_original_hyperplanes} shows the initial and target configurations of the hyperplanes for this type of network.
+\ref{fig:stripe_original_hyperplanes} shows the initial and target configurations of the hyperplanes for this type of network.
 The hidden layer is required because without it, the sigmoid activation function will produce only one hyperplane, as proved in Lemma \ref{lmm:sigmoid_decision_boundary}.
 \begin{figure}
     \centering
@@ -1437,7 +1437,7 @@ and the bump function\footnote{We give a slightly modified version of the well-k
         0 & \text{otherwise}
     \end{cases}.
 \end{equation}
-These functions, graphed in Figure \ref{fig:rbfs}, exhibit slightly different properties.
+These functions, graphed in \ref{fig:rbfs}, exhibit slightly different properties.
 \begin{figure}
     \centering
     \begin{tikzpicture}[
@@ -1477,7 +1477,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
 \end{lemma}
 \begin{proof}
     The proof is similar in method as in Lemma \ref{lmm:sigmoid_decision_boundary}.
-    Consider an equivalent SLN $S$ with $m$ inputs and one output as shown in Figure \ref{fig:sln_m_in_1_out}. 
+    Consider an equivalent SLN $S$ with $m$ inputs and one output as shown in \ref{fig:sln_m_in_1_out}. 
     To obtain the decision boundaries, we set the output equal to the decision threshold, so
     \begin{align*}
         t &= S\left(\vec{x}\right) \\
@@ -1509,16 +1509,16 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
 
 \begin{example}
     \label{ex:sln_2_in_1_out_gaussian_hyperplanes}
-    Like in Example \ref{ex:sln_2_in_1_out_sigmoid_hyperplane}, let us consider once more a single-layered MLP $M$ with two inputs, depicted in Figure \ref{fig:sln_2_in_1_out}, where $w_1=w_2=1$ and $b=0$. 
+    Like in Example \ref{ex:sln_2_in_1_out_sigmoid_hyperplane}, let us consider once more a single-layered MLP $M$ with two inputs, depicted in \ref{fig:sln_2_in_1_out}, where $w_1=w_2=1$ and $b=0$. 
     Let the threshold be $t=\frac{1}{2}$ again, but this time, we will use the Gaussian RBF as the activation function.
 
-    From (\ref{eq:gaussian_hyperplanes}), we obtain the equations of the hyperplanes as
+    From \ref{eq:gaussian_hyperplanes}, we obtain the equations of the hyperplanes as
     \begin{align*}
         \vec{w}\tran \vec{x} + b \pm \sqrt{-\ln{\frac{1}{2}}} &= 0 \\
         w_1 x_1 + w_2 x_2 + b &=  \pm \sqrt{-\ln{\frac{1}{2}}} \\
         x_1 + x_2 &= \pm \sqrt{-\ln{\frac{1}{2}}},
     \end{align*}
-    so the hyperplanes are at $x_2 = -x_1 - 0.8325\dots$ and $x_2 = -x_1 + 0.8325\dots$, as shown in Figure \ref{fig:gaussian_hyperplanes}.
+    so the hyperplanes are at $x_2 = -x_1 - 0.8325\dots$ and $x_2 = -x_1 + 0.8325\dots$, as shown in \ref{fig:gaussian_hyperplanes}.
 
     \begin{figure}
         \begin{subfigure}[b]{0.45\textwidth}
@@ -1596,7 +1596,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
             \end{tikzpicture}
             \caption{Input-activation space}
         \end{subfigure}
-        \caption{Plots of the hyperplanes of the MLP from Figure \ref{fig:sln_2_in_1_out} with Gaussian RBF activation where $w_1=w_2=1$, $b=0$.}
+        \caption{Plots of the hyperplanes of the MLP from \ref{fig:sln_2_in_1_out} with Gaussian RBF activation where $w_1=w_2=1$, $b=0$.}
         \label{fig:gaussian_hyperplanes}
     \end{figure}
 \end{example}
@@ -1608,7 +1608,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
 
 \subsection{Formulating the problem}
 Example \ref{ex:sln_2_in_1_out_gaussian_hyperplanes} showed that a simple 2-1 network with radial basis activation constructs a scenario where the hyperplanes form a stripe that can be rotated by adjusting the weights.
-This means that we could easily contrive the stripe problem from Figure \ref{fig:stripe_original_hyperplanes}.
+This means that we could easily contrive the stripe problem from \ref{fig:stripe_original_hyperplanes}.
 However, since we established that the hyperplanes will always remain parallel in our RBF network and since they rotate around the origin when $b$ is fixed, we can create a much simplified version of the stripe problem using only four samples.
 
 \begin{figure}
@@ -1669,7 +1669,7 @@ However, since we established that the hyperplanes will always remain parallel i
     \caption{The hyperplanes in the initial and target configurations of the RBF stripe problem.}
     \label{fig:stripe_hyperplanes}
 \end{figure}
-Figure \ref{fig:stripe_hyperplanes} depicts the initial and target configurations of this simplified version. 
+\ref{fig:stripe_hyperplanes} depicts the initial and target configurations of this simplified version. 
 It is obvious that whichever direction the stripe rotates, it will need to misclassify one of the samples before achieving the target configuration.
 
 \begin{table}[h!]
@@ -1692,7 +1692,7 @@ It is obvious that whichever direction the stripe rotates, it will need to miscl
     \caption{The dataset for the RBF stripe problem.}
     \label{table:stripe_dataset}
 \end{table}
-We give the dataset for the stripe problem in Table \ref{table:stripe_dataset}.
+We give the dataset for the stripe problem in \ref{table:stripe_dataset}.
 Notice that the third and fourth samples do not have a target output of zero, but rather $\phi(2)$ which is close to zero (for the Gaussian RBF, $\phi(2) \approx 0.018$, and for the bump function $\phi(2) = 0$).
 This will make some calculations later more convenient because it guarantees that there exists at least one weight configuration with a MSE of zero.
 
@@ -1764,7 +1764,7 @@ This will make some calculations later more convenient because it guarantees tha
     \label{fig:stripe_error_surface_bump}
 \end{figure}
 Let us examine the error-weight surface of the stripe problem. 
-It is depicted in Figures \ref{fig:stripe_error_surface_gaussian} and \ref{fig:stripe_error_surface_bump} for the Gaussian and bump activation functions, respectively.
+It is depicted in \ref{fig:stripe_error_surface_gaussian,fig:stripe_error_surface_bump} for the Gaussian and bump activation functions, respectively.
 The graphs are quite similar, showing that the initial weight configuration $\vec{w}_0$ has a MSE of around $1$.
 Most importantly, we see that in order to get to any of the goal weight states $\vec{w}_S$ in the region where the MSE is close to zero, we must first overcome a `hill'.
 
@@ -1775,7 +1775,7 @@ Henceforth the term `stripe problem' shall be used to refer to the Gaussian RBF 
 
 \subsection{Local minima}
 We will now attempt to find the local minima in the error-weight surface analytically. 
-From Table \ref{table:stripe_dataset} we obtain the input matrix
+From \ref{table:stripe_dataset} we obtain the input matrix
 \begin{equation*}
     \vec{X} = \begin{bmatrix}
         0 & 0 \\
@@ -1802,7 +1802,7 @@ This means that our loss function is given by
     &\qquad+ \left(\phi(2 w_2) - \phi(2)\right)^2
      + \left(\phi(2 w_1) - \phi(2)\right)^2.
 \end{align*}
-Substituting (\ref{eq:gaussian}), we obtain
+Substituting \ref{eq:gaussian}, we obtain
 \begin{equation}
     L
      = \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right)^2
@@ -1867,7 +1867,7 @@ Substituting (\ref{eq:gaussian}), we obtain
     It is trivial to see that $\vec{w}_1$, $\vec{w}_2$, and $\vec{w}_3$ are solutions to this equation.
 \end{proof}
 For the remainder of this project, we will assume that these three solutions are the only ones. 
-Analysing the graph from Figure \ref{fig:stripe_error_surface_gaussian} does suggest so.
+Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so.
 
 \begin{lemma}
     The local minima on the error-weight surface given by $L$ are $\vec{w}_1$ and $\vec{w}_2$.
@@ -1875,7 +1875,7 @@ Analysing the graph from Figure \ref{fig:stripe_error_surface_gaussian} does sug
 \begin{proof}
     We have previously shown that $\vec{J}_L=\vec{0}$ for the three critical points $\vec{w}_1$, $\vec{w}_2$, and $\vec{w}_3$.
     Let us now compute the Hessian.
-    We will express the Jacobian from (\ref{eq:stripe_jacobian}) as
+    We will express the Jacobian from \ref{eq:stripe_jacobian} as
     \begin{align*}
         \vec{J}_L &= -16 \left( r
         +
@@ -1917,7 +1917,7 @@ Analysing the graph from Figure \ref{fig:stripe_error_surface_gaussian} does sug
         - 8 x^2 \left(2 e^{-8 x^2} - e^{-4-4 x^2}\right).
     \end{align*}
 
-    Calculating all the second derivatives of (\ref{eq:stripe_jacobian_short}), we get
+    Calculating all the second derivatives of \ref{eq:stripe_jacobian_short}, we get
     \begin{align*}
         \frac{\delta^2 L}{\delta w_1^2}
         &= -16 \frac{\delta}{\delta w_1} \left( r + s(w_1) \right) \\
@@ -1989,10 +1989,10 @@ Analysing the graph from Figure \ref{fig:stripe_error_surface_gaussian} does sug
     \paragraph{Second critical point ($w_1=1, w_2=-1$)}
     Notice that this point can be obtained simply by switching $w_1$ and $w_2$ from the previous critical point.
     We have showed previously that $s'(-1)=s'(1)$ and furthermore we established earlier that $\frac{\delta r}{\delta w_1} =\frac{\delta r}{\delta w_2}$.
-    Hence the Hessian from (\ref{eq:stripe_hessian}) will be positive definite too, thus proving that the second critical point is a local minimum, too.
+    Hence the Hessian from \ref{eq:stripe_hessian} will be positive definite too, thus proving that the second critical point is a local minimum, too.
 
     \paragraph{Third critical point ($w_1=w_2=0$)}
-    Using the same notation as (\ref{eq:stripe_hessian}), we evaluate 
+    Using the same notation as \ref{eq:stripe_hessian}, we evaluate 
     $q$,$r$,$s'(w_1)$, and $\frac{\delta r}{\delta w_1}$ for this weight configuration.
     \begin{align*}
         q &= e^{-4(w_1+w_2)^2} = 1 \\
@@ -2029,7 +2029,7 @@ Analysing the graph from Figure \ref{fig:stripe_error_surface_gaussian} does sug
 \chapter{The neural surfing technique}
 
 \section{Clothoids}
-Consider a scenario in two-dimensional output space, as is shown in Figure \ref{fig:clothoid_motivation_scenario}.
+Consider a scenario in two-dimensional output space, as is shown in \ref{fig:clothoid_motivation_scenario}.
 \begin{figure}
     \centering
     \begin{tikzpicture}
@@ -2073,7 +2073,7 @@ In fact, this clothoid will be a segment of the \textit{Euler spiral} (up to som
 \subsection{Euler spiral}
 The Euler spiral is a special curve with an interesting property: its curvature increases linearly with the curve length from the origin.
 As a consequence, the Euler spiral never forms a complete loop (or circle), a trait that will become useful for the neural surfing technique. 
-Figure \ref{fig:euler_spiral} depicts the normalised Euler spiral.
+\ref{fig:euler_spiral} depicts the normalised Euler spiral.
 \begin{figure}
     \centering
     \begin{tikzpicture}
@@ -2115,7 +2115,7 @@ so the angle $\theta$ of the gradient can be expressed in terms of $t$ as
 \end{equation*}
 
 \subsection{Construction}
-Figure \ref{fig:clothoid_segment} shows how the three points $A,B,C$ from the scenario in Figure \ref{fig:clothoid_motivation_scenario} can be mapped to the Euler spiral. 
+\ref{fig:clothoid_segment} shows how the three points $A,B,C$ from the scenario in \ref{fig:clothoid_motivation_scenario} can be mapped to the Euler spiral. 
 \begin{figure}
     \centering
     \begin{tikzpicture}

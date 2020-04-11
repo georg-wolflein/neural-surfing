@@ -65,11 +65,11 @@
 
 \counterwithout{footnote}{chapter}
 
-% \makeatletter
-% \AtBeginDocument{%
-%   \renewcommand*{\ref}{\Cref}%
-% }
-% \makeatother
+\makeatletter
+\AtBeginDocument{%
+  \renewcommand*{\ref}{\Cref}%
+}
+\makeatother
 
 \pgfdeclarelayer{pre main}
 \begin{document}
