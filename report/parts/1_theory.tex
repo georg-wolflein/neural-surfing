@@ -153,7 +153,7 @@ Rectified units do not suffer from the \textit{vanishing gradient effect} \cite{
 This phenomenon occurs with sigmoid activation functions when they reach high saturation, i.e. when the input is significantly far from zero such that the gradient is almost horizontal.
 However, the vanishing gradient problem is usually not prevelant in shallow\footnote{Shallow networks refer to ANNs with few layers.} networks so the sigmoid function still remains popular \cite{neal1992}.
 
-Particularly in deep neural networks, different neurons (grouped in \textit{layers}, see Section \ref{sec:multi_layer_perceptron}) often have different activation functions \cite{burkov2019}, but for the purposes of this report it is more convenient (in terms of notation) to have the activation function be the same for all neurons, so it does not need to be supplied as a parameter to the function describing the particular neural network.
+Particularly in deep neural networks, different neurons (grouped in \textit{layers}, see \ref{sec:multi_layer_perceptron}) often have different activation functions \cite{burkov2019}, but for the purposes of this report it is more convenient (in terms of notation) to have the activation function be the same for all neurons, so it does not need to be supplied as a parameter to the function describing the particular neural network.
 Much of the work in this report can easily be generalized to designs with multple activation functions.
 This is because the algorithms explained in this report do not concern themselves with the specifics of the activation functions, as long as they are non-linear.
 
@@ -281,7 +281,7 @@ Moreover, if we additionally use the threshold activation function from \ref{eq:
 
 \subsection{Multi-layer perceptron}
 \label{sec:multi_layer_perceptron}
-A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP as defined in literature does not necessarily need to be the binary threshold function $g_\text{thres}$; in fact, it is often one of the more modern activation functions explained in Section \ref{sec:ann} \cite{hastie2017,burkov2019}. Hence we can use the term `multi-layer perceptron'.} (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested functions as in \textcite{burkov2019}.
+A multi-layer perceptron\footnote{Unlike SLPs, the activation function in a MLP as defined in literature does not necessarily need to be the binary threshold function $g_\text{thres}$; in fact, it is often one of the more modern activation functions explained in \ref{sec:ann} \cite{hastie2017,burkov2019}. Hence we can use the term `multi-layer perceptron'.} (MLP) is a fully-connected feedforward ANN architecture with multiple layers which we will define in terms of multiple nested functions as in \textcite{burkov2019}.
 \begin{definition}[Multi-layer perceptron]
     \label{def:mlp}
     A MLP $M$ with $m$ inputs and $L$ layers is the mathematical function
@@ -384,7 +384,7 @@ In the forward pass, the activations are propagated from layer to layer (i.e. ne
 
 \section{The decision boundary in input space}
 We will briefly introduce the concept of binary classification and show how it fits in the framework of the already defined regression model.
-This will allow us to examine the so-called decision boundary in input space which will be useful for formulating the stripe problem (Section \ref{sec:stripe_problem}).
+This will allow us to examine the so-called decision boundary in input space which will be useful for formulating the stripe problem (\ref{sec:stripe_problem}).
 
 \begin{definition}[Binary classification model]
     A binary classification model $C$ is defined as a mathematical function of the form
@@ -554,7 +554,7 @@ We will use a simple loss function that uses mean squared error for this purpose
 \end{definition}
 
 \section{Backpropagation}
-Backpropagation (BP) via gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum} (see Section \ref{sec:local_minimum_problem}).
+Backpropagation (BP) via gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum} (see \ref{sec:local_minimum_problem}).
 The main idea is as follows:
 \begin{enumerate}
     \item Calculate the derivative of the loss function with respect to the current trainable parameters $\vec{p}$ as
@@ -600,7 +600,7 @@ The main idea is as follows:
 
 Calculating the derivative of the loss function with respect to each of the trainable parameters is a core part of the gradient descent algorithm.
 Let us look at calculating this gradient for the example of a single-layer MLP. 
-We will come back to these results in Section \ref{sec:stripe_problem}.
+We will come back to these results in \ref{sec:stripe_problem}.
 \begin{example}[Gradient in a single-layer MLP]
     Let us revisit the SLN with $m$ inputs and one output from \ref{fig:sln_m_in_1_out}.
     The loss function will be in terms of the trainable parameters, i.e. the weights $\vec{w}$ and bias $b$, so
@@ -710,7 +710,7 @@ We will employ a simple approach as a proof of concept that calculates $T_i$ as 
 \end{equation}
 where $c$ is a cooling rate typically of the order of $10^{-1}$ or $10^{-2}$.
 Already, this simple SA algorithm has three hyperparameters: the energy coefficient $k$, the initial temperature $T_0$, and the cooling rate $c$. 
-More sophisticated implementations will require even more hyperparameters (such as \textcite{press1992} as remarked in Section \ref{sec:eval_sim_annealing}) that makes it increasingly difficult to design SA in a generic fashion to suit the training of neural networks. 
+More sophisticated implementations will require even more hyperparameters (such as \textcite{press1992} as remarked in \ref{sec:eval_sim_annealing}) that makes it increasingly difficult to design SA in a generic fashion to suit the training of neural networks. 
 
 \section{Issues}
 \paragraph{Suboptimal local minima}
@@ -870,7 +870,7 @@ We will prove a simple technique for showing that a $2 \times 2$ matrix is posit
     $\vec{H}_f(\vec{p})$ is positive definite.
     Then $\vec{p}$ is a \textit{local minimum} of $f$.
 \end{theorem}
-We will require this theorem to prove that training converges to a local minimum in Section \ref{sec:stripe_problem}.
+We will require this theorem to prove that training converges to a local minimum in \ref{sec:stripe_problem}.
 However, the proof of this theorem exceeds the scope of this report.
 The interested reader may consult \textcite[p. 190]{loomis1990}.
 
@@ -2070,7 +2070,7 @@ Consider a scenario in two-dimensional output space, as is shown in \ref{fig:clo
             \pic[draw, "$\gamma_2$", angle eccentricity=1.5] {angle = A--C--B};
         \end{axis}
     \end{tikzpicture}
-    \caption{A secenario in two-dimensional output space. Note that the ideal goal line need not beparallel to the $y_1$ axis.}
+    \caption{A secenario in two-dimensional output space. Note that the ideal goal line need not be parallel to the $y_1$ axis.}
     \label{fig:clothoid_motivation_scenario}
 \end{figure}
 The current weight configuration produces a point $C$ in output space. 
@@ -2080,6 +2080,73 @@ This curve should undergo a linear decrease in curvature until reaching a curvat
 We call this type of curve \textit{clothoid}, and there can only be one clothoid that passes through all three points and has a curvature of zero at $A$.
 In fact, this clothoid will be a segment of the \textit{Euler spiral} (up to some affine transformation).
 
+For the purposes of the neural surfer, we are interested in two specific properties of that clothoid: the angle that the goal line makes with the tangent of the clothoid at $C$, and that angle at $A$.
+In \ref{fig:clothoid_segment}, these angles are marked $\alpha$ and $\beta$, respectively.
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            x=1cm,
+            y=1cm,
+            xlabel={$y_1$},
+            ylabel={$y_2$},
+            xlabel style={at={(axis description cs:1,0)},anchor=west},
+            ylabel style={at={(axis description cs:0,1)},anchor=south,rotate=-90},
+            axis lines=left,
+            xmin=-1, xmax=7,
+            ymin=-1, ymax=5,
+            ticks=none,
+            clip=false
+        ]
+            \addplot[mark=none] table {data/clothoid_for_points_1.dat};
+        
+            % File: clothoid_for_points_1.dat
+            %   p0: (6.0, 0.0)
+            %   p1: (2.0, 1.5)
+            %   p2: (0.0, 0.0)
+            %   t1: 0.6768535219958538
+            %   t2: 1.086436678895909
+            %   gamma1: 2.1393209 (122.57405090332031°)
+            %   gamma2: 0.6435011 (36.869895935058594°)
+            %   alpha: 1.2556617449320218 (71.94411848063733°)
+            %   beta: 0.5984193070288445 (34.28690067189619°)
+
+            \coordinate (A) at (6.0, 0.0);
+            \coordinate (B) at (2.0, 1.5);
+            \coordinate (C) at (0.0, 0.0);
+            \coordinate (C_tangent) at ($(C)!1!71.94411848063733:(A)$);
+            \coordinate (A_tangent) at ($(A)!1!-34.28690067189619:(C)$);
+            
+            \path [name path=CD] (C) -- (C_tangent);
+            \path [name path=AD] (A) -- (A_tangent);
+            \path [name intersections={of=CD and AD,by=D}];
+
+            \draw (A) -- (B) -- (C) -- (A);
+            \draw[dashed, shorten >= -1cm] (C) -- (D);
+            \draw[dashed, shorten >= -1cm] (A) -- (D);
+
+            \fill (A) circle (2pt) node[below right] {$A$};
+            \fill (B) circle (2pt) node[above] {$B$};
+            \fill (C) circle (2pt) node[below left] {$C$};
+
+            \pic[draw, "", angle radius=1.2cm, angle eccentricity=1.2] {angle = A--C--C_tangent};
+            \node at (1.35, .45) {$\alpha$};
+            \pic[draw, "",  angle radius=1.2cm, angle eccentricity=1.2] {angle = A_tangent--A--C};
+            \node at (4.6, .25) {$\beta$};
+            \pic[draw, "$\theta$", angle eccentricity=1.5] {angle = A--D--C_tangent};
+            \pic[draw, "$\gamma_1$", angle eccentricity=1.5] {angle = C--B--A};
+            \pic[draw, "$\gamma_2$", angle eccentricity=1.5] {angle = A--C--B};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{The scenario from \ref{fig:clothoid_motivation_scenario} with the goal-connecting clothoid.}
+    \label{fig:clothoid_in_output_space}
+\end{figure}
+This leads to the following problem which we will discuss in this section:
+
+\begin{problem}[Clothoid construction]
+    \label{prob:clothoid_construction}
+    Given the angles $\gamma_1$ and $\gamma_2$, determine the angles $\alpha$ and $\beta$ of the resulting clothoid, i.e. find a function that evaluates the mapping $\langle\gamma_1,\gamma_2\rangle\rightarrow\langle\alpha,\beta\rangle$.
+\end{problem}
 
 \subsection{Euler spiral}
 The Euler spiral is a special curve with an interesting property: its curvature increases linearly with the curve length from the origin.
@@ -2128,6 +2195,7 @@ so the angle $\omega$ of the clothoid's tangent at $\left(F_C(t),F_S(t)\right)$ 
 \end{equation}
 
 \subsection{Construction}
+\label{sec:clothoid_construction}
 \ref{fig:clothoid_segment} shows how the three points $A,B,C$ from the scenario in \ref{fig:clothoid_motivation_scenario} can be mapped to the Euler spiral.
 Let us use the notation $\mathcal{A},\mathcal{B},\mathcal{C}$ to denote the corresponding points in two-dimensional Cartesian coordinate plane of the Euler spiral. 
 \begin{figure}
@@ -2198,14 +2266,15 @@ The steps below can be used to find $t_\mathcal{B}$ and $t_\mathcal{C}$.
     \item Create a sequence of $n$ sample values of $t$ such that $t_i = \frac{i}{n}\sqrt{3}$ for $i=1,2,\dots,n$.
     \item Calculate the points $P_1,P_2,\dots,P_n$ along the Euler spiral where the $i$th point is given by $P_i = (F_C(t_i),F_S(t_i))$.
     \item For $b,c \in \mathbb{Z}^+$ subject to $b<c\leq n$, find the pair of values $b,c$ that minimises
-        \begin{equation*}
+        \begin{equation}
+            \label{eq:clothoid_construction_error}
             \left(\measuredangle{AP_bP_c} - \gamma_1\right)^2 + \left(\measuredangle{AP_cP_b} - \gamma_2\right)^2.
-        \end{equation*}
+        \end{equation}
         In other words, find the triangle formed by the points $P_b$, $P_c$, and $\mathcal{A}$ which is the most similar\footnote{Two triangles are \textit{similar} if their side lengths are proportional and hence angles are identical.} to $\triangle{ABC}$. 
         When $n\to\infty$, we find $t_b=t_\mathcal{B}$ and $t_c=t_\mathcal{C}$ (equivalently, $P_b=\mathcal{B}$ and $P_c=\mathcal{C}$), but values of $n$ in the order of $1000$ will be suitable for practical purposes.
 \end{enumerate}
 
-Once we have determined $t_\mathcal{B}$ and $t_\mathcal{C}$ and thus also know the coordinates of $\mathcal{B}$ and $\mathcal{C}$, we can find $\beta$ as the angle that $\mathcal{C}$ makes with the $x$-axis, giving
+Once we have determined $t_\mathcal{B}$ and $t_\mathcal{C}$ and thus know the coordinates of $\mathcal{B}$ and $\mathcal{C}$, we can find $\beta$ as the angle that $\mathcal{C}$ makes with the $x$-axis, giving
 \begin{equation}
     \beta = \tan^{-1} \left( \frac{\mathcal{C}_y}{\mathcal{C}_x} \right).
 \end{equation}
@@ -2214,66 +2283,21 @@ Furthermore, we can deduce from  \ref{fig:clothoid_segment} that $\theta=\alpha+
 \begin{equation}
     \alpha = \theta - \beta = \frac{\pi}{2} \left(t_\mathcal{C}\right)^2 - \beta.
 \end{equation}
+This completes the construction of the clothoid; we have found a na\"{i}ve algorithm for computing \ref{prob:clothoid_construction}.
 
-\begin{figure}
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-            x=1cm,
-            y=1cm,
-            xlabel={$y_1$},
-            ylabel={$y_2$},
-            xlabel style={at={(axis description cs:1,0)},anchor=west},
-            ylabel style={at={(axis description cs:0,1)},anchor=south,rotate=-90},
-            axis lines=left,
-            xmin=-1, xmax=7,
-            ymin=-1, ymax=5,
-            ticks=none,
-            clip=false
-        ]
-            \addplot[mark=none] table {data/clothoid_for_points_1.dat};
-        
-            % File: clothoid_for_points_1.dat
-            %   p0: (6.0, 0.0)
-            %   p1: (2.0, 1.5)
-            %   p2: (0.0, 0.0)
-            %   t1: 0.6768535219958538
-            %   t2: 1.086436678895909
-            %   gamma1: 2.1393209 (122.57405090332031°)
-            %   gamma2: 0.6435011 (36.869895935058594°)
-            %   alpha: 1.2556617449320218 (71.94411848063733°)
-            %   beta: 0.5984193070288445 (34.28690067189619°)
 
-            \coordinate (A) at (6.0, 0.0);
-            \coordinate (B) at (2.0, 1.5);
-            \coordinate (C) at (0.0, 0.0);
-            \coordinate (C_tangent) at ($(C)!1!71.94411848063733:(A)$);
-            \coordinate (A_tangent) at ($(A)!1!-34.28690067189619:(C)$);
-            
-            \path [name path=CD] (C) -- (C_tangent);
-            \path [name path=AD] (A) -- (A_tangent);
-            \path [name intersections={of=CD and AD,by=D}];
+\subsection{Lookup table}
+A disadvantage of the algorithm from \ref{sec:clothoid_construction} is that it must compute $n$ points on the Euler spiral and then perform the angle calculations for $\mathcal{O}(n^2)$ triangles, \textit{for each sample point} and this is carried out \textit{at every training step}.
+Instead, we could sample $n$ points along the Euler spiral for values of $t$ in the interval $(0, \sqrt{3}]$, use these to construct the triangles as explained in step 2 of the algorithm, compute the angles $\gamma_1,\gamma_2,\alpha,\beta$ for each triangle and record these values in a table.
+This table will only need to be constructed once, thus the expensive calculations are not repeated.
+Treating $\langle\gamma_1,\gamma_2\rangle$ as the (multidimensional) index to the table, our table will represent exactly the mapping $\langle\gamma_1,\gamma_2\rangle\rightarrow\langle\alpha,\beta\rangle$ from \ref{prob:clothoid_construction}.
 
-            \draw (A) -- (B) -- (C) -- (A);
-            \draw[dashed, shorten >= -1cm] (C) -- (D);
-            \draw[dashed, shorten >= -1cm] (A) -- (D);
+However, this table will only have a total of $(n-1)(n-2)$ entries which means that the mapping would only be defined for certain values of $\langle\gamma_1,\gamma_2\rangle$.
+When querying using some pair $\langle\overline{\gamma}_1,\overline{\gamma}_2\rangle$ that is not in the table, we will find the pair $\langle\gamma_1,\gamma_2\rangle$ in the table which is closest in terms of Euclidean distance (its \textit{nearest neighbour}) and return that entry's $\langle \alpha,\beta\rangle$.
+In fact, this is equivalent to minimising \ref{eq:clothoid_construction_error} when setting $\overline{\gamma_1} = \measuredangle{AP_bP_c}$ and $\overline{\gamma_2} = \measuredangle{AP_cP_b}$.
 
-            \fill (A) circle (2pt) node[below right] {$A$};
-            \fill (B) circle (2pt) node[above] {$B$};
-            \fill (C) circle (2pt) node[below left] {$C$};
-
-            \pic[draw, "", angle radius=1.2cm, angle eccentricity=1.2] {angle = A--C--C_tangent};
-            \node at (1.35, .45) {$\alpha$};
-            \pic[draw, "",  angle radius=1.2cm, angle eccentricity=1.2] {angle = A_tangent--A--C};
-            \node at (4.6, .25) {$\beta$};
-            \pic[draw, "$\theta$", angle eccentricity=1.5] {angle = A--D--C_tangent};
-            \pic[draw, "$\gamma_1$", angle eccentricity=1.5] {angle = C--B--A};
-            \pic[draw, "$\gamma_2$", angle eccentricity=1.5] {angle = A--C--B};
-        \end{axis}
-    \end{tikzpicture}
-    \caption{A scenario in two-dimensional output space. The sizes of the angles $\alpha,\beta,\gamma_1,\gamma_2$ are identical to \ref{fig:clothoid_motivation_scenario,fig:clothoid_segment}. The dotted lines are the tangents of the clothoid at $A$ and $C$.}
-    \label{fig:clothoid_in_output_space}
-\end{figure}
+The nearest neighbour can be found quite efficiently using a so-called $k$-d tree data structure with an average time complexity logarithmic to the number of points \cite{friedman1977}.
+Hence, using this technique, we can find the clothoid parameters for \ref{prob:clothoid_construction} in $\mathcal{O}(\log n)$ time\footnote{This is because we have $n^2$ points and $\mathcal{O}(\log{n^2})=\mathcal{O}(\log n)$.} on average.
 
 \chapter{Generalising neural surfing}
 \todo: generalize to classification as regression with multiple output variables (this can be done by concatenating all output variables' dimensions into the output vector/space)
