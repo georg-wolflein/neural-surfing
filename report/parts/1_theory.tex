@@ -391,7 +391,7 @@ This will allow us to examine the so-called decision boundary in input space whi
     \begin{equation}
         C(\vec{x}) = \hat{y} = y + \epsilon
     \end{equation}
-    with the same notation as in Definition \ref{def:reg_model} except that we impose the additional restriction that $y,\hat{y}\in \left\{0,1 \right\}$ such that the signature of the function becomes $C:\mathbb{R}^D\rightarrow \left\{0,1\right\}$.
+    with the same notation as in \ref{def:reg_model} except that we impose the additional restriction that $y,\hat{y}\in \left\{0,1 \right\}$ such that the signature of the function becomes $C:\mathbb{R}^D\rightarrow \left\{0,1\right\}$.
 \end{definition}
 \begin{definition}[Decision boundary]
     Given a binary classification model $C$, the decision boundary is the hypersurface\footnote{A hypersurface is a manifold with one fewer dimension. Since the input space is $D$-dimensional, the hypersurface representing the decision boundary will have $D-1$ dimensions.} in input space $\mathcal{I}_C$ that separates the two output classes \cite[p. 723]{russell2010}.
@@ -420,7 +420,7 @@ This will allow us to examine the so-called decision boundary in input space whi
 \end{lemma}
 \begin{proof}
     Consider a single-layer MLP $M$ with $m$ inputs. 
-    By Definition \ref{def:mlp}, this is equivalent to SLN $S$ with $m$ inputs and one output as shown in \ref{fig:sln_m_in_1_out}. 
+    By \ref{def:mlp}, this is equivalent to SLN $S$ with $m$ inputs and one output as shown in \ref{fig:sln_m_in_1_out}. 
     \begin{figure}
         \begin{center}
             \begin{tikzpicture}
@@ -533,7 +533,7 @@ Later in this report, we will look at some issues related to these methods as a 
 In this context, \textit{training} refers to the process of changing the network's weights and biases with the goal of achieving an optimal configuration that reduces the error of the predictions, i.e. how far they are `off'. 
 We will use a simple loss function that uses mean squared error for this purpose.
 \begin{definition}[Mean squared error]
-    Let $\left\{\langle \vec{x}_i, y_i \rangle \right\}_{i=1}^N$ be a labelled dataset (see Definition \ref{def:labelled_dataset}).
+    Let $\left\{\langle \vec{x}_i, y_i \rangle \right\}_{i=1}^N$ be a labelled dataset (see \ref{def:labelled_dataset}).
     The mean squared error of a set of predictions $\vec{\hat{y}}$ is given as an average over the sum of squared differences,
     \begin{equation}
         \label{eq:mean_squared_error}
@@ -723,165 +723,10 @@ More sophisticated implementations will require even more hyperparameters (such 
     \label{fig:gradient_descent_narrow_valley}
 \end{figure}
 
-\chapter{The local minimum problem}
-\label{sec:local_minimum_problem}
-
-\section{The mathematics of local and global minima}
-
-\begin{definition}[Global minimum]
-    The function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ has a \textit{global minimum} at point
-    $\vec{p} \in \mathbb{R}^n$
-    if and only if for all
-    $\vec{x} \in \mathbb{R}^n$
-    it is true that
-    $f(\vec{p}) \leq f(\vec{x})$.
-\end{definition}
-
-\begin{definition}[Local minimum]
-    \label{def:local_minimum}
-    The function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ has a \textit{local minimum} at point
-    $\vec{p} \in \mathbb{R}^n$
-    if there exists a ball with centre
-    $\vec{p}$
-    where
-    $f(\vec{p}) \leq f(\vec{x})$
-    for all points $\vec{x}$ in that ball.
-    A \textit{suboptimal local minimum} is a local minimum that is not a global minimum.
-\end{definition}
-
-\begin{definition}[Jacobian]
-    Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a continuously differentiable function of the form
-    $f=f\left(\vec{x}\right)$
-    where
-    $\vec{x} = \begin{bmatrix}
-        x_1 & x_2 & \cdots & x_n
-    \end{bmatrix}\tran$.
-    The Jacobian of $f$ (or simply \textit{derivative} of $f$) is a row vector of its first-order partial derivatives,
-    \begin{equation*}
-        \vec{J}_f
-        = \frac{\delta f}{\delta \vec{x}}
-        = \begin{bmatrix}
-            \frac{\delta f}{\delta x_1} &
-            \frac{\delta f}{\delta x_2} &
-            \cdots &
-            \frac{\delta f}{\delta x_n}
-        \end{bmatrix}.
-    \end{equation*}
-\end{definition}
-\begin{definition}[Hessian]
-    Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a function of the form
-    $f=f\left(\vec{x}\right)$
-    where
-    $\vec{x} = \begin{bmatrix}
-        x_1 & x_2 & \cdots & x_n
-    \end{bmatrix}\tran$
-    for which all second partial derivatives exist and are continuous over $\mathbb{R}^n$.
-    The Hessian of $f$ is a $n\times n$ matrix of the second-order partial derivatives, given by
-    \begin{equation*}
-        \vec{H}_f = \begin{bmatrix}
-            \frac{\delta^2 f}{\delta x_1^2} &
-            \frac{\delta^2 f}{\delta x_1 x_2} &
-            \cdots &
-            \frac{\delta^2 f}{\delta x_1 x_n} \\
-            \frac{\delta^2 f}{\delta x_2 x_1} &
-            \frac{\delta^2 f}{\delta x_2^2} &
-            \cdots &
-            \frac{\delta^2 f}{\delta x_2 x_n} \\
-            \vdots & \vdots & \ddots & \vdots \\
-            \frac{\delta^2 f}{\delta x_n x_1} &
-            \frac{\delta^2 f}{\delta x_n x_2} &
-            \cdots &
-            \frac{\delta^2 f}{\delta x_n^2}
-        \end{bmatrix}.
-    \end{equation*}
-\end{definition}
-\begin{definition}[Positive definite matrix]
-    \label{def:positive_definite}
-    A symmetric $n\times n$ matrix $\vec{M} \in \mathbb{R}^{n\times n}$ is said to be \textit{positive definite} if and only if
-    $\vec{x}\tran \vec{M} \vec{x} > 0$
-    for all $\vec{x} \in \mathbb{R}^n \setminus \vec{0}$.
-\end{definition}
-We will prove a simple technique for showing that a $2 \times 2$ matrix is positive definite, as this will help us prove the existence of local minima later.
-\begin{theorem}[$2\times 2$ positive definite matrix]
-    \label{thm:positive_definite_2_by_2}
-    The matrix $\vec{M} = \begin{bmatrix}
-        a & b \\ b & c
-    \end{bmatrix}$
-    is positive definite if
-    $a > 0$ and 
-    $ac - b^2>0$.
-\end{theorem}
-\begin{proof}
-    Let $\vec{x} = \begin{bmatrix}
-        x_1 & x_2
-    \end{bmatrix}\tran$
-    and $f(x_1, x_2) = \vec{x}\tran \vec{M} \vec{x}$.
-    Performing the multiplication,
-    \begin{align*}
-        f(x_1, x_2)
-        &= 
-        \begin{bmatrix}
-            x_1 & x_2
-        \end{bmatrix}
-        \begin{bmatrix}
-            a & b \\
-            b & c
-        \end{bmatrix}
-        \begin{bmatrix}
-            x_1 \\ x_2
-        \end{bmatrix} \\
-        &=
-        \begin{bmatrix}
-            x_1 a + x_2 b & x_1 b + x_2 c
-        \end{bmatrix}
-        \begin{bmatrix}
-            x_1 \\ x_2
-        \end{bmatrix} \\
-        &=
-            x_1^2 a + 2 x_1 x_2 b + x_2^2 c.
-    \end{align*}
-
-    We will now discuss under what conditions
-    $f(x_1, x_2) > 0$
-    holds.
-    When $x_2=0$, it must necessarily be the case that $a>0$.
-    Otherwise, dividing by $x_2^2$, we can write
-    \begin{align*}
-        \left(\frac{x_1}{x_2}\right)^2 a + \frac{2 x_1 b}{x_2} + c > 0,
-    \end{align*}
-    and substituting $p = \frac{x_1}{x_2}$ we get
-    \begin{align*}
-        p^2 a + 2pb + c > 0.
-    \end{align*}
-    Treating this as a quadratic function in terms of $p$, we realise that since $a>0$, the parabola opens up.
-    The discriminant $D=4b^2 - 4ac$ is negative if $ac-b^2>0$ which means that the parabola has no roots. 
-    Thus its range is positive.
-
-    We have shown that $f(x_1, x_2)>0$ if $a>0$ and $ac-b^2>0$ for all $x_1,x_2\in \mathbb{R}$ except $x_1=x_2=0$.
-    By Definition \ref{def:positive_definite}, $\vec{M}$ must be positive definite.
-\end{proof}
-
-\begin{theorem}[Local minimum]
-    Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a continuously differentiable function, and let the point
-    $\vec{p} \in \mathbb{R}^n$
-    be such that
-    $\vec{J}_f(\vec{p}) = \vec{0}$
-    and
-    $\vec{H}_f(\vec{p})$ is positive definite.
-    Then $\vec{p}$ is a \textit{local minimum} of $f$.
-\end{theorem}
-We will require this theorem to prove that training converges to a local minimum in \ref{sec:stripe_problem}.
-However, the proof of this theorem exceeds the scope of this report.
-The interested reader may consult \textcite[p. 190]{loomis1990}.
-
-\section{The suboptimal local minimum problem}
-\todo: explain local minimum problem with respect to gradient descent, greedy probing, and SA (+ random initialisation)
-
-
 \chapter{Neural surfing theory}
 
 \section{Weight and output spaces}
-In Definition \ref{def:mlp} we established that the tuple $\langle \mathscr{W}, \mathscr{B} \rangle$ along with the activation function is sufficient to fully define a MLP. 
+In \ref{def:mlp} we established that the tuple $\langle \mathscr{W}, \mathscr{B} \rangle$ along with the activation function is sufficient to fully define a MLP. 
 Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ and $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ representing each layer's weight matrices and bias vectors, respectively. 
 These parameters will be useful for defining the weight and ouput spaces.
 
@@ -911,7 +756,7 @@ These parameters will be useful for defining the weight and ouput spaces.
 \end{lemma}
 \begin{proof}
     $S$'s trainable parameters are the weight matrix $\vec{W} \in \mathbb{R}^{m\times n}$ from \ref{eq:sln_weight_matrix} and bias vector $\vec{b} \in \mathbb{R}^n$ from \ref{eq:sln_bias}.
-    By Definition \ref{def:weight_space}, the weight space encompasses all values of $\vec{W}$ and $\vec{b}$, so
+    By \ref{def:weight_space}, the weight space encompasses all values of $\vec{W}$ and $\vec{b}$, so
     \begin{equation*}
         \mathcal{W}_S = \mathbb{R}^{m \times n} \times \mathbb{R}^{n} = \mathbb{R}^{m n + n} = \mathbb{R}^{(m + 1) n}.
     \end{equation*}
@@ -924,7 +769,7 @@ These parameters will be useful for defining the weight and ouput spaces.
 \end{lemma}
 
 \begin{proof}
-    By Definition \ref{def:mlp}, $M$ is comprised of $L$ SLNs which we will denote $\vec{S}_1, \vec{S}_2, \dots, S_L$.
+    By \ref{def:mlp}, $M$ is comprised of $L$ SLNs which we will denote $\vec{S}_1, \vec{S}_2, \dots, S_L$.
     This allows us to express the weight space of $M$ as the product of the weight spaces of each of the SLNs,
     $$
         \mathcal{W}_M
@@ -959,8 +804,8 @@ These parameters will be useful for defining the weight and ouput spaces.
 
 \begin{remark}
     The significance of Lemma \ref{lmm:weight_space_mlp} is that we obtain a formula for the number of trainable parameters $P$ in a MLP. 
-    By Definition \ref{def:weight_space}, $P$ determines the dimensionality of the weight space. 
-    On other other hand, Definition \ref{def:output_space} states that the number of samples in the training set $N$ determines the dimensionality of the output space.
+    By \ref{def:weight_space}, $P$ determines the dimensionality of the weight space. 
+    On other other hand, \ref{def:output_space} states that the number of samples in the training set $N$ determines the dimensionality of the output space.
     There is no relationship between $P$ and $N$ since the number of samples in the training set can be arbitrarily chosen. 
     It follows that there is no relationship between the dimensionalities of $\mathcal{W}$ and $\mathcal{O}$.
 \end{remark}
@@ -996,7 +841,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
 \end{theorem}
 \begin{proof}
     Let $S$ have $m$ inputs, as depicted in \ref{fig:sln_m_in_1_out}.
-    Modifying the formula for a SLN given in Definition \ref{def:sln} \ref{eq:single_layer_perceptron} for the case where there is only one output unit, we obtain
+    Modifying the formula for a SLN given in \ref{def:sln} \ref{eq:single_layer_perceptron} for the case where there is only one output unit, we obtain
     $\hat{y} = f_\text{SLP}(\vec{x}; \vec{w}\tran, b) = g\left(\vec{w} \vec{x} + b\right)$
     where
     $\vec{x} = \begin{bmatrix}
@@ -1009,7 +854,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
         \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_N
     \end{bmatrix}\tran$
     as in \ref{eq:sup_learn_input_matrix}.
-    By Definition \ref{def:weight_output_space_mapping}, the mapping from weight to output space $h_S: \mathcal{W}_S \rightarrow \mathcal{O}_S$ is
+    By \ref{def:weight_output_space_mapping}, the mapping from weight to output space $h_S: \mathcal{W}_S \rightarrow \mathcal{O}_S$ is
     \begin{equation*}
         h_S \left( \vec{w} \right)
         = \begin{bmatrix}
@@ -1154,7 +999,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
 \end{corollary}
 \begin{proof}
     Let $M$ have $L$ layers.
-    By Definition \ref{def:mlp}, $M$ is a nested function of $L$ SLNs. 
+    By \ref{def:mlp}, $M$ is a nested function of $L$ SLNs. 
     Corollary \ref{col:weight_output_sln} states that each of these SLNs does not have a linear mapping from weight to output space.
     Hence the composition of $L$ SLNs that forms $M$ does not have a linear mapping from weight to output space.
 \end{proof}
@@ -1191,7 +1036,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
 \begin{proof}
     Let us consider an artifical neural network $A$. 
     We will show that for every unrealisable region, $\mathcal{U} \subsetneq \mathcal{O}_A$.
-    By Definition \ref{def:unrealisable_region}, $\mathcal{U} \subset \mathcal{O}_A$, so it remains to prove that every unrealisable region $\mathcal{U} \neq \mathcal{O}_A$.
+    By \ref{def:unrealisable_region}, $\mathcal{U} \subset \mathcal{O}_A$, so it remains to prove that every unrealisable region $\mathcal{U} \neq \mathcal{O}_A$.
 
     Choose any weight configuration $\vec{w} \in \mathcal{W}_A$. 
     Let the point $\vec{p}=h_A(\vec{w})$. 
@@ -1284,9 +1129,6 @@ Let us look at a couple of examples of unrealisable regions.
 \end{example}
 
 
-
-
-
 \todo: Explain significance if target is unrealisable (XOR example demonstrates that)
 
 \section{Goal-connecting paths}
@@ -1294,7 +1136,7 @@ Let us look at a couple of examples of unrealisable regions.
     For an artificial neural network $A$ with current weight configuration $\vec{w}_0 \in \mathcal{W}_A$, a goal-connecting path in output space to the goal $\vec{g}\in \mathcal{O}_A$ is a sequence of points $\vec{s}_0, \vec{s}_1,\dots,\vec{s}_{S} \in \mathcal{O}_A$ where the initial state $\vec{s}_0 = h_A(\vec{w}_0)$ and final state $\vec{s}_S=\vec{g}$.
     The points $\vec{s}_1,\vec{s}_2,\dots,\vec{s}_S$ are referred to as \textit{subgoals}, hence $S$ is the number of subgoals in the goal-connecting path. 
 
-    The goal-connecting path is \textit{realizable} if and only if no subgoal is a strongly unrealisable point (Definition \ref{def:unrealisable_point}).
+    The goal-connecting path is \textit{realizable} if and only if no subgoal is a strongly unrealisable point (\ref{def:unrealisable_point}).
     This means that a realizable goal-connecting path can equivalently be defined by the weight configurations $\vec{w}_0, \vec{w_1},\dots,\vec{w}_S \in \mathcal{W}_A$ such that $h_A(\vec{w}_i) = \vec{s}_i$ for $i \leq S$.
 \end{definition}
 
@@ -1338,7 +1180,159 @@ Let us look at a couple of examples of unrealisable regions.
     Furthermore, we can plot the ideal goal-connecting path in output space in order to find unrealisable regions.
 \end{remark}
 
-\chapter{Problems}
+\chapter{The local minimum problem}
+\label{sec:local_minimum_problem}
+
+\section{The mathematics of local and global minima}
+Before analysing an instance of the local minimum problem, we must define what is meant by `local' and `global' minima.
+We will further introduce a theorem that we can later use as a tool to prove their existence.
+\begin{definition}[Global minimum]
+    \label{def:global_minimum}
+    The function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ has a \textit{global minimum} at point
+    $\vec{p} \in \mathbb{R}^n$
+    if and only if for all
+    $\vec{x} \in \mathbb{R}^n$
+    it is true that
+    $f(\vec{p}) \leq f(\vec{x})$.
+\end{definition}
+
+\begin{definition}[Local minimum]
+    \label{def:local_minimum}
+    The function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ has a \textit{local minimum} at point
+    $\vec{p} \in \mathbb{R}^n$
+    if there exists a ball with centre
+    $\vec{p}$
+    where
+    $f(\vec{p}) \leq f(\vec{x})$
+    for all points $\vec{x}$ in that ball.
+    A \textit{suboptimal local minimum} is a local minimum that is not a global minimum.
+\end{definition}
+
+\begin{definition}[Jacobian]
+    Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a continuously differentiable function of the form
+    $f=f\left(\vec{x}\right)$
+    where
+    $\vec{x} = \begin{bmatrix}
+        x_1 & x_2 & \cdots & x_n
+    \end{bmatrix}\tran$.
+    The Jacobian of $f$ (or simply \textit{derivative} of $f$) is a row vector of its first-order partial derivatives,
+    \begin{equation*}
+        \vec{J}_f
+        = \frac{\delta f}{\delta \vec{x}}
+        = \begin{bmatrix}
+            \frac{\delta f}{\delta x_1} &
+            \frac{\delta f}{\delta x_2} &
+            \cdots &
+            \frac{\delta f}{\delta x_n}
+        \end{bmatrix}.
+    \end{equation*}
+\end{definition}
+\begin{definition}[Hessian]
+    Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a function of the form
+    $f=f\left(\vec{x}\right)$
+    where
+    $\vec{x} = \begin{bmatrix}
+        x_1 & x_2 & \cdots & x_n
+    \end{bmatrix}\tran$
+    for which all second partial derivatives exist and are continuous over $\mathbb{R}^n$.
+    The Hessian of $f$ is a $n\times n$ matrix of the second-order partial derivatives, given by
+    \begin{equation*}
+        \vec{H}_f = \begin{bmatrix}
+            \frac{\delta^2 f}{\delta x_1^2} &
+            \frac{\delta^2 f}{\delta x_1 x_2} &
+            \cdots &
+            \frac{\delta^2 f}{\delta x_1 x_n} \\
+            \frac{\delta^2 f}{\delta x_2 x_1} &
+            \frac{\delta^2 f}{\delta x_2^2} &
+            \cdots &
+            \frac{\delta^2 f}{\delta x_2 x_n} \\
+            \vdots & \vdots & \ddots & \vdots \\
+            \frac{\delta^2 f}{\delta x_n x_1} &
+            \frac{\delta^2 f}{\delta x_n x_2} &
+            \cdots &
+            \frac{\delta^2 f}{\delta x_n^2}
+        \end{bmatrix}.
+    \end{equation*}
+\end{definition}
+\begin{definition}[Positive definite matrix]
+    \label{def:positive_definite}
+    A symmetric $n\times n$ matrix $\vec{M} \in \mathbb{R}^{n\times n}$ is said to be \textit{positive definite} if and only if
+    $\vec{x}\tran \vec{M} \vec{x} > 0$
+    for all $\vec{x} \in \mathbb{R}^n \setminus \vec{0}$.
+\end{definition}
+We will prove a simple technique for showing that a $2 \times 2$ matrix is positive definite, as this will help us prove the existence of local minima later.
+\begin{theorem}[$2\times 2$ positive definite matrix]
+    \label{thm:positive_definite_2_by_2}
+    The matrix $\vec{M} = \begin{bmatrix}
+        a & b \\ b & c
+    \end{bmatrix}$
+    is positive definite if
+    $a > 0$ and 
+    $ac - b^2>0$.
+\end{theorem}
+\begin{proof}
+    Let $\vec{x} = \begin{bmatrix}
+        x_1 & x_2
+    \end{bmatrix}\tran$
+    and $f(x_1, x_2) = \vec{x}\tran \vec{M} \vec{x}$.
+    Performing the multiplication,
+    \begin{align*}
+        f(x_1, x_2)
+        &= 
+        \begin{bmatrix}
+            x_1 & x_2
+        \end{bmatrix}
+        \begin{bmatrix}
+            a & b \\
+            b & c
+        \end{bmatrix}
+        \begin{bmatrix}
+            x_1 \\ x_2
+        \end{bmatrix} \\
+        &=
+        \begin{bmatrix}
+            x_1 a + x_2 b & x_1 b + x_2 c
+        \end{bmatrix}
+        \begin{bmatrix}
+            x_1 \\ x_2
+        \end{bmatrix} \\
+        &=
+            x_1^2 a + 2 x_1 x_2 b + x_2^2 c.
+    \end{align*}
+
+    We will now discuss under what conditions
+    $f(x_1, x_2) > 0$
+    holds.
+    When $x_2=0$, it must necessarily be the case that $a>0$.
+    Otherwise, dividing by $x_2^2$, we can write
+    \begin{align*}
+        \left(\frac{x_1}{x_2}\right)^2 a + \frac{2 x_1 b}{x_2} + c > 0,
+    \end{align*}
+    and substituting $p = \frac{x_1}{x_2}$ we get
+    \begin{align*}
+        p^2 a + 2pb + c > 0.
+    \end{align*}
+    Treating this as a quadratic function in terms of $p$, we realise that since $a>0$, the parabola opens up.
+    The discriminant $D=4b^2 - 4ac$ is negative if $ac-b^2>0$ which means that the parabola has no roots. 
+    Thus its range is positive.
+
+    We have shown that $f(x_1, x_2)>0$ if $a>0$ and $ac-b^2>0$ for all $x_1,x_2\in \mathbb{R}$ except $x_1=x_2=0$.
+    By \ref{def:positive_definite}, $\vec{M}$ must be positive definite.
+\end{proof}
+
+\begin{theorem}[Local minimum]
+    Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a continuously differentiable function, and let the point
+    $\vec{p} \in \mathbb{R}^n$
+    be such that
+    $\vec{J}_f(\vec{p}) = \vec{0}$
+    and
+    $\vec{H}_f(\vec{p})$ is positive definite.
+    Then $\vec{p}$ is a \textit{local minimum} of $f$.
+\end{theorem}
+We will require this theorem to prove that training converges to a local minimum in \ref{sec:stripe_problem}.
+However, the proof of this theorem exceeds the scope of this report.
+The interested reader may consult \textcite[p. 190]{loomis1990}.
+
 
 \section{The stripe problem}
 \label{sec:stripe_problem}
@@ -1733,8 +1727,8 @@ This will make some calculations later more convenient because it guarantees tha
                 domain=-3:3,
                 y domain=-3:3
             ] {(rbf(2*x) - rbf(2))^2 + (rbf(2*y) - rbf(2))^2 + (rbf(2*x + 2*y) - 1)^2};
-            \node[label={360:{$\vec{w}_0$}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
-            \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
+            \node[label={[align=left]360:{initial\\configuration}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
+            \node[label={360:{goal}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
             % \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
         \end{axis}
     \end{tikzpicture}
@@ -1765,8 +1759,8 @@ This will make some calculations later more convenient because it guarantees tha
                 domain=-3:3,
                 y domain=-3:3
             ] {(rbf(2*x) - rbf(2))^2 + (rbf(2*y) - rbf(2))^2 + (rbf(2*x + 2*y) - 1)^2};
-            \node[label={360:{$\vec{w}_0$}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
-            \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
+            \node[label={[align=left]360:{initial configuration}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
+            \node[label={360:{goal}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
             % \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
         \end{axis}
     \end{tikzpicture}
@@ -1778,13 +1772,14 @@ It is depicted in \ref{fig:stripe_error_surface_gaussian,fig:stripe_error_surfac
 The graphs are quite similar, showing that the initial weight configuration $\vec{w}_0$ has a MSE of around $1$.
 Most importantly, we see that in order to get to any of the goal weight states $\vec{w}_S$ in the region where the MSE is close to zero, we must first overcome a `hill'.
 
-For the remainder of this project, we will consider only the Gaussian RBF function, but let it be noted that in principle, any type of RBF that satisfies the criteria given in Definition \ref{def:rbf} is suitable.
+For the remainder of this project, we will consider only the Gaussian RBF function, but let it be noted that in principle, any type of RBF that satisfies the criteria given in \ref{def:rbf} is suitable.
 The Gaussian RBF, however, lends itself better for the purposes of analysis because it is not a piecewise defined function, and it does not have a derivative of zero anywhere except at $x=0$. 
 In addition, gradient descent fails immediately with the bump function because the initial weight configuration is at an area where the gradient is exactly zero.
 Henceforth the term `stripe problem' shall be used to refer to the Gaussian RBF version of the stripe problem. 
 
-\subsection{Local minima}
-We will now attempt to find the local minima in the error-weight surface analytically. 
+\subsection{Critical points}
+\label{sec:stripe_critical_points}
+We will now attempt to find the critical of the error-weight surface analytically, so we can subsequently determine the local minima in the next step. 
 From \ref{table:stripe_dataset} we obtain the input matrix
 \begin{equation*}
     \vec{X} = \begin{bmatrix}
@@ -1797,7 +1792,7 @@ and target output vector
 $\vec{y} = \begin{bmatrix}
     1 & \phi(2) & \phi(2)
 \end{bmatrix}\tran$.
-Modifying the SLN function from Definition \ref{def:sln} for the case of our 2-1 RBF network without bias, we have $S(\vec{x}) = \phi(\vec{w}\tran \vec{x})$.
+Modifying the SLN function from \ref{def:sln} for the case of our 2-1 RBF network without bias, we have $S(\vec{x}) = \phi(\vec{w}\tran \vec{x})$.
 This means that our loss function is given by
 \begin{align*}
     L(\vec{w}) = L
@@ -1811,13 +1806,15 @@ This means that our loss function is given by
 \end{align*}
 Substituting \ref{eq:gaussian}, we obtain
 \begin{equation}
+    \label{eq:stripe_loss}
     L
-     = \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right)^2
-     + \left(e^{-(2 w_2)^2} - e^{-4}\right)^2
-     + \left(e^{-(2 w_1)^2} - e^{-4}\right)^2.
+     = \left(e^{-4(w_1 + w_2)^2} - 1\right)^2
+     + \left(e^{-4w_2^2} - e^{-4}\right)^2
+     + \left(e^{-4w_1^2} - e^{-4}\right)^2.
 \end{equation}
-
+We will now identify and examine the critical points of this function.
 \begin{lemma}
+    \label{lmm:stripe_critical_points}
     Three critical points of the error-weight surface given by $L$ are 
     $\vec{w}_1 = \begin{bmatrix}
         -1 & 1
@@ -1835,17 +1832,17 @@ Substituting \ref{eq:gaussian}, we obtain
     Differentiating $L$ with respect to $w_1$ gives
     \begin{align*}
         \frac{\delta L}{\delta w_1}
-        &= 2 \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right) \frac{\delta}{\delta w_1} e^{-(2 w_1 + 2 w_2)^2} \\
-        &\qquad + 2 \left(e^{-(2 w_1)^2} - e^{-4}\right) \frac{\delta}{\delta w_1} e^{-(2 w_1)^2} \\
-        &= -16 \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right) \left(w_1 + w_2 \right) e^{-(2 w_1 + 2 w_2)^2} \\
+        &= 2 \left(e^{-4(w_1 + w_2)^2} - 1\right) \frac{\delta}{\delta w_1} e^{-4(w_1 + w_2)^2} \\
+        &\qquad + 2 \left(e^{-4w_1^2} - e^{-4}\right) \frac{\delta}{\delta w_1} e^{-4w_1^2} \\
+        &= -16 \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right) \left(w_1 + w_2 \right) e^{-4(w_1 + w_2)^2} \\
         &\qquad -16 w_1 \left(e^{-4 w_1^2} - e^{-4}\right) e^{-4 w_1^2},
     \end{align*}
     and for $w_2$ we have
     \begin{align*}
         \frac{\delta L}{\delta w_2}
-        &= 2 \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right) \frac{\delta}{\delta w_2} e^{-(2 w_1 + 2 w_2)^2} \\
-        &\qquad + 2 \left(e^{-(2 w_2)^2} - e^{-4}\right) \frac{\delta}{\delta w_2} e^{-(2 w_2)^2} \\
-        &= -16 \left(e^{-(2 w_1 + 2 w_2)^2} - 1\right) \left(w_1 + w_2 \right) e^{-(2 w_1 + 2 w_2)^2} \\
+        &= 2 \left(e^{-4(w_1 + w_2)^2} - 1\right) \frac{\delta}{\delta w_2} e^{-4(w_1 + w_2)^2} \\
+        &\qquad + 2 \left(e^{-4w_2^2} - e^{-4}\right) \frac{\delta}{\delta w_2} e^{-4w_2^2} \\
+        &= -16 \left(e^{-4(w_1 + w_2)^2} - 1\right) \left(w_1 + w_2 \right) e^{-4(w_1 + w_2)^2} \\
         &\qquad -16 w_2 \left(e^{-4 w_2^2} - e^{-4}\right) e^{-4 w_2^2}.
     \end{align*}
     This allows us to express the Jacobian as
@@ -1860,24 +1857,63 @@ Substituting \ref{eq:gaussian}, we obtain
         \begin{bmatrix}
             w_1 \left(e^{-4 w_1^2} - e^{-4}\right) e^{-4 w_1^2} \\
             w_2 \left(e^{-4 w_2^2} - e^{-4}\right) e^{-4 w_2^2}
-        \end{bmatrix}\tran \\
-        &= -16 (q^2 - q) (w_1 + w_2) 
-        - 16
-        \begin{bmatrix}
-            w_1 \left(e^{-4 w_1^2} - e^{-4}\right) e^{-4 w_1^2} \\
-            w_2 \left(e^{-4 w_2^2} - e^{-4}\right) e^{-4 w_2^2}
         \end{bmatrix}\tran. \numberthis \label{eq:stripe_jacobian}
     \end{align*}
-    where $q = e^{-(2 w_1 + 2 w_2)^2}$.
     To find the critical points, we set
     $\vec{J}_L = \vec{0}$.
     It is trivial to see that $\vec{w}_1$, $\vec{w}_2$, and $\vec{w}_3$ are solutions to this equation.
 \end{proof}
-For the remainder of this project, we will assume that these three solutions are the only ones. 
+
+At first, it seems like these three points are the only solutions to $\vec{J}_L=\vec{0}$.
+However, upon examining some trial runs of gradient descent, there seemed to be two more local minima around
+$\begin{bmatrix}
+    1 & 1
+\end{bmatrix}\tran$ and 
+$\begin{bmatrix}
+    -1 & -1
+\end{bmatrix}\tran$.
+\begin{lemma}
+    Two more critical points are at
+    $\vec{w}_4 = \begin{bmatrix}
+        \eta & \eta
+    \end{bmatrix}\tran$ and
+    $\vec{w}_5 = \begin{bmatrix}
+        -\eta & -\eta
+    \end{bmatrix}\tran$ where $\eta$ can be numerically approximated to $0.999916$ (6 s.f.).
+\end{lemma}
+\begin{proof}
+    We can find these critical points by setting $w_1=w_2$ in the Jacobian;
+    due to the symmetry of the Jacobian this results in both components becoming. 
+    Setting $\vec{J}_L=0$ with $w_1=w_2$, we obtain
+    \begin{align*}
+        -32 \left(e^{-16 w_1^2} - 1\right) w_1 e^{-16w_1^2}
+        -16 w_1 \left(e^{-4 w_1^2} - e^{-4}\right) e^{-4 w_1^2}
+        &= 0 \\
+        2 \left(e^{-16 w_1^2} - 1\right) w_1 e^{-16w_1^2}
+        + w_1 \left(e^{-4 w_1^2} - e^{-4}\right) e^{-4 w_1^2} &= 0.
+    \end{align*}
+    Noting that $w_1=0$ is a solution (which we have already found in \ref{lmm:stripe_critical_points}), we can divide by $w_1$ to obtain
+    \begin{align*}
+        0&= e^{-32 w_1^2} \left(2 + e^{28 w_1^2}\right) - 2 e^{-16 w_1^2} - e^{-4} \\
+        &= 2 e^{-32 w_1^2} + e^{-4 w_1^2} - 2 e^{-16 w_1^2} - e^{-4}.
+    \end{align*}
+    Substituting $x = e^{-4w_1^2}$, we get the equation
+    \begin{align*}
+        2x^8 - 2x^4 + x - e^{-4} = 0
+    \end{align*}
+    which cannot be simplified further.
+    Using a numerical solver, we can find the two roots of this equation and then find the value of $w_1=\pm \frac{1}{2} \sqrt{-\log x}$ (discarding the non-real solutions) as $w_1\approx0.999916$ and $w_1\approx-0.999916$.
+    Since $w_1=w_2$ we get the solutions $\vec{w}_4$ and $\vec{w}_5$.
+\end{proof}
+
+For the remainder of this project, we will assume that these five critical points are the only ones. 
 Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so.
 
+\subsection{Local minima}
+\label{sec:stripe_local_minima}
 \begin{lemma}
-    The local minima on the error-weight surface given by $L$ are $\vec{w}_1$ and $\vec{w}_2$.
+    \label{lmm:stripe_local_minima}
+    The local minima on the error-weight surface given by $L$ are $\vec{w}_1$, $\vec{w}_2$, $\vec{w}_3$.
 \end{lemma}
 \begin{proof}
     We have previously shown that $\vec{J}_L=\vec{0}$ for the three critical points $\vec{w}_1$, $\vec{w}_2$, and $\vec{w}_3$.
@@ -1968,20 +2004,17 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
         a & b \\ b & c
     \end{bmatrix}$.
     We will begin by showing $a = \frac{\delta ^2 L}{\delta w_1^2}>0$.
-    To do that, we must first evaluate $q$,$r$,$s'(w_1)$, and $\frac{\delta r}{\delta w_1}$ for the current weight configuration.
+    To do that, we must first evaluate $q$,$s'(w_1)$, and $\frac{\delta r}{\delta w_1}$ for the current weight configuration.
     \begin{align*}
         q &= e^{-4(w_1+w_2)^2} = 1 \\
-        r &= (q^2-q)(w_1+w_2) = 0 \\
         s'(w_1) &= e^{-8 w_1^2} - e^{-4 -4w_1^2} - 8 w_1^2 \left(2 e^{-8 w_1^2} - e^{-4-4 w_1^2}\right) = -8e^{-8} \\
         \frac{\delta r}{\delta w_1} &= q^2 - q - 8q(w_1 + w_2)^2 (2q - 1) = 0.
     \end{align*}
-
     We get
     \begin{align*}
         a &= -16s'(w_1) - 16 \frac{\delta r}{\delta w_1} \\
         &= 128 e^{-8} > 0.
     \end{align*}
-
     It remains to show that $ac - b^2 > 0$. 
     Noticing that $s'(1) = s'(-1)$, we realise that in fact $a=c$.
     So,
@@ -1996,35 +2029,139 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
     \paragraph{Second critical point ($w_1=1, w_2=-1$)}
     Notice that this point can be obtained simply by switching $w_1$ and $w_2$ from the previous critical point.
     We have showed previously that $s'(-1)=s'(1)$ and furthermore we established earlier that $\frac{\delta r}{\delta w_1} =\frac{\delta r}{\delta w_2}$.
-    Hence the Hessian from \ref{eq:stripe_hessian} will be positive definite too, thus proving that the second critical point is a local minimum, too.
+    Hence the Hessian from \ref{eq:stripe_hessian} will be positive definite too, thus proving that the second critical point is a local minimum.
 
     \paragraph{Third critical point ($w_1=w_2=0$)}
     Using the same notation as \ref{eq:stripe_hessian}, we evaluate 
-    $q$,$r$,$s'(w_1)$, and $\frac{\delta r}{\delta w_1}$ for this weight configuration.
+    $q$,$s'(w_1)$, and $\frac{\delta r}{\delta w_1}$ for this weight configuration.
     \begin{align*}
         q &= e^{-4(w_1+w_2)^2} = 1 \\
-        r &= (q^2-q)(w_1+w_2) = 0 \\
         s'(w_1) &= e^{-8 w_1^2} - e^{-4 - 4 w_1^2} - 8 w_1^2 \left(2 e^{-8 w_1^2} - e^{-4-4 w_1^2}\right) = 1 - e^{-4} \\
         \frac{\delta r}{\delta w_1} &= q^2 - q - 8q(w_1 + w_2)^2 (2q - 1) = 0.
     \end{align*}
-
     We get
     \begin{align*}
         a &= -16s'(w_1) - 16 \frac{\delta r}{\delta w_1} \\
         &= 16 e^{-4} - 16 \ngtr 0.
     \end{align*}
-    
     This violates the first condition of Theorem \ref{thm:positive_definite_2_by_2}, so this point is not a local minimum.
-    In summary, we have shown that $\vec{w}_1$ and $\vec{w}_2$ are local minima, but not $\vec{w}_3$.
+    
+    \paragraph{Fourth critical point ($w_1=w_2\approx0.999916$)}
+    Calculating the Hessian for $\vec{w}_4$ numerically, we obtain
+    \begin{equation*}
+        \vec{H}_L \approx \begin{bmatrix}
+            0.04295905890 & -0.00005595797825 \\
+            -0.00005595797825 & 0.04295905890
+        \end{bmatrix}
+    \end{equation*}
+    and it is easy to see that the determinant of $\vec{H}_L$ as well as its top left cell are positive, so we have a local minimum.
+
+    \paragraph{Fifth critical point ($w_1=w_2\approx-0.999916$)}
+    The Hessian obtained at $\vec{w}_5$ is equal to the Hessian at $\vec{w}_4$. 
+    It follows that this point is a local minimum as well.
+    In summary, we have shown that $\vec{w}_1$, $\vec{w}_2$, $\vec{w}_4$, $\vec{w}_5$ are local minima, but not $\vec{w}_3$.
 \end{proof}
 
-
-
 \subsection{Global minima}
-\todo: prove that $\vec{w}_1$ and $\vec{w}_2$ are global minima (plug in loss function and observe $L=0$)
+In \ref{sec:stripe_critical_points} we identified five critical points on the error-weight surface for the stripe problem, and in \ref{sec:stripe_local_minima} we have shown that all but one of these points are local minima.
+Now we will determine which of these local minima are also global minima.
+\ref{fig:stripe_critical_points} shows the critical points which allows the hypothesis that if we have identified all local minima, then $\vec{w}_1$ and $\vec{w}_2$ should be the global minima.
+While we were not able to prove that the five critical points we identified are the only ones, we \textit{can} prove that $\vec{w}_1$ and $\vec{w}_2$ are in fact global minima because their loss values minimal.
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[
+        declare function={
+            rbf(\x)= exp(-\x^2);
+        }
+    ]
+        \begin{axis}[
+            scale only axis,
+            width=.75\textwidth,
+            ymin=-3, ymax=3,
+            xmin=-3, xmax=3,
+            zmin=0, zmax=2,
+            xlabel={$w_1$},
+            ylabel={$w_2$},
+            %zlabel={MSE},
+            samples=61,
+            xtick={-3,...,3},
+            ytick={-3,...,3},
+            ztick={},
+            view={0}{90},
+            colorbar,
+            point meta min=0,
+            point meta max=2
+        ]
+            \addplot3 [
+                surf,
+                shader=faceted interp,
+                domain=-3:3,
+                y domain=-3:3
+            ] {(rbf(2*x) - rbf(2))^2 + (rbf(2*y) - rbf(2))^2 + (rbf(2*x + 2*y) - 1)^2};
+            \node[label={360:{$\vec{w}_1$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
+            \node[label={360:{$\vec{w}_2$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
+            \node[label={360:{$\vec{w}_3$}},circle,fill,inner sep=2pt] at (0, 0, 2) {};
+            \node[label={360:{$\vec{w}_4$}},circle,fill,inner sep=2pt] at (1, 1, 0.999) {};
+            \node[label={360:{$\vec{w}_5$}},circle,fill,inner sep=2pt] at (-1, -1, 0.999) {};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Heat map of the stripe problem's error-weight surface showing the critical points. It provides a birds-eye perspective of \ref{fig:stripe_error_surface_gaussian}.}
+    \label{fig:stripe_critical_points}
+\end{figure}
 
-\subsection{Behaviour as the weights approach infinity}
-\todo: show that there is a ``local minimum'' when both weights tend to infinity (or negative infinity)
+\begin{theorem}
+    \label{thm:stripe_global_minima}
+    The points $\vec{w}_1=\begin{bmatrix}
+        -1 & 1
+    \end{bmatrix}\tran$ and $\vec{w}_2=\begin{bmatrix}
+        1 & -1
+    \end{bmatrix}\tran$ are global minima of the stripe problem's error-weight surface $L(\vec{w})$.
+\end{theorem}
+\begin{proof}
+    The loss function $L(\vec{w})$ from \ref{eq:stripe_loss} is a sum of squared terms whose arguments are real-valued.
+    This means that if we can show that $L(\vec{w})=0$ for some $\vec{w}$, then we have proved, by \ref{def:global_minimum} that $L$ has a global minimum at $\vec{w}$.
+    Let us look at the value of the loss function at $\vec{w}_1$,
+    \begin{align*}
+        L(\vec{w}_1)
+        &=\left(e^{-4(w_1 + w_2)^2} - 1\right)^2
+        + \left(e^{-4w_2^2} - e^{-4}\right)^2
+        + \left(e^{-4w_1^2} - e^{-4}\right)^2 \\
+        &=\left(e^{0} - 1\right)^2
+        + \left(e^{-4} - e^{-4}\right)^2
+        + \left(e^{-4} - e^{-4}\right)^2 = 0.
+    \end{align*}
+    Similarly, we obtain $L(\vec{w}_2)=0$. It follows that both $\vec{w}_1$ and $\vec{w}_2$ are global minima.
+\end{proof}
+\begin{corollary}
+    \label{col:stripe_suboptimal_local_minima}
+    The points $\vec{w}_4$ and $\vec{w}_5$ are suboptimal local minima.
+\end{corollary}
+\begin{proof}
+    We have already shown in \ref{lmm:stripe_local_minima} that $\vec{w}_4$ and $\vec{w}_5$ are local minima. 
+    Let us look at the loss values at $\vec{w}_4$.
+    \begin{align*}
+        L(\vec{w}_4)
+        &=\left(e^{-16\eta^2} - 1\right)^2
+        + \left(e^{-4\eta^2} - e^{-4}\right)^2
+        + \left(e^{-4\eta^2} - e^{-4}\right)^2
+    \end{align*}
+    Since $\eta > 0$, we conclude that $L(\vec{w}_4)>0$. 
+    In \ref{thm:stripe_global_minima} we have shown that the minimum of $L(\vec{w})$ is zero.
+    Thus, by \ref{def:global_minimum}, it follows that $\vec{w}_4$ is \textit{not} a global minimum, so it is a suboptimal local minimum.
+    By extension, since $L(\vec{w})=L(-\vec{w})$ and $\vec{w}_4=-\vec{w}_5$, it must be the case that $\vec{w}_5$ represents a suboptimal local minimum as well.
+\end{proof}
+
+\subsection{On the convergence of gradient descent}
+\ref{thm:stripe_global_minima} and \ref{col:stripe_suboptimal_local_minima} allow us to characterise the nature of the error-weight space and provide a rigorous argument that the stripe problem indeed has suboptimal local minima.
+In fact, if $w_1$ and $w_2$ are either both positive or both negative, gradient descent will converge to a suboptimal local minimum, whereas if $w_1$ and $w_2$ have different sign, gradient descent training will converge to a global minimum.
+This can be seen in the heat map of \ref{fig:stripe_critical_points}.
+
+To see this, consider for example $\vec{w}_4$. 
+For $w_1>\eta$ and $w_2>\eta$, it can be shown that $\vec{J}_L>\vec{0}$.
+More specifically, it can be shown that when $w_1>w_2>\eta$, the angle $\theta$ of the gradient of the loss function (when using $w_1$ as the $x$-axis and $w_2$ as the $y$-axis) is in the interval $\left(0, \frac{\pi}{2}\right)$.
+As a consequence, the angle of the negative gradient will point in the rough direction of $\vec{w}_4$.
+\todo: diagram showing directions of gradients
+
 
 \subsection{Ideal goal line}
 \todo: graph of ideal goal line in output space + analysis of unrealisable region
@@ -2098,9 +2235,9 @@ In \ref{fig:clothoid_segment}, these angles are marked $\alpha$ and $\beta$, res
             ticks=none,
             clip=false
         ]
-            \addplot[mark=none] table {data/clothoid_for_points_1.dat};
+            \addplot[mark=none] table {data/clothoid_segment.dat};
         
-            % File: clothoid_for_points_1.dat
+            % File: clothoid_segment.dat
             %   p0: (6.0, 0.0)
             %   p1: (2.0, 1.5)
             %   p2: (0.0, 0.0)
@@ -2298,6 +2435,39 @@ In fact, this is equivalent to minimising \ref{eq:clothoid_construction_error} w
 
 The nearest neighbour can be found quite efficiently using a so-called $k$-d tree data structure with an average time complexity logarithmic to the number of points \cite{friedman1977}.
 Hence, using this technique, we can find the clothoid parameters for \ref{prob:clothoid_construction} in $\mathcal{O}(\log n)$ time\footnote{This is because we have $n^2$ points and $\mathcal{O}(\log{n^2})=\mathcal{O}(\log n)$.} on average.
+
+\section{Scaling sample points}
+\todo: explain how sample points are scaled to be at roughly the same radius in output space
+
+\section{Adaptive clothoid technique}
+\todo
+% \begin{figure}
+%     \centering
+%     \begin{tikzpicture}
+%         \begin{axis}[
+%             axis equal,
+%             width=\textwidth,
+%             xlabel={$y_1$},
+%             ylabel={$y_2$},
+%             xlabel style={at={(axis description cs:1,0)},anchor=west},
+%             ylabel style={at={(axis description cs:0,1)},anchor=south,rotate=-90},
+%             axis lines=left,
+%             xmin=-2, xmax=7,
+%             ymin=-2, ymax=5,
+%             ticks=none,
+%             clip=false
+%         ]
+%             \coordinate (y1) at (0, 0);
+%             \coordinate (y2) at ($(sqrt(2), sqrt(2))$);
+%             \fill (y1) circle (2pt) node[below] {$\vec{\hat{y}}_0$};
+%             \draw (y1) circle [black, radius=1];
+
+%         \end{axis}
+%     \end{tikzpicture}
+%     \caption{The scenario from \ref{fig:clothoid_motivation_scenario} with the goal-connecting clothoid.}
+%     \label{fig:adaptive_clothoid}
+% \end{figure}
+
 
 \chapter{Generalising neural surfing}
 \todo: generalize to classification as regression with multiple output variables (this can be done by concatenating all output variables' dimensions into the output vector/space)
