@@ -713,6 +713,7 @@ Already, this simple SA algorithm has three hyperparameters: the energy coeffici
 More sophisticated implementations will require even more hyperparameters (such as \textcite{press1992} as remarked in \ref{sec:eval_sim_annealing}) that makes it increasingly difficult to design SA in a generic fashion to suit the training of neural networks. 
 
 \section{Issues}
+\label{sec:neural_training_issues}
 \paragraph{Suboptimal local minima}
 \todo: explain
 \paragraph{Efficiency}
@@ -724,6 +725,9 @@ More sophisticated implementations will require even more hyperparameters (such 
 \end{figure}
 
 \chapter{Neural surfing theory}
+The main idea behind the neural surfing technique lies in viewing the neural training problem from a different perspective. 
+Instead of only considering the error-weight space, the neural surfing technique looks at the so-called output space as well. 
+This chapter will discuss the concepts of weight and output space, as well as issues related to these concepts such as unrealisable regions and what is meant by a goal-connecting path.
 
 \section{Weight and output spaces}
 In \ref{def:mlp} we established that the tuple $\langle \mathscr{W}, \mathscr{B} \rangle$ along with the activation function is sufficient to fully define a MLP. 
@@ -1047,6 +1051,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
 
 Let us look at a couple of examples of unrealisable regions.
 \begin{example}
+    \label{ex:unrealisable_trivial}
     A trivial example of an unrealisable region is predicting two different outputs for the same training sample.
     Consider again an MLP $M$ with one layer and two inputs, as shown in \ref{fig:sln_2_in_1_out}.
     Let $\vec{x}\in \mathbb{R}^2$ be any point in input space.
@@ -1067,6 +1072,7 @@ Let us look at a couple of examples of unrealisable regions.
     because $h_M(\vec{x})$ cannot produce two different outputs for the same value of $\vec{x}$.
 \end{example}
 \begin{example}[XOR mapping]
+    \label{ex:unrealisable_xor}
     Let us look at a less contrived example.
     While it ``is well known that any Boolean function \elide can be approximated by a suitable two-layer feed-forward network'' \cite{blum1989}, 
     single-layer networks with non-decreasing activation functions can only learn a Boolean mapping that is \textit{linearly separable} \cite[p. 723]{russell2010}.
@@ -1128,11 +1134,15 @@ Let us look at a couple of examples of unrealisable regions.
     So $\mathcal{U} = \{\vec{p}\}$ is an example of an unrealisable region.    
 \end{example}
 
-
-\todo: Explain significance if target is unrealisable (XOR example demonstrates that)
+\begin{remark}
+    \ref{ex:unrealisable_trivial,ex:unrealisable_trivial} demonstrate that unrealisable regions can arise even in very simple scenarios, so it is vital to take this phenomenon into account when designing a path-finding technique in output space, such as the neural surfer.
+    Furthermore, one must also consider what happens if the target $\vec{y}$ lies in an unrealisable region (which means that $\vec{y}$ itself is unrealisable).
+    In this case, the global minimum of the error-weight surface (using mean squared error) would be the weight configuration that produces the point closest to $\vec{y}$ (in terms of Euclidean distance) which is realisable.
+\end{remark}
 
 \section{Goal-connecting paths}
 \begin{definition}[Goal-connecting path]
+    \label{def:goal_connecting_path}
     For an artificial neural network $A$ with current weight configuration $\vec{w}_0 \in \mathcal{W}_A$, a goal-connecting path in output space to the goal $\vec{g}\in \mathcal{O}_A$ is a sequence of points $\vec{s}_0, \vec{s}_1,\dots,\vec{s}_{S} \in \mathcal{O}_A$ where the initial state $\vec{s}_0 = h_A(\vec{w}_0)$ and final state $\vec{s}_S=\vec{g}$.
     The points $\vec{s}_1,\vec{s}_2,\dots,\vec{s}_S$ are referred to as \textit{subgoals}, hence $S$ is the number of subgoals in the goal-connecting path. 
 
@@ -1510,7 +1520,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
 
 \begin{example}
     \label{ex:sln_2_in_1_out_gaussian_hyperplanes}
-    Like in Example \ref{ex:sln_2_in_1_out_sigmoid_hyperplane}, let us consider once more a single-layered MLP $M$ with two inputs, depicted in \ref{fig:sln_2_in_1_out}, where $w_1=w_2=1$ and $b=0$. 
+    Like in \ref{ex:sln_2_in_1_out_sigmoid_hyperplane}, let us consider once more a single-layered MLP $M$ with two inputs, depicted in \ref{fig:sln_2_in_1_out}, where $w_1=w_2=1$ and $b=0$. 
     Let the threshold be $t=\frac{1}{2}$ again, but this time, we will use the Gaussian RBF as the activation function.
 
     From \ref{eq:gaussian_hyperplanes}, we obtain the equations of the hyperplanes as
@@ -1608,7 +1618,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
 \end{remark}
 
 \subsection{Formulating the problem}
-Example \ref{ex:sln_2_in_1_out_gaussian_hyperplanes} showed that a simple 2-1 network with radial basis activation constructs a scenario where the hyperplanes form a stripe that can be rotated by adjusting the weights.
+\ref{ex:sln_2_in_1_out_gaussian_hyperplanes} showed that a simple 2-1 network with radial basis activation constructs a scenario where the hyperplanes form a stripe that can be rotated by adjusting the weights.
 This means that we could easily contrive the stripe problem from \ref{fig:stripe_original_hyperplanes}.
 However, since we established that the hyperplanes will always remain parallel in our RBF network and since they rotate around the origin\footnote{More precisely, when changing $w_1$, the hyperplanes rotate around their respective $x_2$ intercepts, and similarly when altering $w_2$ the centre of rotation are the $x_1$-intercepts in input space.} when $b$ is fixed, we can create a much simplified version of the stripe problem using only four samples.
 
@@ -1623,13 +1633,14 @@ However, since we established that the hyperplanes will always remain parallel i
             }
         ]
             \begin{axis}[
-                x=.9cm,
-                y=.9cm,
                 xlabel={$x_1$},
                 ylabel={$x_2$},
-                ymin=-2.5, ymax=2.5,
-                xmin=-2.5, xmax=2.5,
-                samples=2
+                ymin=-2, ymax=2,
+                xmin=-2, xmax=2,
+                enlargelimits=.1,
+                samples=2,
+                scale only axis,
+                width=.8\textwidth
             ]
                 \addplot[black, only marks,mark=*] coordinates {(0,0)};
                 \addplot[black, only marks,mark=o] coordinates {(0,2) (2,0) (2,2)};
@@ -1651,13 +1662,14 @@ However, since we established that the hyperplanes will always remain parallel i
             }
         ]
             \begin{axis}[
-                x=.9cm,
-                y=.9cm,
                 xlabel={$x_1$},
                 ylabel={$x_2$},
-                ymin=-2.5, ymax=2.5,
-                xmin=-2.5, xmax=2.5,
-                samples=2
+                ymin=-2, ymax=2,
+                xmin=-2, xmax=2,
+                enlargelimits=.1,
+                samples=2,
+                scale only axis,
+                width=.8\textwidth
             ]
                 \addplot[black, only marks,mark=*] coordinates {(0,0) (2,2)};
                 \addplot[black, only marks,mark=o] coordinates {(0,2) (2,0)};
@@ -1816,13 +1828,13 @@ We will now identify and examine the critical points of this function.
 \begin{lemma}
     \label{lmm:stripe_critical_points}
     Three critical points of the error-weight surface given by $L$ are 
-    $\vec{w}_1 = \begin{bmatrix}
+    $\vec{p}_1 = \begin{bmatrix}
         -1 & 1
     \end{bmatrix}\tran$,
-    $\vec{w}_2 = \begin{bmatrix}
+    $\vec{p}_2 = \begin{bmatrix}
         1 & -1
     \end{bmatrix}\tran$, and
-    $\vec{w}_3 = \begin{bmatrix}
+    $\vec{p}_3 = \begin{bmatrix}
         0 & 0
     \end{bmatrix}\tran$.
 \end{lemma}
@@ -1861,7 +1873,7 @@ We will now identify and examine the critical points of this function.
     \end{align*}
     To find the critical points, we set
     $\vec{J}_L = \vec{0}$.
-    It is trivial to see that $\vec{w}_1$, $\vec{w}_2$, and $\vec{w}_3$ are solutions to this equation.
+    It is trivial to see that $\vec{p}_1$, $\vec{p}_2$, and $\vec{p}_3$ are solutions to this equation.
 \end{proof}
 
 At first, it seems like these three points are the only solutions to $\vec{J}_L=\vec{0}$.
@@ -1874,10 +1886,10 @@ $\begin{bmatrix}
 \end{bmatrix}\tran$.
 \begin{lemma}
     Two more critical points are at
-    $\vec{w}_4 = \begin{bmatrix}
+    $\vec{p}_4 = \begin{bmatrix}
         \eta & \eta
     \end{bmatrix}\tran$ and
-    $\vec{w}_5 = \begin{bmatrix}
+    $\vec{p}_5 = \begin{bmatrix}
         -\eta & -\eta
     \end{bmatrix}\tran$ where $\eta$ can be numerically approximated to $0.999916$ (6 s.f.).
 \end{lemma}
@@ -1903,7 +1915,7 @@ $\begin{bmatrix}
     \end{align*}
     which cannot be simplified further.
     Using a numerical solver, we can find the two roots of this equation and then find the value of $w_1=\pm \frac{1}{2} \sqrt{-\log x}$ (discarding the non-real solutions) as $w_1\approx0.999916$ and $w_1\approx-0.999916$.
-    Since $w_1=w_2$ we get the solutions $\vec{w}_4$ and $\vec{w}_5$.
+    Since $w_1=w_2$ we get the solutions $\vec{p}_4$ and $\vec{p}_5$.
 \end{proof}
 
 For the remainder of this project, we will assume that these five critical points are the only ones. 
@@ -1913,10 +1925,10 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
 \label{sec:stripe_local_minima}
 \begin{lemma}
     \label{lmm:stripe_local_minima}
-    The local minima on the error-weight surface given by $L$ are $\vec{w}_1$, $\vec{w}_2$, $\vec{w}_3$.
+    The local minima on the error-weight surface given by $L$ are $\vec{p}_1$, $\vec{p}_2$, $\vec{p}_3$.
 \end{lemma}
 \begin{proof}
-    We have previously shown that $\vec{J}_L=\vec{0}$ for the three critical points $\vec{w}_1$, $\vec{w}_2$, and $\vec{w}_3$.
+    We have previously shown that $\vec{J}_L=\vec{0}$ for the three critical points $\vec{p}_1$, $\vec{p}_2$, and $\vec{p}_3$.
     Let us now compute the Hessian.
     We will express the Jacobian from \ref{eq:stripe_jacobian} as
     \begin{align*}
@@ -2024,7 +2036,7 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
         &= 128^2e^{-16} - \left(-16 \frac{\delta r}{\delta w_1}\right)^2 \\
         &= 128^2e^{-16} > 0.
     \end{align*}
-    Hence, we showed that the point $\vec{w}_1$ forms a local minimum.
+    Hence, we showed that the point $\vec{p}_1$ forms a local minimum.
 
     \paragraph{Second critical point ($w_1=1, w_2=-1$)}
     Notice that this point can be obtained simply by switching $w_1$ and $w_2$ from the previous critical point.
@@ -2047,7 +2059,7 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
     This violates the first condition of Theorem \ref{thm:positive_definite_2_by_2}, so this point is not a local minimum.
     
     \paragraph{Fourth critical point ($w_1=w_2\approx0.999916$)}
-    Calculating the Hessian for $\vec{w}_4$ numerically, we obtain
+    Calculating the Hessian for $\vec{p}_4$ numerically, we obtain
     \begin{equation*}
         \vec{H}_L \approx \begin{bmatrix}
             0.04295905890 & -0.00005595797825 \\
@@ -2057,16 +2069,16 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
     and it is easy to see that the determinant of $\vec{H}_L$ as well as its top left cell are positive, so we have a local minimum.
 
     \paragraph{Fifth critical point ($w_1=w_2\approx-0.999916$)}
-    The Hessian obtained at $\vec{w}_5$ is equal to the Hessian at $\vec{w}_4$. 
+    The Hessian obtained at $\vec{p}_5$ is equal to the Hessian at $\vec{p}_4$. 
     It follows that this point is a local minimum as well.
-    In summary, we have shown that $\vec{w}_1$, $\vec{w}_2$, $\vec{w}_4$, $\vec{w}_5$ are local minima, but not $\vec{w}_3$.
+    In summary, we have shown that $\vec{p}_1$, $\vec{p}_2$, $\vec{p}_4$, $\vec{p}_5$ are local minima, but not $\vec{p}_3$.
 \end{proof}
 
 \subsection{Global minima}
 In \ref{sec:stripe_critical_points} we identified five critical points on the error-weight surface for the stripe problem, and in \ref{sec:stripe_local_minima} we have shown that all but one of these points are local minima.
 Now we will determine which of these local minima are also global minima.
-\ref{fig:stripe_critical_points} shows the critical points which allows the hypothesis that if we have identified all local minima, then $\vec{w}_1$ and $\vec{w}_2$ should be the global minima.
-While we were not able to prove that the five critical points we identified are the only ones, we \textit{can} prove that $\vec{w}_1$ and $\vec{w}_2$ are in fact global minima because their loss values minimal.
+\ref{fig:stripe_critical_points} shows the critical points which allows the hypothesis that if we have identified all local minima, then $\vec{p}_1$ and $\vec{p}_2$ should be the global minima.
+While we were not able to prove that the five critical points we identified are the only ones, we \textit{can} prove that $\vec{p}_1$ and $\vec{p}_2$ are in fact global minima because their loss values minimal.
 \begin{figure}
     \centering
     \begin{tikzpicture}[
@@ -2098,11 +2110,11 @@ While we were not able to prove that the five critical points we identified are 
                 domain=-3:3,
                 y domain=-3:3
             ] {(rbf(2*x) - rbf(2))^2 + (rbf(2*y) - rbf(2))^2 + (rbf(2*x + 2*y) - 1)^2};
-            \node[label={360:{$\vec{w}_1$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
-            \node[label={360:{$\vec{w}_2$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
-            \node[label={360:{$\vec{w}_3$}},circle,fill,inner sep=2pt] at (0, 0, 2) {};
-            \node[label={360:{$\vec{w}_4$}},circle,fill,inner sep=2pt] at (1, 1, 0.999) {};
-            \node[label={360:{$\vec{w}_5$}},circle,fill,inner sep=2pt] at (-1, -1, 0.999) {};
+            \node[label={360:{$\vec{p}_1$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
+            \node[label={360:{$\vec{p}_2$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
+            \node[label={360:{$\vec{p}_3$}},circle,fill,inner sep=2pt] at (0, 0, 2) {};
+            \node[label={360:{$\vec{p}_4$}},circle,fill,inner sep=2pt] at (1, 1, 0.999) {};
+            \node[label={360:{$\vec{p}_5$}},circle,fill,inner sep=2pt] at (-1, -1, 0.999) {};
         \end{axis}
     \end{tikzpicture}
     \caption{Heat map of the stripe problem's error-weight surface showing the critical points. It provides a birds-eye perspective of \ref{fig:stripe_error_surface_gaussian}.}
@@ -2111,18 +2123,18 @@ While we were not able to prove that the five critical points we identified are 
 
 \begin{theorem}
     \label{thm:stripe_global_minima}
-    The points $\vec{w}_1=\begin{bmatrix}
+    The points $\vec{p}_1=\begin{bmatrix}
         -1 & 1
-    \end{bmatrix}\tran$ and $\vec{w}_2=\begin{bmatrix}
+    \end{bmatrix}\tran$ and $\vec{p}_2=\begin{bmatrix}
         1 & -1
     \end{bmatrix}\tran$ are global minima of the stripe problem's error-weight surface $L(\vec{w})$.
 \end{theorem}
 \begin{proof}
     The loss function $L(\vec{w})$ from \ref{eq:stripe_loss} is a sum of squared terms whose arguments are real-valued.
     This means that if we can show that $L(\vec{w})=0$ for some $\vec{w}$, then we have proved, by \ref{def:global_minimum} that $L$ has a global minimum at $\vec{w}$.
-    Let us look at the value of the loss function at $\vec{w}_1$,
+    Let us look at the value of the loss function at $\vec{p}_1$,
     \begin{align*}
-        L(\vec{w}_1)
+        L(\vec{p}_1)
         &=\left(e^{-4(w_1 + w_2)^2} - 1\right)^2
         + \left(e^{-4w_2^2} - e^{-4}\right)^2
         + \left(e^{-4w_1^2} - e^{-4}\right)^2 \\
@@ -2130,46 +2142,264 @@ While we were not able to prove that the five critical points we identified are 
         + \left(e^{-4} - e^{-4}\right)^2
         + \left(e^{-4} - e^{-4}\right)^2 = 0.
     \end{align*}
-    Similarly, we obtain $L(\vec{w}_2)=0$. It follows that both $\vec{w}_1$ and $\vec{w}_2$ are global minima.
+    Similarly, we obtain $L(\vec{p}_2)=0$. It follows that both $\vec{p}_1$ and $\vec{p}_2$ are global minima.
 \end{proof}
 \begin{corollary}
     \label{col:stripe_suboptimal_local_minima}
-    The points $\vec{w}_4$ and $\vec{w}_5$ are suboptimal local minima.
+    The points $\vec{p}_4$ and $\vec{p}_5$ are suboptimal local minima.
 \end{corollary}
 \begin{proof}
-    We have already shown in \ref{lmm:stripe_local_minima} that $\vec{w}_4$ and $\vec{w}_5$ are local minima. 
-    Let us look at the loss values at $\vec{w}_4$.
+    We have already shown in \ref{lmm:stripe_local_minima} that $\vec{p}_4$ and $\vec{p}_5$ are local minima. 
+    Let us look at the loss values at $\vec{p}_4$.
     \begin{align*}
-        L(\vec{w}_4)
+        L(\vec{p}_4)
         &=\left(e^{-16\eta^2} - 1\right)^2
         + \left(e^{-4\eta^2} - e^{-4}\right)^2
         + \left(e^{-4\eta^2} - e^{-4}\right)^2
     \end{align*}
-    Since $\eta > 0$, we conclude that $L(\vec{w}_4)>0$. 
+    Since $\eta > 0$, we conclude that $L(\vec{p}_4)>0$. 
     In \ref{thm:stripe_global_minima} we have shown that the minimum of $L(\vec{w})$ is zero.
-    Thus, by \ref{def:global_minimum}, it follows that $\vec{w}_4$ is \textit{not} a global minimum, so it is a suboptimal local minimum.
-    By extension, since $L(\vec{w})=L(-\vec{w})$ and $\vec{w}_4=-\vec{w}_5$, it must be the case that $\vec{w}_5$ represents a suboptimal local minimum as well.
+    Thus, by \ref{def:global_minimum}, it follows that $\vec{p}_4$ is \textit{not} a global minimum, so it is a suboptimal local minimum.
+    By extension, since $L(\vec{w})=L(-\vec{w})$ and $\vec{p}_4=-\vec{p}_5$, it must be the case that $\vec{p}_5$ represents a suboptimal local minimum as well.
 \end{proof}
 
 \subsection{On the convergence of gradient descent}
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[
+        declare function={
+            rbf(\x)= exp(-\x^2);
+        }
+    ]
+        \begin{axis}[
+            scale only axis,
+            width=.75\textwidth,
+            ymin=-3, ymax=3,
+            xmin=-3, xmax=3,
+            zmin=0, zmax=2,
+            domain=-3:3,
+            domain y=-3:3,
+            view={0}{90},
+            axis background/.style={fill=white},
+            enlargelimits=.05,
+            xtick={-3,...,3},
+            ytick={-3,...,3},
+            xlabel={$w_1$},
+            ylabel={$w_2$},
+            point meta min=0,
+            point meta max=2,
+            colorbar
+        ]
+            % \addplot3 [
+            %     contour gnuplot={levels={.5, 1, 1.5},labels=true},
+            %     thick,
+            %     samples=50
+            % ] {(rbf(2*x) - rbf(2))^2 + (rbf(2*y) - rbf(2))^2 + (rbf(2*x + 2*y) - 1)^2};
+            \addplot3 [
+                -stealth,
+                samples=18,
+                quiver={
+                    u={-(exp(-8*x^2)*(-1 + exp(-4 + 4*x^2))*x + exp(-8*(x + y)^2)*(-1 + exp(4*(x + y)^2))*(x + y)) / sqrt((exp(-8*x^2)*(-1 + exp(-4 + 4*x^2))*x + exp(-8*(x + y)^2)*(-1 + exp(4*(x + y)^2))*(x + y))^2 + (exp(-8*y^2)*(-1 + exp(-4 + 4*y^2))*y + exp(-8*(x + y)^2)*(-1 + exp(4*(x + y)^2))*(x + y))^2)},
+                    v={-(exp(-8*y^2)*(-1 + exp(-4 + 4*y^2))*y + exp(-8*(x + y)^2)*(-1 + exp(4*(x + y)^2))*(x + y)) / sqrt((exp(-8*x^2)*(-1 + exp(-4 + 4*x^2))*x + exp(-8*(x + y)^2)*(-1 + exp(4*(x + y)^2))*(x + y))^2 + (exp(-8*y^2)*(-1 + exp(-4 + 4*y^2))*y + exp(-8*(x + y)^2)*(-1 + exp(4*(x + y)^2))*(x + y))^2)},
+                    scale arrows=.2
+                },
+                point meta = {(rbf(2*x) - rbf(2))^2 + (rbf(2*y) - rbf(2))^2 + (rbf(2*x + 2*y) - 1)^2},
+                quiver/colored = {mapped color}
+            ] {0};
+            \node[label={360:{$\vec{p}_1$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
+            \node[label={360:{$\vec{p}_2$}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
+            \node[label={360:{$\vec{p}_3$}},circle,fill,inner sep=2pt] at (0, 0, 0) {};
+            \node[label={360:{$\vec{p}_4$}},circle,fill,inner sep=2pt] at (1, 1, 0) {};
+            \node[label={360:{$\vec{p}_5$}},circle,fill,inner sep=2pt] at (-1, -1, 0) {};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Vector field of the negative gradients of the error-weight function. The vectors' magnitudes are normalised and their colour represents the loss values at their respective origins.}
+    \label{fig:stripe_gradient_vector_field}
+\end{figure}
 \ref{thm:stripe_global_minima} and \ref{col:stripe_suboptimal_local_minima} allow us to characterise the nature of the error-weight space and provide a rigorous argument that the stripe problem indeed has suboptimal local minima.
-In fact, if $w_1$ and $w_2$ are either both positive or both negative, gradient descent will converge to a suboptimal local minimum, whereas if $w_1$ and $w_2$ have different sign, gradient descent training will converge to a global minimum.
-This can be seen in the heat map of \ref{fig:stripe_critical_points}.
+In fact, if $w_1$ and $w_2$ are either both positive or both negative, gradient descent will converge to a suboptimal local minimum, whereas if $w_1$ and $w_2$ have different signs, gradient descent training will converge to a global minimum.
+To see this, consider the vector field of the directions of the negative gradients depicted in \ref{fig:stripe_gradient_vector_field}.
+When starting at a point with $w_1>0$, $w_2>0$ and following the arrows, one will end up at the suboptimal local minimum $\vec{p}_4$ eventually.
+On the other hand, when starting at a point $w_1<0$, $w_2>0$, it is easy to see that travel will converge to $\vec{p}_1$.
+The same logic can be applied to the other two points due to symmetry.
+Note that would be possible to formally prove this observation by considering the directions of the Jacobian in different regions of the plot. 
+However, this proof would be very long and exceed the scope of this report. 
+Furthermore, the experimental evidence in \ref{sec:stripe_gradient_descent} verifies this claim empirically.
 
-To see this, consider for example $\vec{w}_4$. 
-For $w_1>\eta$ and $w_2>\eta$, it can be shown that $\vec{J}_L>\vec{0}$.
-More specifically, it can be shown that when $w_1>w_2>\eta$, the angle $\theta$ of the gradient of the loss function (when using $w_1$ as the $x$-axis and $w_2$ as the $y$-axis) is in the interval $\left(0, \frac{\pi}{2}\right)$.
-As a consequence, the angle of the negative gradient will point in the rough direction of $\vec{w}_4$.
-\todo: diagram showing directions of gradients
+\subsection{Ideal goal-connecting path}
+\label{sec:stripe_ideal_goal_connecting_path}
+In \ref{lmm:ideal_subgoal_construction} we showed that the ideal goal-connecting path is a straight line in weight space that starts at the initial configuration $\vec{w}_0$ and ends at the goal $\vec{w}_S$.
+We established that the initial weight configuration is
+$\vec{w}_0 = \begin{bmatrix}
+    1 & 1
+\end{bmatrix}\tran$
+which is near a suboptimal local minimum (see \ref{col:stripe_suboptimal_local_minima}) and the target is 
+$\vec{w}_S \begin{bmatrix}
+    1 & -1
+\end{bmatrix}\tran$
+which we proved in \ref{thm:stripe_global_minima} is a global minimum.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}
+            \begin{axis}[
+                scale only axis,
+                xlabel = {$w_1$},
+                ylabel = {$w_2$},
+                xmin=-1,xmax=1,
+                ymin=-1,ymax=1,
+                width=.8\textwidth,
+                enlargelimits=.1
+            ]
+                \addplot[black, mark=none] coordinates {(1, 1) (1, -1)};
+                \node[circle,fill,inner sep=1.5pt,pin=-170:{$\vec{w}_0$}] at (1, 1) {};
+                \node[circle,fill,inner sep=1.5pt,pin=170:{$\vec{w}_S$}] at (1, -1) {};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Weight space.}
+    \end{subfigure}
+    \hspace*{\fill}
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}[
+            declare function={
+                rbf(\x)= exp(-\x^2);
+            }
+        ]
+            \begin{axis}[
+                scale only axis,
+                xlabel = {$\hat{y}_1$},
+                ylabel = {$\hat{y}_3$},
+                width=.8\textwidth,
+                xmin=0,xmax=1,
+                ymin=0,ymax=1,
+                enlargelimits=.1
+            ]
+                \addplot[domain=-1:1,samples=100] ({rbf(2*x + 2*1)}, {rbf(2*x + 0*1)});
+                \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{\hat{y}}_0$}] at (0, 0) {};
+                \node[circle,fill,inner sep=1.5pt,pin=100:{$\vec{\hat{y}}_S$}] at (1, 0) {};
+                \node[circle,fill,inner sep=1.5pt,pin={[align=center]90:{unrealisable\\point}}] at (.5, 0) {};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Output space.}
+    \end{subfigure}
+    \caption{Ideal goal-connecting path in weight and ouput spaces. It suffices to show the first and third samples of the output space as the second stays constant. Note also that $\vec{\hat{y}}_S=\vec{y}$ because the target is in fact realisable. The point labelled `unrealisable' is the example of an unrealisable point referred to in \ref{sec:stripe_ideal_goal_connecting_path}.}
+    \label{fig:stripe_ideal_goal_path}
+\end{figure}
+\ref{fig:stripe_ideal_goal_path} depicts the ideal goal line in weight space as well as how this line corresponds to output space.
+It is interesting to see the extreme deformation of this path in output space. 
+In fact, a straight line from $\vec{\hat{y}}_0$ to $\vec{\hat{y}}_S$ would \textit{not} be a valid goal-connecting path because it would pass through an unrealisable region.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}[
+            declare function={
+                hminus(\x,\v,\w)= (-\v*\x - sqrt(-ln(0.5))) / \w;
+                hplus(\x,\v,\w) = (-\v*\x + sqrt(-ln(0.5))) / \w;
+                h(\x,\v,\w)     = -\v*\x / \w;
+            }
+        ]
+            \begin{axis}[
+                xlabel={$x_1$},
+                ylabel={$x_2$},
+                ymin=-2, ymax=2,
+                xmin=-2, xmax=2,
+                enlargelimits=.15,
+                samples=2,
+                scale only axis,
+                width=.8\textwidth
+            ]
+                \addplot[black, no marks] {hminus(x,1,-1-.5*sqrt(ln(2)))};
+                \addplot[black, no marks] {hplus(x,1,-1-.5*sqrt(ln(2)))};
+                \addplot[black, dashed] {h(x,1,-1-.5*sqrt(ln(2)))};
+                \fill (2, 2) circle (2pt) node[above] {$\vec{x}_1$};
+                \fill (0, 2) circle (2pt) node[above] {$\vec{x}_2$};
+                \fill (2, 0) circle (2pt) node[above] {$\vec{x}_3$};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{$w_1=1$ and $w_2= - \frac{1}{2}\sqrt{\ln{2}}-1$}
+    \end{subfigure}
+    \hspace*{\fill}
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}[
+            declare function={
+                hminus(\x,\v,\w)= (-\v*\x - sqrt(-ln(0.5))) / \w;
+                hplus(\x,\v,\w) = (-\v*\x + sqrt(-ln(0.5))) / \w;
+                h(\x,\v,\w)     = -\v*\x / \w;
+            }
+        ]
+            \begin{axis}[
+                xlabel={$x_1$},
+                ylabel={$x_2$},
+                ymin=-2, ymax=2,
+                xmin=-2, xmax=2,
+                enlargelimits=.15,
+                samples=2,
+                scale only axis,
+                width=.8\textwidth
+            ]
+                \addplot[black, no marks] {hminus(x,1,-1+.5*sqrt(ln(2)))};
+                \addplot[black, no marks] {hplus(x,1,-1+.5*sqrt(ln(2)))};
+                \addplot[black, dashed] {h(x,1,-1+.5*sqrt(ln(2)))};
+                \fill (2, 2) circle (2pt) node[above] {$\vec{x}_1$};
+                \fill (0, 2) circle (2pt) node[above] {$\vec{x}_2$};
+                \fill (2, 0) circle (2pt) node[above] {$\vec{x}_3$};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{$w_1=1$ and $w_2= \frac{1}{2}\sqrt{\ln{2}}-1$}
+    \end{subfigure}
+    \caption{Input space with hyperplanes and zero-excitation line (dashed) of two of the four possible configurations where a hyperplane of $0.5$ excitation passes through $\vec{x}_1$. The other two configurations can be obtained by reflecting the plots about the $x_1=x_2$ line.}
+    \label{fig:stripe_unrealisable_example_hyperplanes}
+\end{figure}
+To see this, consider for example the point
+$\begin{bmatrix}
+    0.5 & 0 & 0
+\end{bmatrix}\tran$. 
 
 
-\subsection{Ideal goal line}
 \todo: graph of ideal goal line in output space + analysis of unrealisable region
 
-\subsection{Backpropagation applied to the stripe problem}
+\section{Experimental results}
+\subsection{Gradient descent}
+\label{sec:stripe_gradient_descent}
+
+\begin{wrapfigure}{r}{.6\textwidth}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            xlabel = {$w_1$},
+            ylabel = {$w_2$},
+            xmin=0,xmax=2,
+            ymin=-2,ymax=2,
+            x=1.5cm,
+            y=1.5cm,
+            enlargelimits={true,abs value=.25},
+            legend pos=outer north east
+        ]
+            \addplot[mark=none,blue]         table {data/stripe_problem_weights_history_1.dat};
+            \addplot[mark=none,red]          table {data/stripe_problem_weights_history_2.dat};
+            \addplot[mark=none,black]        table {data/stripe_problem_weights_history_3.dat};
+            \addplot[mark=none,blue,dashed]  table {data/stripe_problem_weights_history_4.dat};
+            \addplot[mark=none,red,dashed]   table {data/stripe_problem_weights_history_5.dat};
+            \addplot[mark=none,black,dashed] table {data/stripe_problem_weights_history_6.dat};
+            \node[circle,fill,inner sep=1.5pt,pin=-90:{$\vec{w}_0$}] at (1, 1) {};
+            \node[circle,fill,inner sep=1.5pt,pin=90:{$\vec{w}_S$}] at (1, -1) {};
+            \legend{Trial 1,Trial 2,Trial 3,Trial 4,Trial 5,Trial 6}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Some gradient descent trajectories in weight space.}
+\end{wrapfigure}
+
 \todo: BP performance on stripe problem without subgoals, then with 10 subgoals and finally with 25
 
 \todo: ``blind spots'' \cite{karayiannis1998}
+
+\todo: refer to \ref{sec:neural_training_issues}, specifically \ref{fig:gradient_descent_narrow_valley} due to valley
+
+\subsection{Gradient descent with subgoals}
+
 
 \chapter{The neural surfing technique}
 
