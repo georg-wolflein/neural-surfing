@@ -1198,7 +1198,7 @@ The neural surfer must be able to perform two main tasks:
     \item achieve these subgoals.
 \end{enumerate*}
 This `cheating' technique pertains only to the latter task, ignoring the former.
-It can be used in order to determine whether and to what extent a training regime is \textit{capable} of realising each subgoal.
+It can be used in order to determine whether and to what extent a training regime\footnote{This technique can be used for \textit{any} regime that provides a mechanism for achieving (sub)goals. As such, this technique not only provides a means of testing the neural surfing algorithm, but also provides a means of using gradient to realise a subgoal trajectory.} is \textit{capable} of realising each subgoal.
 The idea is that splitting the problem into two parts will facilitate a better analysis of the neural surfing technique by isolating pain points and performance issues.
 Two main questions can be evaluated:
 \begin{itemize}
