@@ -527,6 +527,7 @@ This will allow us to examine the so-called decision boundary in input space whi
 \end{example}
 
 \chapter{Neural network training}
+\label{chap:neural_training}
 This chapter will introduce two methods of training neural networks to provide an intuition on how this can be achieved.
 Later in this report, we will look at some issues related to these methods as a means of setting the scene for the neural surfing technique.
 
@@ -1192,6 +1193,7 @@ Let us look at a couple of examples of unrealisable regions.
 \end{remark}
 
 \section{A `cheating' technique for evaluating subgoal trajectories}
+\label{sec:cheating_technique}
 The neural surfer must be able to perform two main tasks: 
 \begin{enumerate*}[label=(\roman*)]
     \item set the subgoals in output space; and
@@ -1282,7 +1284,7 @@ The steps below explain the methodology of this technique, for $S$ subgoals (whe
     \item Let $i=0$. Starting at weight configuration $\vec{w}_i$, perform the particular neural network training technique until achieving a point $\vec{p}$ in output space where $\norm{\vec{p} - \vec{\hat{y}}_{i+1}} \leq (1-\mu) \norm{\vec{\hat{y}}_i - \vec{\hat{y}}_{i+1}}$, i.e. at least a fraction $\mu$ of the distance to the next subgoal is achieved.
     \item Repeat the previous step for $i=1, 2, \dots, S$.
 \end{enumerate}
-We will employ this technique in \ref{sec:stripe_gradient_descent_subgoals} to evaluate the feasability of the ideal goal line.
+We will employ this technique in \ref{sec:stripe_gradient_descent_subgoals} to evaluate the feasability of the ideal goal line in a suboptimal local minimum setting.
 \todo{Where else?}
 
 \chapter{The local minimum problem}
@@ -2511,6 +2513,9 @@ To see this, consider for example the point $\vec{u}$ lying midway on the straig
 \end{remark}
 
 \section{Experimental results}
+A variety of experiments have been carried out on the stripe problem using the different optimisation techniques from \ref{chap:neural_training} with and without subgoals. 
+This section will summarise the findings from some of these experiments. 
+
 \subsection{Gradient descent}
 \label{sec:stripe_gradient_descent}
 
@@ -2595,9 +2600,19 @@ The error-weight surface in \ref{fig:stripe_error_surface_gaussian} shows exampl
 
 \subsection{Gradient descent with subgoals}
 \label{sec:stripe_gradient_descent_subgoals}
+After empirically verifying in the previous section that the classical BP algorithm fails to converge to a global minium with a weight initialisation in Q1 or Q3, we will now employ the `cheating' technique introduced in \ref{sec:cheating_technique} using gradient descent as a means to test if neural training techniques in general can realise the ideal goal line (or some trajectory close to it).
+
 \todo: BP performance on stripe problem without subgoals, then with 10 subgoals and finally with 25
 
 \todo: ``blind spots'' \cite{karayiannis1998}
+
+\subsection{Derivative-free techniques}
+Other techniques, namely greedy probing and simulated annealing have been evaluated in the context of the stripe problem, too.
+They parallel the findings of \ref{sec:stripe_gradient_descent} insofar as initial weight configurations in Q1 and Q3 converging to suboptimal local minima.
+In fact, the trajectories in weight space are quite similar to \ref{fig:stripe_gradient_descent_experiments} with the notable difference that training using these derivative-free techniques found the local or global minimum (depending on the quadrant of initialisation) requiring only around 100 epochs where BP required 100000. 
+These findings can be reproduced using the framework (see \ref{chap:framework}).
+
+On the other hand, \todo{cheating technique/subgoal trajectory using greedy probing}
 
 
 \chapter{The neural surfing technique}
