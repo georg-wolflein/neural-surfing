@@ -721,7 +721,7 @@ More sophisticated implementations will require even more hyperparameters (such 
 \todo: both BP and SA have efficiency drawbacks (see \ref{fig:gradient_descent_narrow_valley})
 \begin{figure}
     \includegraphics[width=\textwidth]{press_steepest_gradient_descent.png}
-    \caption{The method of steepest gradient descent in a long narrow valley \cite[p. 421]{press1992}.}
+    \caption{The method of steepest gradient descent in a long, narrow valley \cite[p. 421]{press1992}.}
     \label{fig:gradient_descent_narrow_valley}
 \end{figure}
 
@@ -783,7 +783,7 @@ These parameters will be useful for defining the weight and ouput spaces.
 
     For every layer $l$, the number of inputs to $S_l$ will be the number of inputs to the $l$th layer, $m_l$. 
     Let $n_l$ denote the number outputs for each layer $l$.
-    Then, by Lemma \ref{lmm:weight_space_sln},
+    Then, by \ref{lmm:weight_space_sln},
     $$\mathcal{W}_{S_l} = \mathbb{R}^{n_l(m_l+1)}.$$
     
     By splitting of the last factor in the product of weight spaces, we obtain 
@@ -808,7 +808,7 @@ These parameters will be useful for defining the weight and ouput spaces.
 \end{proof}
 
 \begin{remark}
-    The significance of Lemma \ref{lmm:weight_space_mlp} is that we obtain a formula for the number of trainable parameters $P$ in a MLP. 
+    The significance of \ref{lmm:weight_space_mlp} is that we obtain a formula for the number of trainable parameters $P$ in a MLP. 
     By \ref{def:weight_space}, $P$ determines the dimensionality of the weight space. 
     On other other hand, \ref{def:output_space} states that the number of samples in the training set $N$ determines the dimensionality of the output space.
     There is no relationship between $P$ and $N$ since the number of samples in the training set can be arbitrarily chosen. 
@@ -1185,11 +1185,105 @@ Let us look at a couple of examples of unrealisable regions.
 \end{proof}
 
 \begin{remark}
-    Lemma \ref{lmm:ideal_subgoal_construction} shows a construction for achieving the ideal goal-connecting path, given knowledge of the target weight configuration $\vec{w}_S$.
+    \ref{lmm:ideal_subgoal_construction} shows a construction for achieving the ideal goal-connecting path, given knowledge of the target weight configuration $\vec{w}_S$.
     Of course, this is not known to the neural learning algorithm while it is learning, only once it finished and was able to actually achieve the goal. 
     However, we can use the ideal goal-connecting path in retrospect to evaluate the performance of the neural learning algorithm in comparison to the ideal path.
     Furthermore, we can plot the ideal goal-connecting path in output space in order to find unrealisable regions.
 \end{remark}
+
+\section{A `cheating' technique for evaluating subgoal trajectories}
+The neural surfer must be able to perform two main tasks: 
+\begin{enumerate*}[label=(\roman*)]
+    \item set the subgoals in output space; and
+    \item achieve these subgoals.
+\end{enumerate*}
+This `cheating' technique pertains only to the latter task, ignoring the former.
+It can be used in order to determine whether and to what extent a training regime is \textit{capable} of realising each subgoal.
+The idea is that splitting the problem into two parts will facilitate a better analysis of the neural surfing technique by isolating pain points and performance issues.
+Two main questions can be evaluated:
+\begin{itemize}
+    \item How well is the approach getting to the subgoals?
+    \item How good is the state the approach ends up in when it achieves the subgoal?
+\end{itemize}
+
+\paragraph{Achieving a subgoal}
+One important question that must be answered is what constitutes realising a subgoal. 
+For the purpose of this technique, we will assume that achieving some fraction $\mu\in(0,1)$ of the distance to the subgoal constitutes as `achieving' it. 
+In more sophisticated scenarios, this technique could be extended to use functions that give a specific threshold for each subgoal.
+
+\paragraph{Procedure}
+The steps below explain the methodology of this technique, for $S$ subgoals (where the last subgoal represents the goal).
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width=.6\textwidth,
+            height=.4\textwidth,
+            xmin=0, xmax=15,
+            ymin=0, ymax=10,
+            xlabel={$y_1$},
+            ylabel={$y_2$},
+            ticks=none,
+            axis x line=bottom,
+            axis y line=left
+        ]
+            \coordinate (initial) at (2, 4);
+            \coordinate (goal) at (12.5, 7.5);
+            \coordinate (y1) at (4, 1);
+            \coordinate (y2) at (7, 1);
+            \coordinate (y3) at (10, 5);
+
+            \draw[->] (initial) (initial) to[curve through={(y1) .. (y2) .. (y3)}] (goal);
+
+            \node[label={180:{$\vec{\hat{y}_0}$}}, circle, fill, inner sep=1pt] at (initial) {};
+            \node[label={270:{$\vec{\hat{y}_1}$}}, circle, fill, inner sep=1pt] at (y1) {};
+            \node[label={90:{$\vec{\hat{y}_2}$}}, circle, fill, inner sep=1pt] at (y2) {};
+            \node[label={180:{$\vec{\hat{y}_3}$}}, circle, fill, inner sep=1pt] at (y3) {};
+            \node[label={90:{$\vec{\hat{y}_4}$}}, circle, fill, inner sep=1pt] at (goal) {};
+
+            \draw
+                let
+                    \p1 = ($(y1) - (initial)$),
+                    \p2 = ($(y2) - (y1)$),
+                    \p3 = ($(y3) - (y2)$),
+                    \p4 = ($(goal) - (y3)$),
+                    \n1 = {veclen(\x1, \y1)/2},
+                    \n2 = {veclen(\x2, \y2)/2},
+                    \n3 = {veclen(\x3, \y3)/2},
+                    \n4 = {veclen(\x4, \y4)/2}
+                in
+                    (y1) circle (\n1)
+                    (y2) circle (\n2)
+                    (y3) circle (\n3)
+                    (goal) circle (\n4);
+            
+            \draw[dashed]
+                (initial) -- (y1)
+                (y1) -- (y2)
+                (y2) -- (y3)
+                (y3) -- (goal);
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Output space for the `cheating' technique for $S=4$ subgoals and $\mu=\frac{1}{2}$. The circles around each point indicate the threshold that constitutes `achieving' a particular point. The radius of the circle around point $\vec{\hat{y}}_i$ is $(1-\mu) \norm{\vec{\hat{y}}_i-\vec{\hat{y}}_{i-1}}$ for $i=1, \dots, S$; hence the circles are not necessarily identical in size. While the weight configurations $\vec{w}_0, \dots, \vec{w}_S$ are equidistant and collinear in weight space, it is important to note that the corresponding points in output space $\vec{y}_1, \dots, \vec{y}_{n+1}$ will usually neither be collinear nor equidistant due to the inherent non-linearity of the network. In practice, $\mu$ will be set to a larger value such as $0.9$ (which will decrease the circles' radii) to ensure that enough progress was made in achieving a subgoal before proceding to the next.}
+    \label{fig:cheat_technique}
+\end{figure}
+\ref{fig:cheat_technique} illustrates this technique in output space.
+\begin{enumerate}
+    \item Determine the point in weight space $\vec{w}_S$ that corresponds to the target in output space (i.e. the global minimum on the error-weight surface). 
+        
+        This can be done either by
+        \begin{enumerate*}[label=(\roman*)]
+            \item analytically finding the global minimum of the error-weight space if the network architecture is simple enough (see \ref{thm:stripe_global_minima}); or
+            \item running gradient descent from many random initial configurations in order to find the (likely) global minimum.
+        \end{enumerate*}
+    
+    \item Determine the ideal goal line $\vec{w}_1,\vec{w}_2,\dots,\vec{w}_S$ in weight space using \ref{lmm:ideal_subgoal_construction} and the corresponding goal-connecting path $\vec{\hat{y}}_1,\vec{\hat{y}}_2,\dots,\vec{\hat{y}}_S$ in output space.
+    \item Let $i=0$. Starting at weight configuration $\vec{w}_i$, perform the particular neural network training technique until achieving a point $\vec{p}$ in output space where $\norm{\vec{p} - \vec{\hat{y}}_{i+1}} \leq (1-\mu) \norm{\vec{\hat{y}}_i - \vec{\hat{y}}_{i+1}}$, i.e. at least a fraction $\mu$ of the distance to the next subgoal is achieved.
+    \item Repeat the previous step for $i=1, 2, \dots, S$.
+\end{enumerate}
+We will employ this technique in \ref{sec:stripe_gradient_descent_subgoals} to evaluate the feasability of the ideal goal line.
+\todo{Where else?}
 
 \chapter{The local minimum problem}
 \label{sec:local_minimum_problem}
@@ -1354,7 +1448,7 @@ Changing the weights in the neural network will allow the hyperplanes to rotate,
 
 The stripe problem can be achieved by a 2-2-1 sigmoidal MLP \cite{weir2019}. 
 \ref{fig:stripe_original_hyperplanes} shows the initial and target configurations of the hyperplanes for this type of network.
-The hidden layer is required because without it, the sigmoid activation function will produce only one hyperplane, as proved in Lemma \ref{lmm:sigmoid_decision_boundary}.
+The hidden layer is required because without it, the sigmoid activation function will produce only one hyperplane, as proved in \ref{lmm:sigmoid_decision_boundary}.
 \begin{figure}
     \centering
     \begin{subfigure}{.45\textwidth}
@@ -1488,7 +1582,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
     A single-layer Gaussian RBF MLP with decision threshold $t\in (0,1)$ will have two hyperplanes in input space.
 \end{lemma}
 \begin{proof}
-    The proof is similar in method as in Lemma \ref{lmm:sigmoid_decision_boundary}.
+    The proof is similar in method as in \ref{lmm:sigmoid_decision_boundary}.
     Consider an equivalent SLN $S$ with $m$ inputs and one output as shown in \ref{fig:sln_m_in_1_out}. 
     To obtain the decision boundaries, we set the output equal to the decision threshold, so
     \begin{align*}
@@ -1515,8 +1609,8 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
     Thus there will always be two hyperplanes.
 \end{proof}
 \begin{remark}
-    Although Lemma \ref{lmm:single_layer_rbf_decision_boundaries} proves the existence of two hyperplane decision boundaries for Gaussian RBFs, it is trivial to modify this proof for any other type of RBF, such as the bump function.
-    As a consequence, we know that unlike single-layer sigmoidal networks (see Lemma \ref{lmm:sigmoid_decision_boundary}), we can use single-layer RBF networks to generate a decision boundary in the form of a stripe which will allow us to use this type of network to provide a more simple example of the stripe problem.
+    Although \ref{lmm:single_layer_rbf_decision_boundaries} proves the existence of two hyperplane decision boundaries for Gaussian RBFs, it is trivial to modify this proof for any other type of RBF, such as the bump function.
+    As a consequence, we know that unlike single-layer sigmoidal networks (see \ref{lmm:sigmoid_decision_boundary}), we can use single-layer RBF networks to generate a decision boundary in the form of a stripe which will allow us to use this type of network to provide a more simple example of the stripe problem.
 \end{remark}
 
 \begin{example}
@@ -2416,9 +2510,6 @@ To see this, consider for example the point $\vec{u}$ lying midway on the straig
     \ref{fig:stripe_unrealisable_example_hyperplanes} illustrates this point by considering the hyperplanes of the target output values for the point $\vec{u}$ discussed above.
 \end{remark}
 
-\subsection{Gradient descent with subgoals}
-\todo{use figure from notes}
-
 \section{Experimental results}
 \subsection{Gradient descent}
 \label{sec:stripe_gradient_descent}
@@ -2483,10 +2574,10 @@ The hyperparameters had to be adjusted depending on the initial weight configura
             \addplot[mark=none,blue]  table {data/stripe_problem_weights_history_10.dat};
             \addplot[mark=none,red]   table {data/stripe_problem_weights_history_11.dat};
             \addplot[mark=none,black] table {data/stripe_problem_weights_history_12.dat};
-            \node[circle,fill,inner sep=1.5pt,pin=90:{$\vec{p}_1$}] at (-1, 1) {};
-            \node[circle,fill,inner sep=1.5pt,pin=-90:{$\vec{p}_2$}] at (1, -1) {};
-            \node[circle,fill,inner sep=1.5pt,pin=90:{$\vec{p}_4$}] at (1, 1) {};
-            \node[circle,fill,inner sep=1.5pt,pin=-90:{$\vec{p}_5$}] at (-1, -1) {};
+            \node[circle,fill,inner sep=1.5pt,pin=-90:{$\vec{p}_1$}] at (-1, 1) {};
+            \node[circle,fill,inner sep=1.5pt,pin=90:{$\vec{p}_2$}] at (1, -1) {};
+            \node[circle,fill,inner sep=1.5pt,pin=-90:{$\vec{p}_4$}] at (1, 1) {};
+            \node[circle,fill,inner sep=1.5pt,pin=90:{$\vec{p}_5$}] at (-1, -1) {};
             \legend{Trial 1,Trial 2,Trial 3,Trial 4,Trial 5,Trial 6,Trial 7,Trial 8,Trial 9,Trial 10,Trial 11,Trial 12}
         \end{axis}
     \end{tikzpicture}
@@ -2495,12 +2586,15 @@ The hyperparameters had to be adjusted depending on the initial weight configura
 \end{figure}
 In \ref{fig:stripe_gradient_descent_experiments}, the trajectories of each of the trials in weight space is shown.
 It is evident that each trial converges to the local minimum point in the quadrant of its initial weight configuration. 
-This means that trials 1-3 and 7-9 converge to a suboptimal local minimum (Q1 and Q3), whereas trials 4-6 and 10-12 converge to a global minimum (Q2 and Q4).
+This means that trials 1-3 and 7-9 converge to a suboptimal local minimum (Q1 and Q3), whereas trials 4-6 and 10-12 converge to a global minimum (Q2 and Q4), thus empirically affirming the claim made in \ref{sec:stripe_gradient_descent_theory}.
 
-
-\todo: refer to \ref{sec:neural_training_issues}, specifically \ref{fig:gradient_descent_narrow_valley} due to valley
+Even with a relatively large learning rate and despite the use of momentum, the fact that training requires around 10000 epochs to converge highlights one of the core issues of gradient descent.
+As discussed in \ref{sec:neural_training_issues}, specifically \ref{fig:gradient_descent_narrow_valley}, the classical BP algorithm becomes quite slow in ``long, narrow valleys`` \cite[p. 421]{press1992} due to the gradient alternating in near right-angle directions.
+Although the motivation of the stripe problem is to highlight another issue (that of suboptimal local minima), it is noteworthy that this example is quite potent in highlighting other issues as well.
+The error-weight surface in \ref{fig:stripe_error_surface_gaussian} shows examples of this phenomenon quite convincingly because the area marked in blue is a long, narrow valley.
 
 \subsection{Gradient descent with subgoals}
+\label{sec:stripe_gradient_descent_subgoals}
 \todo: BP performance on stripe problem without subgoals, then with 10 subgoals and finally with 25
 
 \todo: ``blind spots'' \cite{karayiannis1998}
