@@ -553,7 +553,8 @@ We will use a simple loss function that uses mean squared error for this purpose
     We use the term \textit{error-weight surface} to refer to the graph of this function.
 \end{definition}
 
-\section{Backpropagation}
+\section{Backpropagation via gradient descent}
+\label{sec:backpropagation}
 Backpropagation (BP) via gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum} (see \ref{sec:local_minimum_problem}).
 The main idea is as follows:
 \begin{enumerate}
@@ -2164,6 +2165,7 @@ While we were not able to prove that the five critical points we identified are 
 \end{proof}
 
 \subsection{On the convergence of gradient descent}
+\label{sec:stripe_gradient_descent_theory}
 \begin{figure}
     \centering
     \begin{tikzpicture}[
@@ -2276,129 +2278,232 @@ which we proved in \ref{thm:stripe_global_minima} is a global minimum.
                 enlargelimits=.1
             ]
                 \addplot[domain=-1:1,samples=100] ({rbf(2*x + 2*1)}, {rbf(2*x + 0*1)});
-                \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{\hat{y}}_0$}] at (0, 0) {};
-                \node[circle,fill,inner sep=1.5pt,pin=100:{$\vec{\hat{y}}_S$}] at (1, 0) {};
-                \node[circle,fill,inner sep=1.5pt,pin={[align=center]90:{unrealisable\\point}}] at (.5, 0) {};
+                \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{\hat{y}}_0$}] at ({rbf(4)}, {rbf(2)}) {};
+                \node[circle,fill,inner sep=1.5pt,pin=100:{$\vec{\hat{y}}_S$}] at (1, {rbf(2)}) {};
+                \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{u}$}] at ({(1-rbf(4))/2}, {rbf(2)}) {};
             \end{axis}
         \end{tikzpicture}
         \caption{Output space.}
     \end{subfigure}
-    \caption{Ideal goal-connecting path in weight and ouput spaces. It suffices to show the first and third samples of the output space as the second stays constant. Note also that $\vec{\hat{y}}_S=\vec{y}$ because the target is in fact realisable. The point labelled `unrealisable' is the example of an unrealisable point referred to in \ref{sec:stripe_ideal_goal_connecting_path}.}
+    \caption{Ideal goal-connecting path in weight and ouput spaces. It suffices to show the first and third samples of the output space as the second stays constant. Note also that $\vec{\hat{y}}_S=\vec{y}$ because the target is in fact realisable. The point labelled $\vec{u}$ is the example of an unrealisable point referred to in \ref{sec:stripe_ideal_goal_connecting_path}.}
     \label{fig:stripe_ideal_goal_path}
 \end{figure}
 \ref{fig:stripe_ideal_goal_path} depicts the ideal goal line in weight space as well as how this line corresponds to output space.
 It is interesting to see the extreme deformation of this path in output space. 
 In fact, a straight line from $\vec{\hat{y}}_0$ to $\vec{\hat{y}}_S$ would \textit{not} be a valid goal-connecting path because it would pass through an unrealisable region.
-
-\begin{figure}
-    \centering
-    \begin{subfigure}{.45\textwidth}
-        \begin{tikzpicture}[
-            declare function={
-                hminus(\x,\v,\w)= (-\v*\x - sqrt(-ln(0.5))) / \w;
-                hplus(\x,\v,\w) = (-\v*\x + sqrt(-ln(0.5))) / \w;
-                h(\x,\v,\w)     = -\v*\x / \w;
-            }
-        ]
-            \begin{axis}[
-                xlabel={$x_1$},
-                ylabel={$x_2$},
-                ymin=-2, ymax=2,
-                xmin=-2, xmax=2,
-                enlargelimits=.15,
-                samples=2,
-                scale only axis,
-                width=.8\textwidth
+To see this, consider for example the point $\vec{u}$ lying midway on the straight line between the initial and target configurations,
+\begin{equation*}
+    \vec{u}=
+    \frac{\vec{y}-\vec{\hat{y}}_0}{2}=
+    \begin{bmatrix}
+        \frac{1-\phi(4)}{2} & \phi(2) & \phi(2)
+    \end{bmatrix}\tran.
+\end{equation*}
+\begin{lemma}
+    \label{lmm:stripe_unrealisable_point}
+    The point $\vec{u}$ is strongly unrealisable.
+\end{lemma}
+\begin{proof}
+    We need to find a weight configuration
+    $\vec{w}=\begin{bmatrix}
+        w_1 & w_2
+    \end{bmatrix}\tran$ that satisfies
+    $\phi\left(\vec{w}\tran \vec{x}_i\right)=u_i$ for $i=1,2,3$ where $u_i$ is the $i$th component of $\vec{u}$.
+    The first input $\vec{x}_1$ is given by
+    $\vec{x}_1=\begin{bmatrix}
+        2 & 2
+    \end{bmatrix}\tran$ and so we obtain the following equation:
+    \begin{align*}
+        \phi(\vec{w}\tran \vec{x}_1) &= \frac{1-\phi(4)}{2} \\
+        e^{-4(w_1+w_2)^2} &= \frac{1-e^{-16}}{2} \\
+        w_1+w_2 &= \pm\frac{1}{2} \sqrt{-\ln\frac{1-e^{-16}}{2}}.\numberthis\label{eq:stripe_unrealisable_1}
+    \end{align*}
+    Similarly, for the second input
+    $\vec{x}_2=\begin{bmatrix}
+        0 & 2
+    \end{bmatrix}\tran$ we obtain
+    \begin{align*}
+        \phi(\vec{w}\tran \vec{x}_2) &= \phi(2) \\
+        e^{-4 w_2^2} &= e^{-4} \\
+        w_2 &= \pm 1,\numberthis\label{eq:stripe_unrealisable_2}
+    \end{align*}
+    and finally for
+    $\vec{x}_3=\begin{bmatrix}
+        2 & 0
+    \end{bmatrix}\tran$ we get
+    \begin{align*}
+        \phi(\vec{w}\tran \vec{x}_3) &= \phi(2) \\
+        e^{-4 w_1^2} &= e^{-4} \\
+        w_1 &= \pm 1.\numberthis\label{eq:stripe_unrealisable_3}
+    \end{align*}
+    There exist no solutions for $w_1$ and $w_2$ that satisfy \ref{eq:stripe_unrealisable_1,eq:stripe_unrealisable_2,eq:stripe_unrealisable_3}.
+    Thus, by \ref{def:unrealisable_point}, we conclude that $\vec{u}$ is a strongly unrealisable point.
+\end{proof}
+\begin{remark}
+    \begin{figure}
+        \centering
+        \begin{subfigure}{.45\textwidth}
+            \begin{tikzpicture}[
+                declare function={
+                    hminus(\x,\v,\w)= (-2-\x*\v) / \w;
+                    hplus(\x,\v,\w) = (2-\x*\v) / \w;
+                    kminus(\x,\v,\w)= (-sqrt(-ln((1-exp(-16))/2))-\x*\v) / \w;
+                    kplus(\x,\v,\w) = (sqrt(-ln((1-exp(-16))/2))-\x*\v) / \w;
+                    h(\x,\v,\w)     = -\v*\x / \w;
+                }
             ]
-                \addplot[black, no marks] {hminus(x,1,-1-.5*sqrt(ln(2)))};
-                \addplot[black, no marks] {hplus(x,1,-1-.5*sqrt(ln(2)))};
-                \addplot[black, dashed] {h(x,1,-1-.5*sqrt(ln(2)))};
+                \begin{axis}[
+                    xlabel={$x_1$},
+                    ylabel={$x_2$},
+                    ymin=-2, ymax=2,
+                    xmin=-2, xmax=2,
+                    enlargelimits=.15,
+                    samples=2,
+                    scale only axis,
+                    width=.8\textwidth
+                ]
+                    \addplot[black, no marks] {hminus(x,1,-1+.5*sqrt(-ln(.5*(1-exp(-16)))))};
+                    \addplot[black, no marks] {hplus(x,1,-1+.5*sqrt(-ln(.5*(1-exp(-16)))))};
+                    \addplot[black, dotted] {kminus(x,1,-1+.5*sqrt(-ln(.5*(1-exp(-16)))))};
+                    \addplot[black, dotted] {kplus(x,1,-1+.5*sqrt(-ln(.5*(1-exp(-16)))))};
+                    \addplot[black, dashed] {h(x,1,-1+.5*sqrt(-ln(.5*(1-exp(-16)))))};
+                    \fill (2, 2) circle (2pt) node[above] {$\vec{x}_1$};
+                    \fill (0, 2) circle (2pt) node[above] {$\vec{x}_2$};
+                    \fill (2, 0) circle (2pt) node[above] {$\vec{x}_3$};
+                \end{axis}
+            \end{tikzpicture}
+            \caption{Input space for $w_1=1$ and $w_2=\frac{1}{2} \sqrt{-\ln{\frac{1-e^{-16}}{2}}}-1$.}
+        \end{subfigure}
+        \hspace*{\fill}
+        \begin{subfigure}{.45\textwidth}
+            \begin{tikzpicture}[
+                declare function={
+                    hminus(\x,\v,\w)= (-2-\x*\v) / \w;
+                    hplus(\x,\v,\w) = (2-\x*\v) / \w;
+                    kminus(\x,\v,\w)= (-sqrt(-ln((1-exp(-16))/2))-\x*\v) / \w;
+                    kplus(\x,\v,\w) = (sqrt(-ln((1-exp(-16))/2))-\x*\v) / \w;
+                    h(\x,\v,\w)     = -\v*\x / \w;
+                }
+            ]
+                \begin{axis}[
+                    xlabel={$x_1$},
+                    ylabel={$x_2$},
+                    ymin=-2, ymax=2,
+                    xmin=-2, xmax=2,
+                    enlargelimits=.15,
+                    samples=2,
+                    scale only axis,
+                    width=.8\textwidth
+                ]
+                \addplot[black, no marks] {hminus(x,1,-1-.5*sqrt(-ln(.5*(1-exp(-16)))))};
+                \addplot[black, no marks] {hplus(x,1,-1-.5*sqrt(-ln(.5*(1-exp(-16)))))};
+                \addplot[black, dotted] {kminus(x,1,-1-.5*sqrt(-ln(.5*(1-exp(-16)))))};
+                \addplot[black, dotted] {kplus(x,1,-1-.5*sqrt(-ln(.5*(1-exp(-16)))))};
+                \addplot[black, dashed] {h(x,1,-1-.5*sqrt(-ln(.5*(1-exp(-16)))))};
                 \fill (2, 2) circle (2pt) node[above] {$\vec{x}_1$};
                 \fill (0, 2) circle (2pt) node[above] {$\vec{x}_2$};
                 \fill (2, 0) circle (2pt) node[above] {$\vec{x}_3$};
-            \end{axis}
-        \end{tikzpicture}
-        \caption{$w_1=1$ and $w_2= - \frac{1}{2}\sqrt{\ln{2}}-1$}
-    \end{subfigure}
-    \hspace*{\fill}
-    \begin{subfigure}{.45\textwidth}
-        \begin{tikzpicture}[
-            declare function={
-                hminus(\x,\v,\w)= (-\v*\x - sqrt(-ln(0.5))) / \w;
-                hplus(\x,\v,\w) = (-\v*\x + sqrt(-ln(0.5))) / \w;
-                h(\x,\v,\w)     = -\v*\x / \w;
-            }
-        ]
-            \begin{axis}[
-                xlabel={$x_1$},
-                ylabel={$x_2$},
-                ymin=-2, ymax=2,
-                xmin=-2, xmax=2,
-                enlargelimits=.15,
-                samples=2,
-                scale only axis,
-                width=.8\textwidth
-            ]
-                \addplot[black, no marks] {hminus(x,1,-1+.5*sqrt(ln(2)))};
-                \addplot[black, no marks] {hplus(x,1,-1+.5*sqrt(ln(2)))};
-                \addplot[black, dashed] {h(x,1,-1+.5*sqrt(ln(2)))};
-                \fill (2, 2) circle (2pt) node[above] {$\vec{x}_1$};
-                \fill (0, 2) circle (2pt) node[above] {$\vec{x}_2$};
-                \fill (2, 0) circle (2pt) node[above] {$\vec{x}_3$};
-            \end{axis}
-        \end{tikzpicture}
-        \caption{$w_1=1$ and $w_2= \frac{1}{2}\sqrt{\ln{2}}-1$}
-    \end{subfigure}
-    \caption{Input space with hyperplanes and zero-excitation line (dashed) of two of the four possible configurations where a hyperplane of $0.5$ excitation passes through $\vec{x}_1$. The other two configurations can be obtained by reflecting the plots about the $x_1=x_2$ line.}
-    \label{fig:stripe_unrealisable_example_hyperplanes}
-\end{figure}
-To see this, consider for example the point
-$\begin{bmatrix}
-    0.5 & 0 & 0
-\end{bmatrix}\tran$. 
+                \end{axis}
+            \end{tikzpicture}
+            \caption{Input space for $w_1=1$ and $w_2=-\frac{1}{2} \sqrt{-\ln{\frac{1-e^{-16}}{2}}}-1$.}
+        \end{subfigure}
+        \caption{Input space with hyperplanes at zero excitation (dashed), $\frac{1-e^{-16}}{2}$ activation (dotted) and $\phi(2)$ activation (solid) for two possible input configurations. It can be seen that although $\vec{x}_1$ always intersects with the dotted line, only one of the two other input points will intersect with the solid line.}
+        \label{fig:stripe_unrealisable_example_hyperplanes}
+    \end{figure}
+    \ref{lmm:stripe_unrealisable_point} proves the existence of one specific unrealisable point, but this methodology could be repeated for other points in order to prove that there is actually a larger unrealisable region consisting of more than that one point on the goal line.
+    Although this will not be carried in this report, it is an important aspect of the stripe problem to keep in mind.
+    The intuition in this scenario with three outputs is that it will often be possible to satisfy two of the three output targets, but not the third. 
+    \ref{fig:stripe_unrealisable_example_hyperplanes} illustrates this point by considering the hyperplanes of the target output values for the point $\vec{u}$ discussed above.
+\end{remark}
 
-
-\todo: graph of ideal goal line in output space + analysis of unrealisable region
+\subsection{Gradient descent with subgoals}
+\todo{use figure from notes}
 
 \section{Experimental results}
 \subsection{Gradient descent}
 \label{sec:stripe_gradient_descent}
 
-\begin{wrapfigure}{r}{.6\textwidth}
+In order to test the theoretical findings from \ref{sec:stripe_gradient_descent_theory}, gradient descent was used to train on the stripe problem from a dozen different starting configurations.
+When considering $w_1$ and $w_2$ as the $x$ and $y$ axes of the Cartesian plane, a total of three initial weight configurations per quadrant were tested.
+
+\begin{table}[h!]
+    \centering
+    \begin{tabular}{c||c|c|c}
+        trial & initial weights $\vec{w}_0$ & learning rate $\alpha$ & momentum $\beta$ \\
+        \hline
+        1  & $\begin{bmatrix} 1.8 &  1.5 \end{bmatrix}$ & $10 $ & $0.9$ \\
+        2  & $\begin{bmatrix} 1.5 &  1.8 \end{bmatrix}$ & $10 $ & $0.9$ \\
+        3  & $\begin{bmatrix} 2.0 &  2.0 \end{bmatrix}$ & $100$ & $0.7$ \\
+        4  & $\begin{bmatrix} 1.8 & -1.5 \end{bmatrix}$ & $1  $ & $0.9$ \\
+        5  & $\begin{bmatrix} 1.5 & -1.8 \end{bmatrix}$ & $1  $ & $0.9$ \\
+        6  & $\begin{bmatrix} 2.0 & -2.0 \end{bmatrix}$ & $100$ & $0.7$ \\
+        7  & $\begin{bmatrix}-1.8 & -1.5 \end{bmatrix}$ & $10 $ & $0.9$ \\
+        8  & $\begin{bmatrix}-1.5 & -1.8 \end{bmatrix}$ & $10 $ & $0.9$ \\
+        9  & $\begin{bmatrix}-2.0 & -2.0 \end{bmatrix}$ & $100$ & $0.7$ \\
+        10 & $\begin{bmatrix}-1.8 &  1.5 \end{bmatrix}$ & $1  $ & $0.9$ \\
+        11 & $\begin{bmatrix}-1.5 &  1.8 \end{bmatrix}$ & $1  $ & $0.9$ \\
+        12 & $\begin{bmatrix}-2.0 &  2.0 \end{bmatrix}$ & $100$ & $0.7$
+    \end{tabular}
+    \caption{The dataset for the RBF stripe problem.}
+    \label{table:stripe_gradient_descent_hyperparameters}
+\end{table}
+\ref{table:stripe_gradient_descent_hyperparameters} shows the initial configurations along with the learning rate $\alpha$ and momentum\footnote{
+    As explained in \ref{sec:backpropagation}, the learning rate $\alpha$ controls the step size.
+    However, due to the fact that training using only a specific step size took too long, it was decided to use BP with momentum.
+    Essentially, instead of determining the weight update based solely on the magnitude of the gradient and value of $\alpha$, we additionally take into account an exponentially weighted average of the past gradients where the hyperparameter $\beta\in[0,1]$ determines the degree of that weighting.
+    Introducing the momentum term is common practice in this type of scenario, so it will not be explained in further detail.
+    It should not adversely affect the performance of gradient descent, so it is fair to use this technique to aid the speed of the experiments.
+}
+$\beta$ of the BP via gradient descent algorithm.
+For each trial, training was carried out for 10000 epochs. 
+The hyperparameters had to be adjusted depending on the initial weight configuration in order to ensure convergence within the epoch limit.
+\begin{figure}
     \centering
     \begin{tikzpicture}
         \begin{axis}[
             scale only axis,
             xlabel = {$w_1$},
             ylabel = {$w_2$},
-            xmin=0,xmax=2,
+            xmin=-2,xmax=2,
             ymin=-2,ymax=2,
             x=1.5cm,
             y=1.5cm,
             enlargelimits={true,abs value=.25},
             legend pos=outer north east
         ]
-            \addplot[mark=none,blue]         table {data/stripe_problem_weights_history_1.dat};
-            \addplot[mark=none,red]          table {data/stripe_problem_weights_history_2.dat};
-            \addplot[mark=none,black]        table {data/stripe_problem_weights_history_3.dat};
-            \addplot[mark=none,blue,dashed]  table {data/stripe_problem_weights_history_4.dat};
-            \addplot[mark=none,red,dashed]   table {data/stripe_problem_weights_history_5.dat};
-            \addplot[mark=none,black,dashed] table {data/stripe_problem_weights_history_6.dat};
-            \node[circle,fill,inner sep=1.5pt,pin=-90:{$\vec{w}_0$}] at (1, 1) {};
-            \node[circle,fill,inner sep=1.5pt,pin=90:{$\vec{w}_S$}] at (1, -1) {};
-            \legend{Trial 1,Trial 2,Trial 3,Trial 4,Trial 5,Trial 6}
+            \addplot[mark=none,blue]  table {data/stripe_problem_weights_history_1.dat};
+            \addplot[mark=none,red]   table {data/stripe_problem_weights_history_2.dat};
+            \addplot[mark=none,black] table {data/stripe_problem_weights_history_3.dat};
+            \addplot[mark=none,blue]  table {data/stripe_problem_weights_history_4.dat};
+            \addplot[mark=none,red]   table {data/stripe_problem_weights_history_5.dat};
+            \addplot[mark=none,black] table {data/stripe_problem_weights_history_6.dat};
+            \addplot[mark=none,blue]  table {data/stripe_problem_weights_history_7.dat};
+            \addplot[mark=none,red]   table {data/stripe_problem_weights_history_8.dat};
+            \addplot[mark=none,black] table {data/stripe_problem_weights_history_9.dat};
+            \addplot[mark=none,blue]  table {data/stripe_problem_weights_history_10.dat};
+            \addplot[mark=none,red]   table {data/stripe_problem_weights_history_11.dat};
+            \addplot[mark=none,black] table {data/stripe_problem_weights_history_12.dat};
+            \node[circle,fill,inner sep=1.5pt,pin=90:{$\vec{p}_1$}] at (-1, 1) {};
+            \node[circle,fill,inner sep=1.5pt,pin=-90:{$\vec{p}_2$}] at (1, -1) {};
+            \node[circle,fill,inner sep=1.5pt,pin=90:{$\vec{p}_4$}] at (1, 1) {};
+            \node[circle,fill,inner sep=1.5pt,pin=-90:{$\vec{p}_5$}] at (-1, -1) {};
+            \legend{Trial 1,Trial 2,Trial 3,Trial 4,Trial 5,Trial 6,Trial 7,Trial 8,Trial 9,Trial 10,Trial 11,Trial 12}
         \end{axis}
     \end{tikzpicture}
-    \caption{Some gradient descent trajectories in weight space.}
-\end{wrapfigure}
+    \caption{Some gradient descent trajectories in weight space. Trials in the same quadrant have different colours to differentiate between them. Trials 1-3 are in the first quadrant (Q1), 4-6 in Q2, 7-9 in Q3 and 10-12 in Q3.}
+    \label{fig:stripe_gradient_descent_experiments}
+\end{figure}
+In \ref{fig:stripe_gradient_descent_experiments}, the trajectories of each of the trials in weight space is shown.
+It is evident that each trial converges to the local minimum point in the quadrant of its initial weight configuration. 
+This means that trials 1-3 and 7-9 converge to a suboptimal local minimum (Q1 and Q3), whereas trials 4-6 and 10-12 converge to a global minimum (Q2 and Q4).
 
-\todo: BP performance on stripe problem without subgoals, then with 10 subgoals and finally with 25
-
-\todo: ``blind spots'' \cite{karayiannis1998}
 
 \todo: refer to \ref{sec:neural_training_issues}, specifically \ref{fig:gradient_descent_narrow_valley} due to valley
 
 \subsection{Gradient descent with subgoals}
+\todo: BP performance on stripe problem without subgoals, then with 10 subgoals and finally with 25
+
+\todo: ``blind spots'' \cite{karayiannis1998}
 
 
 \chapter{The neural surfing technique}
