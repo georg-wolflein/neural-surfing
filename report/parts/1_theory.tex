@@ -604,6 +604,7 @@ Calculating the derivative of the loss function with respect to each of the trai
 Let us look at calculating this gradient for the example of a single-layer MLP. 
 We will come back to these results in \ref{sec:stripe_problem}.
 \begin{example}[Gradient in a single-layer MLP]
+    \label{ex:gradient_single_layer_mlp}
     Let us revisit the SLN with $m$ inputs and one output from \ref{fig:sln_m_in_1_out}.
     The loss function will be in terms of the trainable parameters, i.e. the weights $\vec{w}$ and bias $b$, so
     \begin{align}
@@ -1192,14 +1193,14 @@ Let us look at a couple of examples of unrealisable regions.
     Furthermore, we can plot the ideal goal-connecting path in output space in order to find unrealisable regions.
 \end{remark}
 
-\section{A `cheating' technique for evaluating subgoal trajectories}
+\section{A `cheat' technique for evaluating subgoal trajectories}
 \label{sec:cheating_technique}
 The neural surfer must be able to perform two main tasks: 
 \begin{enumerate*}[label=(\roman*)]
     \item set the subgoals in output space; and
     \item achieve these subgoals.
 \end{enumerate*}
-This `cheating' technique pertains only to the latter task, ignoring the former.
+This `cheat' technique pertains only to the latter task, ignoring the former.
 It can be used in order to determine whether and to what extent a training regime\footnote{This technique can be used for \textit{any} regime that provides a mechanism for achieving (sub)goals. As such, this technique not only provides a means of testing the neural surfing algorithm, but also provides a means of using gradient to realise a subgoal trajectory.} is \textit{capable} of realising each subgoal.
 The idea is that splitting the problem into two parts will facilitate a better analysis of the neural surfing technique by isolating pain points and performance issues.
 Two main questions can be evaluated:
@@ -1267,7 +1268,7 @@ The steps below explain the methodology of this technique, for $S$ subgoals (whe
                 (y3) -- (goal);
         \end{axis}
     \end{tikzpicture}
-    \caption{Output space for the `cheating' technique for $S=4$ subgoals and $\mu=\frac{1}{2}$. The circles around each point indicate the threshold that constitutes `achieving' a particular point. The radius of the circle around point $\vec{\hat{y}}_i$ is $(1-\mu) \norm{\vec{\hat{y}}_i-\vec{\hat{y}}_{i-1}}$ for $i=1, \dots, S$; hence the circles are not necessarily identical in size. While the weight configurations $\vec{w}_0, \dots, \vec{w}_S$ are equidistant and collinear in weight space, it is important to note that the corresponding points in output space $\vec{y}_1, \dots, \vec{y}_{n+1}$ will usually neither be collinear nor equidistant due to the inherent non-linearity of the network. In practice, $\mu$ will be set to a larger value such as $0.9$ (which will decrease the circles' radii) to ensure that enough progress was made in achieving a subgoal before proceding to the next.}
+    \caption{Output space for the `cheat' technique for $S=4$ subgoals and $\mu=\frac{1}{2}$. The circles around each point indicate the threshold that constitutes `achieving' a particular point. The radius of the circle around point $\vec{\hat{y}}_i$ is $(1-\mu) \norm{\vec{\hat{y}}_i-\vec{\hat{y}}_{i-1}}$ for $i=1, \dots, S$; hence the circles are not necessarily identical in size. While the weight configurations $\vec{w}_0, \dots, \vec{w}_S$ are equidistant and collinear in weight space, it is important to note that the corresponding points in output space $\vec{y}_1, \dots, \vec{y}_{n+1}$ will usually neither be collinear nor equidistant due to the inherent non-linearity of the network. In practice, $\mu$ will be set to a larger value such as $0.9$ (which will decrease the circles' radii) to ensure that enough progress was made in achieving a subgoal before proceding to the next.}
     \label{fig:cheat_technique}
 \end{figure}
 \ref{fig:cheat_technique} illustrates this technique in output space.
@@ -1937,7 +1938,7 @@ We will now identify and examine the critical points of this function.
 \end{lemma}
 
 \begin{proof}
-    We need to find the Jacobian, $\vec{J}_L$. 
+    We need to find the Jacobian, $\vec{J}_L$ like in \ref{ex:gradient_single_layer_mlp}. 
     Differentiating $L$ with respect to $w_1$ gives
     \begin{align*}
         \frac{\delta L}{\delta w_1}
@@ -2063,8 +2064,8 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
         s'(x)
         &= e^{-8 x^2} - e^{-4-4x^2}
         + x \frac{\delta}{\delta x} \left(e^{-8 x^2} - e^{-4-4 x^2}\right)\\
-        &= e^{-8 x^2} - e^{-4-4x^2}
-        + x \left(-16 x e^{-8 x^2} + 8 x e^{-4-4 x^2}\right)\\
+        % &= e^{-8 x^2} - e^{-4-4x^2}
+        % + x \left(-16 x e^{-8 x^2} + 8 x e^{-4-4 x^2}\right)\\
         &= e^{-8 x^2} - e^{-4-4x^2}
         - 8 x^2 \left(2 e^{-8 x^2} - e^{-4-4 x^2}\right).
     \end{align*}
@@ -2080,8 +2081,8 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
     \begin{align*}
         \frac{\delta^2 L}{\delta w_1 w_2}
         &= -16 \frac{\delta}{\delta w_2} \left( r + s(w_1) \right) \\
-        &= -16 \frac{\delta r}{\delta w_2} \\
-        &= -16 \frac{\delta r}{\delta w_1},
+        &= -16 \frac{\delta r}{\delta w_2}
+         = -16 \frac{\delta r}{\delta w_1},
     \end{align*}
     \begin{align*}
         \frac{\delta^2 L}{\delta w_2 w_1}
@@ -2092,8 +2093,8 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
     \begin{align*}
         \frac{\delta^2 L}{\delta w_2^2}
         &= -16 \frac{\delta}{\delta w_2} \left( r + s(w_2) \right) \\
-        &= -16 \left( \frac{\delta r}{\delta w_2} + s'(w_2) \right) \\
-        &= -16 \left( \frac{\delta r}{\delta w_1} + s'(w_2) \right).
+        &= -16 \left( \frac{\delta r}{\delta w_2} + s'(w_2) \right)
+         = -16 \left( \frac{\delta r}{\delta w_1} + s'(w_2) \right).
     \end{align*}
     This allows us to write an expression for the Hessian matrix in the form
     \begin{align}
@@ -2376,7 +2377,7 @@ which we proved in \ref{thm:stripe_global_minima} is a global minimum.
                 \addplot[domain=-1:1,samples=100] ({rbf(2*x + 2*1)}, {rbf(2*x + 0*1)});
                 \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{\hat{y}}_0$}] at ({rbf(4)}, {rbf(2)}) {};
                 \node[circle,fill,inner sep=1.5pt,pin=100:{$\vec{\hat{y}}_S$}] at (1, {rbf(2)}) {};
-                \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{u}$}] at ({(1-rbf(4))/2}, {rbf(2)}) {};
+                \node[circle,fill,inner sep=1.5pt,pin=100:{$\vec{u}$}] at ({(1-rbf(4))/2}, {rbf(2)}) {};
             \end{axis}
         \end{tikzpicture}
         \caption{Output space.}
@@ -2598,22 +2599,243 @@ As discussed in \ref{sec:neural_training_issues}, specifically \ref{fig:gradient
 Although the motivation of the stripe problem is to highlight another issue (that of suboptimal local minima), it is noteworthy that this example is quite potent in highlighting other issues as well.
 The error-weight surface in \ref{fig:stripe_error_surface_gaussian} shows examples of this phenomenon quite convincingly because the area marked in blue is a long, narrow valley.
 
-\subsection{Gradient descent with subgoals}
-\label{sec:stripe_gradient_descent_subgoals}
-After empirically verifying in the previous section that the classical BP algorithm fails to converge to a global minium with a weight initialisation in Q1 or Q3, we will now employ the `cheating' technique introduced in \ref{sec:cheating_technique} using gradient descent as a means to test if neural training techniques in general can realise the ideal goal line (or some trajectory close to it).
-
-\todo: BP performance on stripe problem without subgoals, then with 10 subgoals and finally with 25
-
-\todo: ``blind spots'' \cite{karayiannis1998}
-
 \subsection{Derivative-free techniques}
 Other techniques, namely greedy probing and simulated annealing have been evaluated in the context of the stripe problem, too.
 They parallel the findings of \ref{sec:stripe_gradient_descent} insofar as initial weight configurations in Q1 and Q3 converging to suboptimal local minima.
 In fact, the trajectories in weight space are quite similar to \ref{fig:stripe_gradient_descent_experiments} with the notable difference that training using these derivative-free techniques found the local or global minimum (depending on the quadrant of initialisation) requiring only around 100 epochs where BP required 100000. 
 These findings can be reproduced using the framework (see \ref{chap:framework}).
 
+\subsection{Gradient descent with subgoals}
+\label{sec:stripe_gradient_descent_subgoals}
+After empirically verifying in \ref{sec:stripe_gradient_descent} that the classical BP algorithm fails to converge to a global minium with a weight initialisation in Q1 or Q3, we will now employ the `cheating' technique introduced in \ref{sec:cheating_technique} using gradient descent as a means to test if neural training techniques in general can realise the ideal goal line (or some trajectory close to it).
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}[
+            declare function={
+                rbf(\x)= exp(-\x^2);
+            }
+        ]
+            \begin{axis}[
+                scale only axis,
+                width = 0.8\textwidth,
+                xlabel = {$w_1$},
+                ylabel = {$w_2$},
+                legend entries = {subgoals,actual},
+                legend pos = north west
+                ]
+                \addplot+[mark=x] table {data/stripe_problem_gradient_descent_10_subgoals__subgoal_weights.dat};
+                \addplot+[mark=none] table {data/stripe_problem_gradient_descent_10_subgoals__training_weights.dat};
+                \node[circle,fill,inner sep=1.5pt,pin=-170:{$\vec{w}_0$}] at (1, 1) {};
+                \node[circle,fill,inner sep=1.5pt,pin=170:{$\vec{w}_S$}] at (1, -1) {};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Weight space.}
+        \label{fig:stripe_gradient_descent_with_10_subgoals_weight_space}
+    \end{subfigure}
+    \hspace*{\fill}
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}[
+            declare function={
+                rbf(\x)= exp(-\x^2);
+            }
+        ]
+            \begin{axis}[
+                scale only axis,
+                width = 0.8\textwidth,
+                xlabel = {$\hat{y}_1$},
+                ylabel = {$\hat{y}_3$},
+                legend entries = {subgoals,actual},
+                legend pos = north east
+                ]
+                \addplot+[mark=x] table {data/stripe_problem_gradient_descent_10_subgoals__subgoal_outputs.dat};
+                \addplot+[mark=none] table {data/stripe_problem_gradient_descent_10_subgoals__training_outputs.dat};
+                \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{\hat{y}}_0$}] at ({rbf(4)}, {rbf(2)}) {};
+                \node[circle,fill,inner sep=1.5pt,pin=100:{$\vec{\hat{y}}_S$}] at (1, {rbf(2)}) {};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Output space.}
+        \label{fig:stripe_gradient_descent_with_10_subgoals_output_space}
+    \end{subfigure}
+    \caption{Gradient descent with $S=10$ subgoals on the ideal goal-connecting path.}
+    \label{fig:stripe_gradient_descent_with_10_subgoals}
+\end{figure}
+Recall the inputs and target outputs of the stripe problem presented in \ref{table:stripe_dataset}.
+\ref{fig:stripe_gradient_descent_with_10_subgoals} shows the ideal goal line from the initial configuration
+$\vec{w}_0=
+\begin{bmatrix}
+    1 & 1
+\end{bmatrix}\tran$
+to the target
+$\vec{w}_S=
+\begin{bmatrix}
+    1 & -1
+\end{bmatrix}\tran$
+along with the $S=10$ equidistant subgoals on that line.
+The red line represents the actual weight and output trajectories achieved by the `cheat' technique in conjunction with gradient descent for the parameter\footnote{Recall from \ref{sec:cheating_technique} that $\mu$ is the minimum fractional progress that needs to be attained towards the next subgoal before that subgoal is considered `realised'. The value of $\mu=0.9$ was chosen after experiments with different values showed that when $\mu$ is too low, the path deformation in output space from the ideal goal line can become very extreme.} $\mu=0.9$.
+It can be seen in \ref{fig:stripe_gradient_descent_with_10_subgoals_output_space} that although the fifth subgoal was achieved, the approach failed to realise the sixth subgoal, and hence the remaining path to the goal.
+The training regime achieves the first four subgoals in weight space (see \ref{fig:stripe_gradient_descent_with_10_subgoals_weight_space}) perfectly, but just shy of achieving the fifth subgoal, $w_2$ is altered such that the subgoal can never be reached. 
+
+Notice that the goal line in weight space keeps the weight $w_1$ constant, whereas the actual trajectory violates this principle. 
+Upon achieving the third subgoal, the technique fails to simply continue to decreasing the value of $w_2$ such that it becomes negative. 
+This is due to the nature of the radial basis activation function. 
+As shown in \ref{fig:rbfs}, the RBF outputs its maximum value when the input is zero, and its output decreases as the absolute value of the input increases. 
+The gradient descent approach is almost at the maximum of the RBF when en route to achieving the fourth subgoal, but it does not know that the function would decrease again if it continued further.
+Essentially, there is a ``blind spot'' \cite{karayiannis1998} because the algorithm cannot `see' the other side of the hump.
+Furthermore, the gradient of the RBF is flat when the input is zero ($\phi'(0)=0$) which is another reason why gradient descent might have difficulties mounting the top of the hump.
+
+\begin{figure}
+    \centering
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}[
+            declare function={
+                rbf(\x)= exp(-\x^2);
+            }
+        ]
+            \begin{axis}[
+                scale only axis,
+                width = 0.8\textwidth,
+                xlabel = {$w_1$},
+                ylabel = {$w_2$},
+                legend entries = {subgoals,actual},
+                legend pos = north west
+                ]
+                \addplot+[mark=x] table {data/stripe_problem_gradient_descent_2_subgoals__subgoal_weights.dat};
+                \addplot+[mark=none] table {data/stripe_problem_gradient_descent_2_subgoals__training_weights.dat};
+                \node[circle,fill,inner sep=1.5pt,pin=-170:{$\vec{w}_0$}] at (1, 1) {};
+                \node[circle,fill,inner sep=1.5pt,pin=170:{$\vec{w}_S$}] at (1, -1) {};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Weight space.}
+        \label{fig:stripe_gradient_descent_with_2_subgoals_weight_space}
+    \end{subfigure}
+    \hspace*{\fill}
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}[
+            declare function={
+                rbf(\x)= exp(-\x^2);
+            }
+        ]
+            \begin{axis}[
+                scale only axis,
+                width = 0.8\textwidth,
+                xlabel = {$\hat{y}_1$},
+                ylabel = {$\hat{y}_3$},
+                legend entries = {subgoals,actual},
+                legend pos = north east
+                ]
+                \addplot+[mark=x] table {data/stripe_problem_gradient_descent_2_subgoals__subgoal_outputs.dat};
+                \addplot+[mark=none] table {data/stripe_problem_gradient_descent_2_subgoals__training_outputs.dat};
+                \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{\hat{y}}_0$}] at ({rbf(4)}, {rbf(2)}) {};
+                \node[circle,fill,inner sep=1.5pt,pin=100:{$\vec{\hat{y}}_S$}] at (1, {rbf(2)}) {};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Output space.}
+        \label{fig:stripe_gradient_descent_with_2_subgoals_output_space}
+    \end{subfigure}
+    \caption{Gradient descent ($\alpha=0.1$, $\beta=0$) with $S=2$ subgoals on the ideal goal-connecting path.}
+    \label{fig:stripe_gradient_descent_with_2_subgoals}
+\end{figure}
+It was conjectured that in order to mitigate the problem of the ``blind spot'', it might be necessary to increase the step size at the region where the gradient is near-zero, as this would increase the likelihood of the technique `jumping' over the hump.
+One method of ensuring a greater step size in that region is introducing momentum.
+Experiments were conducted with different numbers of subgoals, and different learning rates.
+The most important finding is that the target could be achieved using only a minimal number of subgoals ($S=2$, so using only one subgoal and the actual goal) by keeping the learning rate $\alpha=0.1$ (like in \ref{fig:stripe_gradient_descent_with_10_subgoals}) but using momentum with $\beta=0.9$.
+The relevant trajectories are depicted in \ref{fig:stripe_gradient_descent_with_2_subgoals}.
+While the subgoal is achieved reasonably well in the two dimensions of output space portrayed in \ref{fig:stripe_gradient_descent_with_2_subgoals_output_space}, the final prediction of $\hat{y}_2$ changes by around $0.07$ albeit it should stay constant.
+This is because the step size due to momentum increased too much after overcoming the `hump'.
+One mechanism to mitigate this problem would be to increase a learning rate schedule; since the final weight configuration is already in the right quadrant, gradient descent is guaranteed to converge to the target (as discussed theoretically in \ref{sec:stripe_gradient_descent_theory} and confirmed empirically in \ref{sec:stripe_gradient_descent}), given an adequate learning rate.
+
+\subsection{Derivative-free techniques with subgoals}
+\begin{figure}
+    \centering
+    \tikzexternaldisable
+    \pgfplotslegendfromname{leg:stripe_greedy_probing_with_2_subgoals}
+    \tikzexternalenable
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}[
+            declare function={
+                rbf(\x)= exp(-\x^2);
+            }
+        ]
+            \begin{axis}[
+                scale only axis,
+                width = 0.8\textwidth,
+                xlabel = {$w_1$},
+                ylabel = {$w_2$},
+                legend entries = {subgoals,exhaustive sampling,modified cost,random sampling},
+                legend columns=-1,
+                legend to name=leg:stripe_greedy_probing_with_2_subgoals
+                ]
+                \addplot+[mark=x] table {data/stripe_problem_greedy_probing_2_subgoals__subgoal_weights.dat};
+                \addplot+[mark=none] table {data/stripe_problem_greedy_probing_2_subgoals__training_weights.dat};
+                \addplot+[mark=none] table {data/stripe_problem_greedy_probing_modified_cost_2_subgoals__training_weights.dat};
+                \addplot+[mark=none,magenta] table {data/stripe_problem_greedy_probing_random_sampling_2_subgoals__training_weights.dat};
+                \node[circle,fill,inner sep=1.5pt,pin=-170:{$\vec{w}_0$}] at (1, 1) {};
+                \node[circle,fill,inner sep=1.5pt,pin=170:{$\vec{w}_S$}] at (1, -1) {};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Weight space.}
+        \label{fig:stripe_greedy_probing_with_2_subgoals_weight_space}
+    \end{subfigure}
+    \hspace*{\fill}
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}[
+            declare function={
+                rbf(\x)= exp(-\x^2);
+            }
+        ]
+            \begin{axis}[
+                scale only axis,
+                width = 0.8\textwidth,
+                xlabel = {$\hat{y}_1$},
+                ylabel = {$\hat{y}_3$}
+                ]
+                \addplot+[mark=x] table {data/stripe_problem_greedy_probing_2_subgoals__subgoal_outputs.dat};
+                \addplot+[mark=none] table {data/stripe_problem_greedy_probing_2_subgoals__training_outputs.dat};
+                \addplot+[mark=none] table {data/stripe_problem_greedy_probing_modified_cost_2_subgoals__training_outputs.dat};
+                \addplot+[mark=none,magenta] table {data/stripe_problem_greedy_probing_random_sampling_2_subgoals__training_outputs.dat};
+                \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{\hat{y}}_0$}] at ({rbf(4)}, {rbf(2)}) {};
+                \node[circle,fill,inner sep=1.5pt,pin=100:{$\vec{\hat{y}}_S$}] at (1, {rbf(2)}) {};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Output space.}
+        \label{fig:stripe_greedy_probing_with_2_subgoals_output_space}
+    \end{subfigure}
+    \caption{Greedy probing ($r=0.1$) with $S=2$ subgoals on the ideal goal-connecting path.}
+    \label{fig:stripe_greedy_probing_with_2_subgoals}
+\end{figure}
+The greedy probing approach was also tested.
 On the other hand, \todo{cheating technique/subgoal trajectory using greedy probing}
 
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            xbar, xmin=0,
+            width=.6\textwidth,
+            height=4cm,
+            enlarge y limits=0.5,
+            xlabel={number of epochs},
+            symbolic y coords={{gradient descent},{greedy probing (exhaustive sampling)},{greedy probing (modified cost)},{greedy probing (random sampling)}},
+            ytick=data,
+            nodes near coords,
+            nodes near coords align={horizontal}
+        ]
+            \addplot coordinates {
+                (15,{gradient descent})
+                (22,{greedy probing (exhaustive sampling)})
+                (20,{greedy probing (modified cost)})
+                (30,{greedy probing (random sampling)})
+            };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Number of epochs until achieving the final subgoal by training regime.}
+    \label{fig:stripe_num_epochs}
+\end{figure}
+
+
+\todo: number of steps vs gradient descent
 
 \chapter{The neural surfing technique}
 
