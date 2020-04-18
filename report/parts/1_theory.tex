@@ -653,6 +653,7 @@ We will come back to these results in \ref{sec:stripe_problem}.
 
 
 \section{Greedy probing}
+\label{sec:greedy_probing}
 Unlike BP, greedy probing is a simple derivative-free optimisation (DFO) technique. 
 At each iteration, the algorithm will sample a predefined number of configurations in the local neighbourhood of the current parameter configuration $\vec{p}$. 
 The loss is calculated at each of these samples, and the best (i.e. lowest value) is chosen as the new parameter configuration. 
@@ -2747,6 +2748,51 @@ This is because the step size due to momentum increased too much after overcomin
 One mechanism to mitigate this problem would be to increase a learning rate schedule; since the final weight configuration is already in the right quadrant, gradient descent is guaranteed to converge to the target (as discussed theoretically in \ref{sec:stripe_gradient_descent_theory} and confirmed empirically in \ref{sec:stripe_gradient_descent}), given an adequate learning rate.
 
 \subsection{Derivative-free techniques with subgoals}
+The greedy probing approach was also tested with $S=2$ subgoals using a sampling radius of $r=0.1$.
+To ensure that the trajectory in output space gets close enough to the first subgoal such that it passes the `hump', the fractional progress parameter $\mu$ had to be increased to $0.99$.
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            xbar, xmin=0,
+            width=.6\textwidth,
+            height=4cm,
+            enlarge y limits=0.5,
+            xlabel={number of epochs},
+            symbolic y coords={
+                {greedy probing (random sampling)},
+                {greedy probing (modified cost)},
+                {greedy probing (exhaustive sampling)},
+                {gradient descent}
+            },
+            ytick=data,
+            nodes near coords,
+            nodes near coords align={horizontal}
+        ]
+            \addplot coordinates {
+                (15,{gradient descent})
+                (22,{greedy probing (exhaustive sampling)})
+                (20,{greedy probing (modified cost)})
+                (30,{greedy probing (random sampling)})
+            };
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Number of epochs until achieving the final subgoal by training regime.}
+    \label{fig:stripe_num_epochs}
+\end{figure}
+One of the drawbacks of the greedy probing technique is that per epoch, it needs to compute the forward pass of the network for every weight sample and every output sample. 
+Hence if the sampling technique generates $s$ samples per epoch and the dataset contains $N$ records, a total of $sN$ forward passes must be computed\footnote{In practice, since the weights are the same for each sample, the forward passes are batched for each sample which means that $s$ forward passes are computed, each with a batch dimension of $N$. This is possible because the neural layers in essence just represent a matrix multiplication (see \ref{eq:single_layer_perceptron}), but keep in mind that this can only achieve a speedup if the matrix multiplication is parallelised (on a GPU for example), and even then, this argument only applies to large values of $N$, whereas for the stripe problem $N=3$. Therefore, let us just say for argument's sake that $sN$ forward passes must be computed.}.
+In the case of the exhaustive sampling technique, \ref{sec:greedy_probing} explains that $s=3^P-1$ samples are generated for a $P$-dimensional weight space.
+So, for the stripe problem, the exhaustive sampling technique will generate 8 weight samples which means that a total of 24 forward passes must be carried out per epoch.
+Note that gradient descent must only perform one derivative calculation which is comparable in computational complexity to a forward pass (assuming the loss value itself is not calculated, only its derivative).
+The advantage of the random sampling technique is twofold: the user may specify the number of samples to calculate, and the directions are not as constrained in weight space.
+We chose a value of $s=6$ for the random sampling technique which means that it only requires 18 forward passes per epoch.
+However, in \ref{fig:stripe_greedy_probing_with_2_subgoals} it becomes apparent that there is a drawback: the random sampling technique needs more epochs to achieve the final goal.
+In this regard, gradient descent actually outperformed all of the tested derivative-free schemes because it requires fewer epochs and fewer forward passes per epoch.
+However, it must be noted that finding the optimal hyperparameters that actually allowed gradient descent to converge with only one subgoal was not easy and required a lot of trial and error, so these results are highly customised towards the stripe problem and will likely perform poorly in other settings.
+
+An alternative cost function was also tested for the greedy probing approach, calculating the cost as the sum of the trajectory's strain in both weight space and output space in order to penalise large turns in both spaces.
 \begin{figure}
     \centering
     \tikzexternaldisable
@@ -2805,37 +2851,12 @@ One mechanism to mitigate this problem would be to increase a learning rate sche
     \caption{Greedy probing ($r=0.1$) with $S=2$ subgoals on the ideal goal-connecting path.}
     \label{fig:stripe_greedy_probing_with_2_subgoals}
 \end{figure}
-The greedy probing approach was also tested.
-On the other hand, \todo{cheating technique/subgoal trajectory using greedy probing}
-
-\begin{figure}
-    \centering
-    \begin{tikzpicture}
-        \begin{axis}[
-            xbar, xmin=0,
-            width=.6\textwidth,
-            height=4cm,
-            enlarge y limits=0.5,
-            xlabel={number of epochs},
-            symbolic y coords={{gradient descent},{greedy probing (exhaustive sampling)},{greedy probing (modified cost)},{greedy probing (random sampling)}},
-            ytick=data,
-            nodes near coords,
-            nodes near coords align={horizontal}
-        ]
-            \addplot coordinates {
-                (15,{gradient descent})
-                (22,{greedy probing (exhaustive sampling)})
-                (20,{greedy probing (modified cost)})
-                (30,{greedy probing (random sampling)})
-            };
-        \end{axis}
-    \end{tikzpicture}
-    \caption{Number of epochs until achieving the final subgoal by training regime.}
-    \label{fig:stripe_num_epochs}
-\end{figure}
-
-
-\todo: number of steps vs gradient descent
+\ref{fig:stripe_greedy_probing_with_2_subgoals} provides a comparison of the trajectories of all three approaches.
+It can be seen that the modified cost function exactly produces the ideal goal line in weight space; however, this is only because the initial direction of the trajectory in weight space was correct.
+If this were not the case, this modified cost function would fail, so in that regard it is not fair to claim that the modified cost function is superior.
+Another observation is that due to the randomness of the random sampling technique, its trajectory is chaotic in both the weight and output spaces.
+For the exhaustive sampling technique, it is interesting to see that like gradient descent (\ref{fig:stripe_gradient_descent_with_2_subgoals}), the trajectory in weight space begins to deviate from the goal line in weight space after achieving the subgoal, but unlike gradient descent, it is actually able to find back to the goal line. 
+A possible explanation for this could be the increased value of $\mu$ used for greedy probing.
 
 \chapter{The neural surfing technique}
 
