@@ -9,6 +9,7 @@ report.}
 
 \section{Context survey}
 \subsection{Artificial neural networks}
+\label{sec:context_anns}
 The first mathematical model representing neurons in the human brain, so-called \textit{perceptons}, was formulated by \textcite{mcculloch1943} (see Section \ref{sec:ann}).
 In 1958, the psychologist Frank Rosenblatt published the first percepton learning algorithm \cite{rosenblatt1958}, but this type of network lacked the ability to learn mappings that were not \textit{linearly separable}.
 It was not until the 1980s with the introduction of the backpropagation algorithm capable of training networks with hidden layers, that neural networks experienced a substantial rise in popularity.
@@ -52,11 +53,30 @@ However, setting these subgoals requires some finesse.
 A technique of setting and achieving subgoals that does not rely on BP has been explored in \textcite{weir2000}.
 
 \subsection{Implementation tools}
-\begin{itemize}
-    \item TensorFlow
-    \item keras
-\end{itemize}
-\todo
+In both acedemia and industry, Python is the de facto standard programming language for machine learning. 
+A 2019 analysis on the world-leading software development platform \href{https://www.github.com/}{GitHub} found that Python is the most popular language for open source machine learning repositories \cite{elliott2019}.
+Python is a simple yet versatile language that natively supports different programming paradigms (imperative, functional, object-oriented, and more).
+It is often called an interpreted language\footnote{There is nuance associated with this statement, but Python certainly exhibits more traits of an interpreted than a compiled language.} because it is dynamically typed and performs automatic memory management (garbage collection) which generally facilitates shorter code than compiled languages such as C or Java, but also means that pure-Python implementations of data-intensive algorithms will usually not be as efficient.
+One of the most fundamental packages, \href{https://numpy.org/}{NumPy}, implements very efficient array manipulation operations that, although specified in Python, are carried out at a lower level for performance.
+
+NumPy is just one piece of Python's rich ecosystem of packages that are maintained by open-source contributers in the scientific and engineering community.
+The two main frameworks for machine learning are \href{https://www.tensorflow.org/}{TensorFlow} by Google and \href{https://www.pytorch.org/}{PyTorch} by Facebook. 
+At their core, both frameworks facilitate the computation of mathematical operations on tensors, offering support for hardware acceleration via \textit{graphics processing units} (GPUs) and providing parallelisation strategies for distributed computing which is especially potent in the context of machine learning where many operations fit the \textit{single instruction, multple data} (SIMD) pattern.
+A TensorFlow program is specified as a directed \textit{computational graph} where nodes represent operations and edges represent their inputs and outputs (data tensors) \cite{tensorflow2015whitepaper}.
+In the new TensorFlow 2, this graph does not need to be explicitly constructed anymore but is created on the fly which is known as \textit{eager execution}, thereby providing the user with a simpler API similar to NumPy.
+The slightly younger PyTorch framework provided dynamic computation graphs and a NumPy-like interface since its initial release in 2016, and more recently added support for static computational graphs.
+Hence the newest versions of both frameworks provide similar computational capabilities.
+They also facilitate the automatic computation of gradients which is useful for training neural networks. 
+TensorFlow is one of the most popular repositories on GitHub, and PyTorch's popularity is rapidly growing \cite{github2019}.
+
+\href{https://keras.io/}{Keras} is a neural network library for Python which is conceived as a high-level interface rather than a framework. 
+It provides implementations of, and abstractions over, common components of neural networks such as layers, optimisers, and activation functions.
+TensorFlow 2 adopted Keras as part of its core library so that the abstractions provided by Keras can easily be used with the TensorFlow backend.
+
+One should not overlook the concept of interactive notebooks made possible by Python's interpreted nature -- that is, mixing rich text (markdown), Python code, and its output. 
+Not only does this allow the programmer to make changes to the code without having to rerun the program, but it also provides a means of presenting Python code in a more engaging way than just comments.
+Any type of Python output, including data visualisations, can be presented in such notebooks which makes it attractive for machine learning.
+These notebooks can be created using the \href{https://jupyter.org/}{Jupyter} package or even run online in the cloud using for example \href{https://colab.research.google.com/}{Google Colab}. 
 
 \section{Requirements specification}
 \todo

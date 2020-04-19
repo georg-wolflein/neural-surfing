@@ -534,6 +534,7 @@ Later in this report, we will look at some issues related to these methods as a 
 In this context, \textit{training} refers to the process of changing the network's weights and biases with the goal of achieving an optimal configuration that reduces the error of the predictions, i.e. how far they are `off'. 
 We will use a simple loss function that uses mean squared error for this purpose.
 \begin{definition}[Mean squared error]
+    \label{def:mean_squared_error}
     Let $\left\{\langle \vec{x}_i, y_i \rangle \right\}_{i=1}^N$ be a labelled dataset (see \ref{def:labelled_dataset}).
     The mean squared error of a set of predictions $\vec{\hat{y}}$ is given as an average over the sum of squared differences,
     \begin{equation}
@@ -543,10 +544,12 @@ We will use a simple loss function that uses mean squared error for this purpose
 \end{definition}
 
 \begin{definition}[Loss function]
+    \label{def:loss_function}
     Given an MLP $M$ with $P$ trainable parameters (weights and biases), the loss function $L:\mathbb{R}^P\rightarrow \mathbb{R}$ is a function that maps weight (and bias) configurations to their associated error values.
     Let $\vec{y} \in \mathbb{R}^N$ be the target outputs for training.
     Then the loss function is defined as
     \begin{equation}
+        \label{eq:loss_function}
         L(\vec{p}) = \sum_{i=1}^N{\left(M\left(\vec{x}_i; \vec{p}\right) - y_i\right)^2}.
     \end{equation}
     Notice the similarity to \ref{eq:mean_squared_error}. 
@@ -556,7 +559,7 @@ We will use a simple loss function that uses mean squared error for this purpose
 
 \section{Backpropagation via gradient descent}
 \label{sec:backpropagation}
-Backpropagation (BP) via gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum} (see \ref{sec:local_minimum_problem}).
+Backpropagation (BP) via gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum} (see \ref{chap:local_minimum_problem}).
 The main idea is as follows:
 \begin{enumerate}
     \item Calculate the derivative of the loss function with respect to the current trainable parameters $\vec{p}$ as
@@ -714,19 +717,29 @@ We will employ a simple approach as a proof of concept that calculates $T_i$ as 
 \end{equation}
 where $c$ is a cooling rate typically of the order of $10^{-1}$ or $10^{-2}$.
 Already, this simple SA algorithm has three hyperparameters: the energy coefficient $k$, the initial temperature $T_0$, and the cooling rate $c$. 
-More sophisticated implementations will require even more hyperparameters (such as \textcite{press1992} as remarked in \ref{sec:eval_sim_annealing}) that makes it increasingly difficult to design SA in a generic fashion to suit the training of neural networks. 
+More sophisticated implementations will require even more hyperparameters (such as the algorithm proposed by \textcite{press1992} which will be remarked upon in \ref{sec:eval_sim_annealing}) that makes it increasingly difficult to design SA in a generic fashion to suit the training of neural networks. 
 
 \section{Issues}
 \label{sec:neural_training_issues}
 \paragraph{Suboptimal local minima}
-\todo: explain
+One prevelant problem such optimisation techniques face is that of suboptimal local minima (also known simply as the `local minimum problem') which was introduced in \ref{sec:context_anns} and will be explored in great detail in \ref{chap:local_minimum_problem}.
+\ref{fig:gradient_descent_local_minimum} provides a simple example where gradient descent via BP fails to find the global minimum in favour of a local minimum.
+However, this issue is not unique to BP: greedy probing, being in effect a form of gradient descent itself, suffers from the same problem as the evidence suggests in \ref{sec:local_minimum_experiments_derivative_free}.
+SA tries to circumvent the local minimum problem by allowing intermediate states that are worse than their predecessors, but even this technique is not guaranteed to find the global minimum in a finite amount of time.
+
 \paragraph{Efficiency}
-\todo: both BP and SA have efficiency drawbacks (see \ref{fig:gradient_descent_narrow_valley})
+In the context of computation time per epoch, BP will outperform the derivative-free techniques because it computes only the gradient of the loss function (along with the loss value itself). 
+Both of these computations are in the order of the complexity of computing a forward pass.
+On the other hand, derivative-free techniques rely on probing, so they must compute as many forward passes as samples they require per epoch.
+In that sense, the DFO algorithms will be slower.
+
+However, BP has other efficiency drawbacks as a result of relying solely on derivatives: it is more sensitive to local `noise' in the loss function, and it becomes quite slow in long, narrow valleys \cite{press1992} as explained in \ref{fig:gradient_descent_narrow_valley}.
 \begin{figure}
     \includegraphics[width=\textwidth]{press_steepest_gradient_descent.png}
-    \caption{The method of steepest gradient descent in a long, narrow valley \cite[p. 421]{press1992}.}
+    \caption{Contour plot of the method of steepest gradient descent in a long, narrow valley \cite[p. 421]{press1992}. Travel proceeds in near right angles due to the gradients.}
     \label{fig:gradient_descent_narrow_valley}
 \end{figure}
+Per contra, DFO algorithms are not as sensitive to local noise, and their probing approach will facilitate more efficient progress along narrow valleys.
 
 \chapter{Neural surfing theory}
 The main idea behind the neural surfing technique lies in viewing the neural training problem from a different perspective. 
@@ -1022,7 +1035,18 @@ Note that linear mappings can exist between spaces of different dimensionalities
 \end{remark}
 
 \subsection{Gradient descent from the perspective of weight and output space}
-\todo: Write about how SGD with MSE usually gets viewed from the perspective of error-weight surface. However, it is interesting to look at the perspective of weight and output space. It becomes apparent that MSE can be thought of as greedily trying to reduce the Euclidean distance from $\vec{\hat{y}}$ to $\vec{y}$ in output space.
+Gradient descent with mean squared error is classically viewed from the perspective of the error-weight surface. 
+In this regard, its objective is to descend the error-weight surface.
+Now that we have examined the relationship between the weight and output spaces, it follows naturally to determine how gradient descent fits in this frame of reference.
+It becomes apparent that in output space, MSE can be thought of as greedily trying to reduce the Euclidean distance from $\vec{\hat{y}}$ to $\vec{y}$, i.e. from the prediction to the target.
+To see this, recall \ref{def:mean_squared_error} and substitute
+\begin{equation*}
+    \norm{\vec{\hat{y}}-\vec{y}}=\sqrt{\sum_{i=1}^N{\left(\hat{y}_i - y_i\right)^2}}
+\end{equation*}
+in \ref{eq:mean_squared_error} to obtain
+$
+    E\left( \vec{y}, \vec{\hat{y}} \right) = \frac{1}{N} \norm{\vec{\hat{y}}-\vec{y}}^2
+$. Since the number of samples $N$ is constant during training, there exists a linear relationship between the mean squared error and the Euclidean distance of the current output to the target output (goal).
 
 \section{Unrealisable regions}
 \begin{definition}[Strongly unrealisable point]
@@ -1286,11 +1310,10 @@ The steps below explain the methodology of this technique, for $S$ subgoals (whe
     \item Let $i=0$. Starting at weight configuration $\vec{w}_i$, perform the particular neural network training technique until achieving a point $\vec{p}$ in output space where $\norm{\vec{p} - \vec{\hat{y}}_{i+1}} \leq (1-\mu) \norm{\vec{\hat{y}}_i - \vec{\hat{y}}_{i+1}}$, i.e. at least a fraction $\mu$ of the distance to the next subgoal is achieved.
     \item Repeat the previous step for $i=1, 2, \dots, S$.
 \end{enumerate}
-We will employ this technique in \ref{sec:stripe_gradient_descent_subgoals} to evaluate the feasability of the ideal goal line in a suboptimal local minimum setting.
-\todo{Where else?}
+We will employ this technique in \ref{sec:stripe_gradient_descent_subgoals,sec:stripe_derivative_free_subgoals} to evaluate the feasability of the ideal goal line in a suboptimal local minimum setting using both gradient-based and derivative-free optimisation regimes.
 
 \chapter{The local minimum problem}
-\label{sec:local_minimum_problem}
+\label{chap:local_minimum_problem}
 
 \section{The mathematics of local and global minima}
 Before analysing an instance of the local minimum problem, we must define what is meant by `local' and `global' minima.
@@ -2514,7 +2537,7 @@ To see this, consider for example the point $\vec{u}$ lying midway on the straig
     \ref{fig:stripe_unrealisable_example_hyperplanes} illustrates this point by considering the hyperplanes of the target output values for the point $\vec{u}$ discussed above.
 \end{remark}
 
-\section{Experimental results}
+\section{Experimental results and analysis}
 A variety of experiments have been carried out on the stripe problem using the different optimisation techniques from \ref{chap:neural_training} with and without subgoals. 
 This section will summarise the findings from some of these experiments. 
 
@@ -2601,6 +2624,7 @@ Although the motivation of the stripe problem is to highlight another issue (tha
 The error-weight surface in \ref{fig:stripe_error_surface_gaussian} shows examples of this phenomenon quite convincingly because the area marked in blue is a long, narrow valley.
 
 \subsection{Derivative-free techniques}
+\label{sec:local_minimum_experiments_derivative_free}
 Other techniques, namely greedy probing and simulated annealing have been evaluated in the context of the stripe problem, too.
 They parallel the findings of \ref{sec:stripe_gradient_descent} insofar as initial weight configurations in Q1 and Q3 converging to suboptimal local minima.
 In fact, the trajectories in weight space are quite similar to \ref{fig:stripe_gradient_descent_experiments} with the notable difference that training using these derivative-free techniques found the local or global minimum (depending on the quadrant of initialisation) requiring only around 100 epochs where BP required 100000. 
@@ -2748,6 +2772,7 @@ This is because the step size due to momentum increased too much after overcomin
 One mechanism to mitigate this problem would be to increase a learning rate schedule; since the final weight configuration is already in the right quadrant, gradient descent is guaranteed to converge to the target (as discussed theoretically in \ref{sec:stripe_gradient_descent_theory} and confirmed empirically in \ref{sec:stripe_gradient_descent}), given an adequate learning rate.
 
 \subsection{Derivative-free techniques with subgoals}
+\label{sec:stripe_derivative_free_subgoals}
 The greedy probing approach was also tested with $S=2$ subgoals using a sampling radius of $r=0.1$.
 To ensure that the trajectory in output space gets close enough to the first subgoal such that it passes the `hump', the fractional progress parameter $\mu$ had to be increased to $0.99$.
 
