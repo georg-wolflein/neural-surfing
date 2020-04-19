@@ -10,13 +10,10 @@ The goal is to design and implement an approach to training neural networks that
 ## Objectives
 
 ### Primary objectives
-1.	Design a generic framework that can be used for various neural training algorithms with a clear set of inputs and outputs at each step. This framework should include benchmarking capabilities.
-2.	For a simple case of this framework (when the dimensionality of the control space and output space are suitably low), implement a visualisation tool that shows the algorithm’s steps.
-3.	Implement a particular training algorithm for the framework that uses potential field techniques.
-4.	Evaluate the performance of this and other algorithms on tasks of differing complexity, especially with regard to the local minimum problem and similar issues.
+1.	Contrive a minimalist version of the stripe problem and show that it provides a strong basis for investigating and resolving the suboptimal local minimum problem for neural networks.
+2.	Investigate goal-connecting paths for this problem and design a “neural surfer” that attempts to find such a goal-connecting path.
+3.	Design a generic framework with a well-defined interface for implementing different gradient-based and derivative-free neural training algorithms and implement such algorithms.
+4.	For this framework, implement a tool that facilitates the comparison of neural training algorithms on a given problem (dataset) by visualising arbitrary user-specified metrics (including weight and output trajectories) during training in real time.
 
 ### Secondary objectives
-1.	Investigate how this approach can be generalized to any numerical optimisation problems.
-
-### Tertiary objectives
-1.	Investigate if and how reinforcement learning could be used for such an algorithm.
+1.	Investigate how the neural surfer can be generalized to more complex problems.

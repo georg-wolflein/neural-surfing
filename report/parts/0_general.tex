@@ -76,31 +76,27 @@ TensorFlow 2 adopted Keras as part of its core library so that the abstractions 
 One should not overlook the concept of interactive notebooks made possible by Python's interpreted nature -- that is, mixing rich text (markdown), Python code, and its output. 
 Not only does this allow the programmer to make changes to the code without having to rerun the program, but it also provides a means of presenting Python code in a more engaging way than just comments.
 Any type of Python output, including data visualisations, can be presented in such notebooks which makes it attractive for machine learning.
-These notebooks can be created using the \href{https://jupyter.org/}{Jupyter} package or even run online in the cloud using for example \href{https://colab.research.google.com/}{Google Colab}. 
+These notebooks can be created using the \href{https://jupyter.org/}{Jupyter} package or even run online in the with services such as \href{https://colab.research.google.com/}{Google Colab}. 
 
 \section{Requirements specification}
-\todo
-
-Primary objectives:
+This project is primarily a research project, its main focus lies in contriving and investigating an example of the local minimum problem in neural networks and designing a technique that tackles this issue. 
+Of auxillary importance is a software framework that should be developed to not only to compare different neural training techniques, but also to ensure that the main theoretical results obtained regarding the local minimum problem are reproducible.
+During the course of this project, the initial objectives formulated in the DOER document evolved, especially as a better understanding of the theoretical aspect of neural surfing was attained.
+The primary objectives are enumerated below in order of decreasing importance.
 \begin{enumerate}
-    \item Design a generic framework that can be used for various neural training algorithms
-    with a clear set of inputs and outputs at each step. This framework should include
-    benchmarking capabilities.
-    \item For a simple case of this framework (when the dimensionality of the control space
-    and output space are suitably low), implement a visualisation tool that shows the
-    algorithm’s steps.
-    \item Design and implement the neural surfing technique.
-    \item Evaluate the performance of this and other algorithms on tasks of differing
-    complexity, especially with regard to the local minimum problem and similar issues.
+    \item Contrive a minimalist version of the stripe problem and show that it provides a strong basis for investigating and resolving the suboptimal local minimum problem for neural networks.
+    \item Investigate goal-connecting paths for this problem and design a “neural surfer” that attempts to find such a goal-connecting path.
+    \item Design a generic framework with a well-defined interface for implementing different gradient-based and derivative-free neural training algorithms and implement such algorithms.
+    \item For this framework, implement a tool that facilitates the comparison of neural training algorithms on a given problem (dataset) by visualising arbitrary user-specified metrics (including weight and output trajectories) during training in real time.
 \end{enumerate}
-Secondary objectives:
+In addition, a secondary objective for this project was identified:
 \begin{enumerate}
-    \item Investigate how this approach can be generalized to other numerical optimisation problems.
+    \item Investigate how the neural surfer can be generalized to more complex problems.
 \end{enumerate}
 
 \section{Software engineering process}
 \todo
-
+\LaTeX
 \section{Ethics}
 There are no ethical considerations. 
 All questions on the preliminary self-assessment form were answered with ``NO'' and hence no ethics form had to be completed.
