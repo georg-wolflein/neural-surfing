@@ -76,11 +76,11 @@
 \makeatletter
 \AtBeginDocument{%
   \renewcommand*{\ref}{\Cref}%
+  \renewcommand{\contentsname}{Contents}%
+  \renewcommand{\listfigurename}{List of figures}%
 }
 \makeatother
 
-\renewcommand{\contentsname}{Contents}
-\renewcommand{\listfigurename}{List of figures}
 \pgfdeclarelayer{pre main}
 \begin{document}
 

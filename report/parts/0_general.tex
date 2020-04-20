@@ -1,11 +1,14 @@
 \chapter{Introduction}
 
-This project is primarily a research project; its main focus lies in contriving and investigating an example of the local minimum problem in neural networks and designing a training regime that tackles this issue. 
+This project is primarily a research project; its main focus lies in contriving and investigating an example of the local minimum problem in neural networks\footnote{Throughout this report, the terms \textit{neural network} and \textit{artifical neural network} (ANN) are used interchangeably.} and designing a training regime that tackles this issue. 
 Of auxiliary importance is a software framework that should be developed to not only to compare different neural training techniques, but also to ensure that the main theoretical results obtained regarding the local minimum problem are empirically verified and reproducible.
 
-The local minimum problem, formally introduced in \ref{chap:local_minimum_problem}, 
-
-in chapter ... we introduce a different paradigm of viewing neural training
+This report begins with a context survey identifying not only the classical neural training algorithms, but also the efforts that have been made to deal with the local minimum problem and their limitations.
+The classical theory of neural networks is presented from the ground up in \ref{chap:neural_network_theory} which naturally leads to the analysis of popular neural training techniques in \ref{chap:neural_training}.
+In \ref{chap:neural_surfing_theory}, a different paradigm of viewing neural training -- `neural surfing theory' -- is introduced.
+\ref{chap:local_minimum_problem} provides a precise definition of the local minimum problem, thereafter facilitating the design of an instance of said problem which is then analysed from both viewpoints described in \ref{chap:neural_network_theory,chap:neural_surfing_theory}.
+The subsequent chapter lays out the neural surfing technique for undertaking the local minimum problem.
+Finally, an outlook is provided how this type of technique can be generalised to other problems before finally presenting the software framework and an evaluation of the project.
 
 \section{Context survey}
 \subsection{Neural training}
@@ -25,7 +28,7 @@ A common technique to subdue the effect of this issue is to run BP multiple time
 \paragraph{Derivative-free optimisation}
 The class of derivative-free optimisation (DFO) algorithms are optimisation techniques that attempt to find a global optimum, requiring only an objective function, but no gradient information.
 One example of such an algorithm is simulated annealing (SA), proposed by \citeauthor{kirkpatrick1983}, that mimics the motion of atoms in the physical process of a slowly cooling material \cite*{kirkpatrick1983}.
-Originally employed in discrete optimisation problems such as the combinatorial travelling salesman problem \cite{cerny1985}, it was later generalized and applied to problems with continuous domains \cite{belisle1993}.
+Originally employed in discrete optimisation problems such as the combinatorial travelling salesman problem \cite{cerny1985}, it was later generalised and applied to problems with continuous domains \cite{belisle1993}.
 However, in a comparative study of derivative-free optimisation algorithms, \citeauthor{rios2009} found that SA performed relatively poorly in comparison to more modern DFOs on general optimisation problems\footnote{It is important to note that \citeauthor{rios2009} did not assess DFOs for the purpose of neural network optimisation, but rather compared their performances on general convex and non-convex optimisation problems.} \cite*{rios2009}.
 
 The concept of applying DFO as a means of training neural networks is not unique to this project.
@@ -93,7 +96,7 @@ The primary objectives are enumerated below in order of decreasing importance.
 \end{enumerate}
 In addition, a secondary objective for this project was identified:
 \begin{enumerate}
-    \item Investigate how the neural surfer can be generalized to more complex problems.
+    \item Investigate how the neural surfer can be generalised to more complex problems.
 \end{enumerate}
 
 \section{Software engineering process}

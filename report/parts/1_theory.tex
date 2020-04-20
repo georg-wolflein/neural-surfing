@@ -1,5 +1,14 @@
 \chapter{Neural network theory}
+\label{chap:neural_network_theory}
+Before tackling the local minimum problem, we must first understand the motivation and function of neural networks.
+We will begin by introducing the general concept of supervised learning algorithms which neural networks are an example of.
+This lays the foundation for a more rigorous definition of artificial neural networks in \ref{sec:ann} as regression models which we widen in the following section to include binary classification tasks as well.
+The definitions, examples, and lemmata from this chapter are the groundwork for the stripe problem later on.
+
 \section{Supervised learning}
+At its core, the purpose of a neural network is to infer a function that maps some input to some output, based on sample input-output pairs.
+In machine learning, we call this a \textit{supervised learning} task. 
+Let us define that more precisely below.
 
 \begin{definition}[Regression model]
     \label{def:reg_model}
@@ -44,6 +53,7 @@
 \end{definition}
 
 \begin{definition}[Supervised learning]
+    \label{def:supervised_learning}
     A supervised learning algorithm for a regression task infers the function $f$ given in \ref{eq:reg_model} from a set of \textit{labelled training data} of the form explained previously. 
     We use the vector
     \begin{equation}
@@ -531,7 +541,8 @@ This will allow us to examine the so-called decision boundary in input space whi
 This chapter will introduce two methods of training neural networks to provide an intuition on how this can be achieved.
 Later in this report, we will look at some issues related to these methods as a means of setting the scene for the neural surfing technique.
 
-In this context, \textit{training} refers to the process of changing the network's weights and biases with the goal of achieving an optimal configuration that reduces the error of the predictions, i.e. how far they are `off'. 
+In this context, \textit{training} refers to the process of altering the network's weights and biases with the goal of achieving an optimal configuration that reduces the error of the predictions, i.e. how far they are `off'. 
+This how the network facilitates \textit{learning} the input-output function from \ref{def:supervised_learning}.
 We will use a simple loss function that uses mean squared error for this purpose.
 \begin{definition}[Mean squared error]
     \label{def:mean_squared_error}
@@ -552,8 +563,7 @@ We will use a simple loss function that uses mean squared error for this purpose
         \label{eq:loss_function}
         L(\vec{p}) = \sum_{i=1}^N{\left(M\left(\vec{x}_i; \vec{p}\right) - y_i\right)^2}.
     \end{equation}
-    Notice the similarity to \ref{eq:mean_squared_error}. 
-    However, we have omitted the factor $\frac{1}{N}$ since the actual loss values are not as important as their relationship to each other, and multiplying by $N$ will retain that relationship.
+    Notice the similarity to \ref{eq:mean_squared_error}; we have only omitted the factor $\frac{1}{N}$ since the actual loss values are not as important as their relationship to each other, and multiplying by $N$ will retain that relationship.
     We use the term \textit{error-weight surface} to refer to the graph of this function.
 \end{definition}
 
@@ -742,6 +752,7 @@ However, BP has other efficiency drawbacks as a result of relying solely on deri
 Per contra, DFO algorithms are not as sensitive to local noise, and their probing approach will facilitate more efficient progress along narrow valleys.
 
 \chapter{Neural surfing theory}
+\label{chap:neural_surfing_theory}
 The main idea behind the neural surfing technique lies in viewing the neural training problem from a different perspective. 
 Instead of only considering the error-weight space, the neural surfing technique looks at the so-called output space as well. 
 This chapter will discuss the concepts of weight and output space, as well as issues related to these concepts such as unrealisable regions and what is meant by a goal-connecting path.
@@ -1314,6 +1325,9 @@ We will employ this technique in \ref{sec:stripe_gradient_descent_subgoals,sec:s
 
 \chapter{The local minimum problem}
 \label{chap:local_minimum_problem}
+The previous chapters explained the theory behind neural networks and their classical training algorithms. 
+We briefly looked at some of these algorithms' shortcomings in \ref{sec:neural_training_issues} and hypothesised that they would potentially fail to find global minima in the presence of suboptimal local minima.
+Now we can now define the local minimum problem more accurately, contrive an example of said problem, and finally not only analyse it from the classical viewpoint of \ref{chap:neural_network_theory}, but also relate it to the paradigm of \ref{chap:neural_surfing_theory}.
 
 \section{The mathematics of local and global minima}
 Before contriving and analysing an instance of the local minimum problem, we must define what is meant by `local' and `global' minima.
