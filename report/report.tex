@@ -101,15 +101,22 @@
 
     \vspace{0.5cm}
 
-    {April 13, 2020\par}
+    {April 27, 2020\par}
 
-    \vfill
-
-    Word count: \quickwordcount{report}
+    %\vfill
+    %Word count: \quickwordcount{report}
 \end{titlepage}
 
 \chapter*{Abstract}
-\todo
+Gradient-based methods based on backpropagation are widely used in training multilayer feedforward neural networks. 
+However, such algorithms often converge to suboptimal weight configurations known as local minima. 
+This report presents a novel minimal example of the local minimum problem with only three training samples and demonstrates its suitability for investigating and resolving said problem by analysing its mathematical properties and conditions leading to the failure of conventional training regimes. 
+A different perspective of training neural networks is introduced that concerns itself with neural spaces and applied to study the local minimum example, giving rise to the concept of setting intermediate subgoals during training which is demonstrated to be a viable and effective means of overcoming the local minimum problem. 
+The versatility of subgoal-based approaches is highlighted by showing their generalisation potential. 
+An example of a subgoal-based training regime using sampling and an adaptive clothoid for establishing a goal-connecting path is suggested as a proof of concept for further research. 
+In addition, this project includes the design and implementation of a software framework for monitoring the performance of different neural training algorithms on a given problem simultaneously and in real time. 
+This framework can be used to reproduce the findings of how classical algorithms fail to find the global minimum in the aforementioned example.
+
 
 \chapter*{Declaration}
 ``I declare that the material submitted for assessment is my own work except where credit is explicitly given to others by citation or acknowledgement.
@@ -130,14 +137,14 @@ I retain the copyright in this work.''
 
 \input{parts/0_general.tex}
 
-% \part{Theory}
 \input{parts/1_theory.tex}
 
-% \part{Framework}
 \input{parts/2_framework.tex}
 
-% \part{End}
 \input{parts/3_end.tex}
+
+\appendix
+\input{parts/4_appendix.tex}
 
 \addcontentsline{toc}{chapter}{Bibliography}
 \printbibliography
