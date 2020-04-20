@@ -19,11 +19,10 @@ experiment = Experiment(agents)
 experiment.run([
     Scatter2D("weights"),
     Histogram("loss"),
+    Scatter2D("output:0", "output:1"),
+    Scatter2D("output:0", "output:2"),
     Histogram("output:0"),
     Histogram("output:1"),
     Histogram("output:2"),
-    Histogram("output:3"),
-    Scatter2D("output:0", "output:1"),
-    Scatter2D("output:2", "output:3"),
     Histogram("run_time")
 ], epoch_batch_size=10, title="Stripe problem")

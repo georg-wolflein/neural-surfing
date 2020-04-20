@@ -24,13 +24,11 @@ class StripeProblem(Problem):
 
         super().__init__(
             X=np.array([
-                (0, 0),
                 (2, 2),
-                (2, 0),
-                (0, 2)
+                (0, 2),
+                (2, 0)
             ]).astype(np.float64),
             y=np.array([
-                1,
                 1,
                 rbf(2.),
                 rbf(2.)

@@ -50,10 +50,12 @@ This is underpinned in theory by other works which proved the nonexistence of su
 On the other hand, a recent article asserts that ``The apparent scarcity of poor local minima has lead practitioners to develop the intuition that bad local minima \elide are practically non-existent'' \cite{goldblum2019}.
 Notwithstanding this apparent disagreement, the neural local minimum problem remains an active area of research.
 
-\cite*{choi2008}
+There have been various approaches attempting to overcome the local minimum problem as it relates to neural training.
+\citeauthor{choi2008} presented a method whereby the network is split into two separate parts that are trained separately, but this technique works only on networks with one hidden layer \cite*{choi2008}.
+\citeauthor{lo2012} followed a different approach through which the mean squared error function is modified in order to `convexify' the error-weight surface \cite*{lo2012,lo2017}.
+This is achieved using a ``risk-averting criterion'' that should decrease the likelihood of training samples being underrepresented, but the claim is only to find better local minima as opposed to global ones.
 
-
-The local minimum problems as it relates to neural training has been investigated extensively here in St Andrews as well. 
+The local minimum problems has been investigated here in St Andrews as well. 
 One particularly promising approach seems to be setting subgoals on the goal path.
 However, setting these subgoals requires some finesse.
 \textcite{lewis1999} show that simply employing a linear chain of subgoals (such as in \textcite{gorse1997}) does not suffice in reliably finding the global minimum, but instead a non-linear chain of subgoals is required.
@@ -86,8 +88,9 @@ Any type of Python output, including data visualisations, can be presented in su
 These notebooks can be created using the \href{https://jupyter.org/}{Jupyter} package or even run online in the with services such as \href{https://colab.research.google.com/}{Google Colab}. 
 
 \section{Objectives}
-During the course of this project, the initial objectives formulated in the DOER document evolved, especially as a better understanding of the theoretical aspect of neural surfing was attained.
-The primary objectives are enumerated below in order of decreasing importance.
+The initial objectives formulated in the DOER document evolved significantly which is owed to the research-heavy nature of the project and expected.
+Throughout the course of this project, as a better understanding of the theoretical aspect of neural surfing was attained by research and experimentation, the objectives were adapted.
+The refined primary objectives are enumerated below in order of decreasing importance.
 \begin{enumerate}
     \item Contrive a minimalist version of the stripe problem and show that it provides a strong basis for investigating and resolving the suboptimal local minimum problem for neural networks.
     \item Investigate goal-connecting paths for this problem and design a “neural surfer” that attempts to find such a goal-connecting path.
@@ -99,11 +102,23 @@ In addition, a secondary objective for this project was identified:
     \item Investigate how the neural surfer can be generalised to more complex problems.
 \end{enumerate}
 
+\section{Requirements specification}
+The requirements below were formulated for the software framework aspect of the project based mainly on the third and fourth objectives from the previous section.
+It is assumed that the user of the framework is familiar with Python, TensorFlow, and Keras.
+\begin{enumerate}
+    \item The framework should be written in Python 3 and use the TensorFlow 2 library for neural computation.
+    \item The user should be able to specify a neural \textit{problem} as a Keras model with either a custom or random weight initialisation.
+    \item Each problem may record \textit{metrics} during training, and the user can implement custom metrics.
+    \item The user may implement a custom \textit{agent} that can be used to train on any problem specified using the framework.
+    \item The user should be able to specify an \textit{experiment} that runs specified agents simultaneously, reporting and visualising the associated problem metrics for each agent in real time. 
+    \item The framework should provide some implementations of agents (both gradient-based and derivative-free), problems (the stripe problem and others), and experiments for demonstrational purposes.
+\end{enumerate}
+
 \section{Software engineering process}
 \todo
 \LaTeX
 \section{Ethics}
 There are no ethical considerations. 
-All questions on the preliminary self-assessment form were answered with ``NO'' and hence no ethics form had to be completed.
+All questions on the preliminary self-assessment form were answered with ``NO'' and hence no ethics form was completed.
 
 
