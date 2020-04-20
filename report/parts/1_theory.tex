@@ -722,7 +722,7 @@ More sophisticated implementations will require even more hyperparameters (such 
 \section{Issues}
 \label{sec:neural_training_issues}
 \paragraph{Suboptimal local minima}
-One prevelant problem such optimisation techniques face is that of suboptimal local minima (also known simply as the `local minimum problem') which was introduced in \ref{sec:context_anns} and will be explored in great detail in \ref{chap:local_minimum_problem}.
+One prevelant problem such optimisation techniques face is that of suboptimal local minima (also known simply as the `local minimum problem') which was introduced in \ref{sec:context_local_minimum_problem} and will be explored in great detail in \ref{chap:local_minimum_problem}.
 \ref{fig:gradient_descent_local_minimum} provides a simple example where gradient descent via BP fails to find the global minimum in favour of a local minimum.
 However, this issue is not unique to BP: greedy probing, being in effect a form of gradient descent itself, suffers from the same problem as the evidence suggests in \ref{sec:local_minimum_experiments_derivative_free}.
 SA tries to circumvent the local minimum problem by allowing intermediate states that are worse than their predecessors, but even this technique is not guaranteed to find the global minimum in a finite amount of time.
@@ -1316,7 +1316,7 @@ We will employ this technique in \ref{sec:stripe_gradient_descent_subgoals,sec:s
 \label{chap:local_minimum_problem}
 
 \section{The mathematics of local and global minima}
-Before analysing an instance of the local minimum problem, we must define what is meant by `local' and `global' minima.
+Before contriving and analysing an instance of the local minimum problem, we must define what is meant by `local' and `global' minima.
 We will further introduce a theorem that we can later use as a tool to prove their existence.
 \begin{definition}[Global minimum]
     \label{def:global_minimum}

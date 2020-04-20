@@ -1,6 +1,7 @@
-\documentclass{report}
+\documentclass[a4paper,oneside]{book}
 \usepackage[utf8]{inputenc}
 \usepackage[british]{babel}
+\usepackage{fancyhdr}
 \usepackage{csquotes}
 \usepackage[hidelinks]{hyperref}
 \usepackage{graphicx}
@@ -20,6 +21,12 @@
     style=apa,
     citestyle=authoryear
 ]{biblatex}
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot{}
+\lhead{\textit{\leftmark}}
+\cfoot{\thepage}
 
 \makeatletter
 \newrobustcmd*{\parentexttrack}[1]{%
@@ -72,9 +79,12 @@
 }
 \makeatother
 
+\renewcommand{\contentsname}{Contents}
+\renewcommand{\listfigurename}{List of figures}
 \pgfdeclarelayer{pre main}
 \begin{document}
 
+\frontmatter
 \begin{titlepage}
     \centering
     
@@ -114,6 +124,9 @@ I retain the copyright in this work.''
 \textit{Georg Wölflein}
 
 \tableofcontents
+\listoffigures
+
+\mainmatter
 
 \input{parts/0_general.tex}
 
@@ -125,8 +138,6 @@ I retain the copyright in this work.''
 
 % \part{End}
 \input{parts/3_end.tex}
-
-% \listoffigures
 
 \addcontentsline{toc}{chapter}{Bibliography}
 \printbibliography

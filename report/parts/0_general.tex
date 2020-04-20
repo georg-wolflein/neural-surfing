@@ -1,14 +1,14 @@
 \chapter{Introduction}
-\textit{Describe the problem you set out to solve and the
-extent of your success in solving it. You should include
-the aims and objectives of the project in order of
-importance and try to outline key aspects of your
-project for the reader to look for in the rest of your
-report.}
-\todo
+
+This project is primarily a research project; its main focus lies in contriving and investigating an example of the local minimum problem in neural networks and designing a training regime that tackles this issue. 
+Of auxiliary importance is a software framework that should be developed to not only to compare different neural training techniques, but also to ensure that the main theoretical results obtained regarding the local minimum problem are empirically verified and reproducible.
+
+The local minimum problem, formally introduced in \ref{chap:local_minimum_problem}, 
+
+in chapter ... we introduce a different paradigm of viewing neural training
 
 \section{Context survey}
-\subsection{Artificial neural networks}
+\subsection{Neural training}
 \label{sec:context_anns}
 The first mathematical model representing neurons in the human brain, so-called \textit{perceptons}, was formulated by \textcite{mcculloch1943} (see Section \ref{sec:ann}).
 In 1958, the psychologist Frank Rosenblatt published the first percepton learning algorithm \cite{rosenblatt1958}, but this type of network lacked the ability to learn mappings that were not \textit{linearly separable}.
@@ -30,23 +30,27 @@ However, in a comparative study of derivative-free optimisation algorithms, \cit
 
 The concept of applying DFO as a means of training neural networks is not unique to this project.
 In the 1990s, several training regimes for neural networks were proposed that did not rely on derivative calculations, employing variants of random and local search \cite{hirasawa1998,battiti1995}.
-These approaches seemed to find better minima and did not get stuck in local minima as BP did. 
+These approaches seemed to find better minima in some settings and did not get stuck in local minima as BP did. 
 More recently, a particular random search approach was affirmed in outperforming BP in the context of deep neural networks for reinforcement learning, although a different family of DFO algorithms, so-called genetic algorithms were proposed as a superior alternative \cite{such2017}.
 
 A very recent work presents a DFO technique for neural networks that uses a variant of local search belonging in the family of random search algorithms \cite{aly2019}.
 This technique parallels the finding from other works that DFOs are often able to escape some\footnote{Guaranteed convergence to a global minimum in every scenario is not asserted, although the results indicate that the local minima are not as `poor'.} local minima and thus produce better training results; however, they require more iterations and computational resources than BP. 
 
-\citeauthor{aly2019}, \citeauthor{such2017}, and similar works studied the performance of their respective DFO algorithms for training neural networks with a large parameter space (in the order of $10^6$ parameters) which, while providing valuable practical insight, made it impossible to examine the structure of the loss surface analytically in order to assess issues such as severely suboptimal local minima.
+\citeauthor{aly2019}, \citeauthor{such2017}, and similar works studied the performance of their respective DFO algorithms for training neural networks with a large parameter space (in the order of $10^6$ parameters) which, while providing valuable practical insight, made it infeasible to examine the structure of the loss surface analytically in order to assess issues such as severely suboptimal local minima.
 
-\paragraph{The local minimum problem}
+\subsection{The local minimum problem}
+\label{sec:context_local_minimum_problem}
 The local minimum problem, which arises when an algorithm converges to a suboptimal local minimum with a comparatively high loss value, has been extensively studied as a phenomenon in optimisation problems.
 However, with regards to neural networks, there seems to be differing opinions on the severity of this issue. 
 One frequently cited article claims that ``In practice, poor local minima are rarely a problem with large networks'' \cite{lecun2015}.
 This is underpinned in theory by other works which proved the nonexistence of suboptimal local minima, although they make varying assumptions on the structure of the underlying neural networks \cite{kawaguchi2016,nguyen2018,laurent2018}.
 On the other hand, a recent article asserts that ``The apparent scarcity of poor local minima has lead practitioners to develop the intuition that bad local minima \elide are practically non-existent'' \cite{goldblum2019}.
-Therefore, it can be said that the local minimum problem is still an active area of research.
+Notwithstanding this apparent disagreement, the neural local minimum problem remains an active area of research.
 
-The local minimum problems as it relates to neural training has been investigated extensively here in St Andrews. 
+\cite*{choi2008}
+
+
+The local minimum problems as it relates to neural training has been investigated extensively here in St Andrews as well. 
 One particularly promising approach seems to be setting subgoals on the goal path.
 However, setting these subgoals requires some finesse.
 \textcite{lewis1999} show that simply employing a linear chain of subgoals (such as in \textcite{gorse1997}) does not suffice in reliably finding the global minimum, but instead a non-linear chain of subgoals is required.
@@ -78,9 +82,7 @@ Not only does this allow the programmer to make changes to the code without havi
 Any type of Python output, including data visualisations, can be presented in such notebooks which makes it attractive for machine learning.
 These notebooks can be created using the \href{https://jupyter.org/}{Jupyter} package or even run online in the with services such as \href{https://colab.research.google.com/}{Google Colab}. 
 
-\section{Requirements specification}
-This project is primarily a research project, its main focus lies in contriving and investigating an example of the local minimum problem in neural networks and designing a technique that tackles this issue. 
-Of auxillary importance is a software framework that should be developed to not only to compare different neural training techniques, but also to ensure that the main theoretical results obtained regarding the local minimum problem are reproducible.
+\section{Objectives}
 During the course of this project, the initial objectives formulated in the DOER document evolved, especially as a better understanding of the theoretical aspect of neural surfing was attained.
 The primary objectives are enumerated below in order of decreasing importance.
 \begin{enumerate}
