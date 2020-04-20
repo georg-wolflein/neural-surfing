@@ -164,7 +164,7 @@ This phenomenon occurs with sigmoid activation functions when they reach high sa
 However, the vanishing gradient problem is usually not prevelant in shallow\footnote{Shallow networks refer to ANNs with few layers.} networks so the sigmoid function still remains popular \cite{neal1992}.
 
 Particularly in deep neural networks, different neurons (grouped in \textit{layers}, see \ref{sec:multi_layer_perceptron}) often have different activation functions \cite{burkov2019}, but for the purposes of this report it is more convenient (in terms of notation) to have the activation function be the same for all neurons, so it does not need to be supplied as a parameter to the function describing the particular neural network.
-Much of the work in this report can easily be generalized to designs with multple activation functions.
+Much of the work in this report can easily be generalised to designs with multple activation functions.
 This is because the algorithms explained in this report do not concern themselves with the specifics of the activation functions, as long as they are non-linear.
 
 \paragraph{ANNs as regression models}
@@ -758,6 +758,7 @@ Instead of only considering the error-weight space, the neural surfing technique
 This chapter will discuss the concepts of weight and output space, as well as issues related to these concepts such as unrealisable regions and what is meant by a goal-connecting path.
 
 \section{Weight and output spaces}
+\label{sec:weight_and_output_spaces}
 In \ref{def:mlp} we established that the tuple $\langle \mathscr{W}, \mathscr{B} \rangle$ along with the activation function is sufficient to fully define a MLP. 
 Most importantly, we have $\mathscr{W} = \vec{W}_1, \vec{W}_2, \dots, \vec{W}_L$ and $\mathscr{B} = \vec{b}_1, \vec{b}_2, \dots, \vec{b}_L$ representing each layer's weight matrices and bias vectors, respectively. 
 These parameters will be useful for defining the weight and ouput spaces.
@@ -848,7 +849,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
 
 \begin{definition}[Weight-output mapping]
     \label{def:weight_output_space_mapping}
-    Given an artifical neural network $A:\mathbb{R}^m \rightarrow \mathbb{R}^n$ with $m$ inputs and $n$ outputs parameterized by a set of trainable parameters $\vec{w} \in \mathcal{W_A}$,
+    Given an artifical neural network $A:\mathbb{R}^m \rightarrow \mathbb{R}^n$ with $m$ inputs and $n$ outputs parameterised by a set of trainable parameters $\vec{w} \in \mathcal{W_A}$,
     the weight-to-output-space mapping $h_A: \mathcal{W}_A \rightarrow \mathcal{O}_A$ for a dataset with $N$ $m$-dimensional feature vectors given by the matrix
     $\vec{X} = \begin{bmatrix}
         \vec{x}_1 & \vec{x}_2 & \cdots & \vec{x}_N
@@ -966,7 +967,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
     For any SLN $S$, the function $h_S: \mathcal{W}_S \rightarrow \mathcal{O}_S$ is not a linear mapping.
 \end{corollary}
 \begin{proof}
-    We will generalize the results from Theorem \ref{thm:sln_one_output} to SLNs with multiple outputs.
+    We will generalise the results from Theorem \ref{thm:sln_one_output} to SLNs with multiple outputs.
     Let $S$ have $m$ inputs and $n$ outputs.
     We construct $n$ smaller SLNs, $S_1,S_2,\dots,S_n$ where each $S_i$ has all $m$ input units, but only the $i$th output unit. 
     The DAG representing $S_i$ will only contain links from the input nodes to output node $\hat{y}_i$ (and, of course, the associated bias term $b_i$) as depicted in \ref{fig:sln_m_in_n_out_construction}.
@@ -1013,13 +1014,13 @@ Note that linear mappings can exist between spaces of different dimensionalities
             \hat{y}_1 \\
             \hat{y}_2 \\
             \vdots \\
-            \hat{y}_n \\
+            \hat{y}_n
         \end{bmatrix}
         = \begin{bmatrix}
             S_1(\vec{x}) \\
             S_2(\vec{x}) \\
             \vdots \\
-            S_n(\vec{x}) \\
+            S_n(\vec{x})
         \end{bmatrix}.
     \end{equation*}
     By Theorem \ref{thm:sln_one_output}, each $S_i$ does not have a linear mapping from weight space to output space, so $S$ cannot have a linear mapping either.
@@ -1032,12 +1033,12 @@ Note that linear mappings can exist between spaces of different dimensionalities
 \begin{proof}
     Let $M$ have $L$ layers.
     By \ref{def:mlp}, $M$ is a nested function of $L$ SLNs. 
-    Corollary \ref{col:weight_output_sln} states that each of these SLNs does not have a linear mapping from weight to output space.
+    \ref{col:weight_output_sln} states that each of these SLNs does not have a linear mapping from weight to output space.
     Hence the composition of $L$ SLNs that forms $M$ does not have a linear mapping from weight to output space.
 \end{proof}
 
 \begin{remark}
-    The findings from Corollary \ref{col:weight_output_mlp} are very significant.
+    The findings from \ref{col:weight_output_mlp} are very significant.
     They show that there is no apparent relationship between weight and output space that we can easily determine analytically. 
     If there were a straightforward mapping between weight and output space, we would be able to simply determine the ideal weight configuration that would achieve our target $\vec{y}$ in output space. 
     
@@ -1633,14 +1634,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
         -\ln{t} &= \left(\vec{w}\tran \vec{x} + b \right)^2 \\
         \pm \sqrt{-\ln{t}} &= \vec{w}\tran \vec{x} + b.
     \end{align*}
-    Since $t\in (0,1)$, it follows that
-    \begin{align*}
-        0 < t &< 1 \\
-        \ln t &< \ln 1 \\
-        -\ln t &> 0 \\
-        \sqrt{-\ln{t}} &> 0
-    \end{align*}
-    which means that $\sqrt{-\ln{t}} \neq 0$. 
+    Since $t\in (0,1)$, it follows that $\ln t < 0$ and thus $\sqrt{-\ln{t}} > 0$ which of course means that $\sqrt{-\ln{t}} \neq 0$. 
     Hence
     \begin{equation}
         \label{eq:gaussian_hyperplanes}
@@ -3162,38 +3156,72 @@ In fact, this is equivalent to minimising \ref{eq:clothoid_construction_error} w
 The nearest neighbour can be found quite efficiently using a so-called $k$-d tree data structure with an average time complexity logarithmic to the number of points \cite{friedman1977}.
 Hence, using this technique, we can find the clothoid parameters for \ref{prob:clothoid_construction} in $\mathcal{O}(\log n)$ time\footnote{This is because we have $n^2$ points and $\mathcal{O}(\log{n^2})=\mathcal{O}(\log n)$.} on average.
 
-\section{Scaling sample points}
-\todo: explain how sample points are scaled to be at roughly the same radius in output space
-
 \section{Adaptive clothoid technique}
 \todo
-% \begin{figure}
-%     \centering
-%     \begin{tikzpicture}
-%         \begin{axis}[
-%             axis equal,
-%             width=\textwidth,
-%             xlabel={$y_1$},
-%             ylabel={$y_2$},
-%             xlabel style={at={(axis description cs:1,0)},anchor=west},
-%             ylabel style={at={(axis description cs:0,1)},anchor=south,rotate=-90},
-%             axis lines=left,
-%             xmin=-2, xmax=7,
-%             ymin=-2, ymax=5,
-%             ticks=none,
-%             clip=false
-%         ]
-%             \coordinate (y1) at (0, 0);
-%             \coordinate (y2) at ($(sqrt(2), sqrt(2))$);
-%             \fill (y1) circle (2pt) node[below] {$\vec{\hat{y}}_0$};
-%             \draw (y1) circle [black, radius=1];
-
-%         \end{axis}
-%     \end{tikzpicture}
-%     \caption{The scenario from \ref{fig:clothoid_motivation_scenario} with the goal-connecting clothoid.}
-%     \label{fig:adaptive_clothoid}
-% \end{figure}
-
 
 \chapter{Generalising neural surfing}
-\todo: generalize to classification as regression with multiple output variables (this can be done by concatenating all output variables' dimensions into the output vector/space)
+In this chapter we will consider how any neural surfing technique can be generalised to different neural network architectures and problems.
+For this purpose, we will define a `neural surfer' to be an algorithm that samples states in weight space $\mathcal{W}$ that are in the local neighbourhood, producing predictions in output space $\mathcal{O}$ and deciding which weight state to transition to based on the associated predictions.
+The motivation for this analysis is to demonstrate the potential for research in neural surfing algorithms: if a good neural surfer for the stripe problem is devised, it will have applications beyond that simple problem, and potentially even neural networks.
+
+\section{Multiple layers}
+Up until now, in the context of the stripe problem, we have looked at a single-layer network with one output unit.
+However, what happens when we increase the number of layers?
+Recall that the definitions of weight and output space in \ref{sec:weight_and_output_spaces} are completely decoupled. 
+In fact, we proved in \ref{thm:sln_one_output} that there exists no linear mapping between these spaces for SLNs with one output unit which in \ref{col:weight_output_mlp} we generalised to arbitrary MLPs. 
+In a sense, the hidden layers are thus hidden behind an abstraction: the neural training technique itself has no knowledge whether or not the underlying network had hidden layers; indeed it not aware of the neural network's architecture at all because its only information is the generated prediction $\vec{\hat{y}}$ in output space $\mathcal{O}$ associated with each sample $\vec{w}$ in weight space $\mathcal{W}$.
+Both  $\mathcal{W}$ and $\mathcal{O}$ can be of arbitrary dimensionality, and so the technique can be used for any MLP.
+
+
+\section{Multiple outputs}
+In \ref{def:mlp}, we characterised MLPs as multi-layer feedforward networks with one output unit, meaning that the last layer has only one neuron. 
+We have shown this to be suitable and sufficient for regression tasks as well as binary classification problems. 
+Yet in practice, we can also have multi-layer networks with multiple outputs.
+For example, multi-class classification tasks require $c$ output units for a one-hot-encoded problem with $c$ classes.
+
+Let us now show that any neural surfing technique could also train this type of network.
+The n\"{i}ve approach would be to perform a construction like in \ref{fig:sln_m_in_n_out_construction} that was used to prove \ref{col:weight_output_sln}.
+However, especially for multi-class problems, it is often the case that the activation function on the last layer depends on other nodes in that layer.
+For example, the softmax activation function, defined for the $i$th output unit given that layer's excitation vector $\vec{z}$ as
+\begin{equation}
+    \sigma_i(\vec{z}) = \frac{e^{z_i}}{\sum_j{e^{z_j}}},
+\end{equation}
+is commonly used on the final layer of a neural network for multi-class classification because the outputs can roughly be interpreted as probabilities. 
+
+Instead, we must follow a different approach. 
+In \ref{def:supervised_learning} we assumed that the neural network will output a scalar value because it only has one output node. 
+We can generalise \ref{eq:sup_learn_prediction} which represented the output vector (the scalar prediction for each input sample) to instead be the concatenation of all prediction vectors.
+This will not interfere with the notion of output space from \ref{def:output_space} and thus the methodology of the neural surfer can also be used for any type of feedforward neural network architecture.
+
+Notice that now we can apply the same reasoning as in the previous section claiming that the weight and output spaces are decoupled to assert that theoretically the neural surfing approach could be generalised to networks with arbitrary inter-layer and intra-layer connections such as recurrent networks.
+
+\section{Potential field navigation}
+A common task in robotics is to smoothly navigate an obstacle course to reach a goal.
+It is convenient to consider this obstacle course in a two-dimensional space, but the approach can be generalised to arbitrary dimensionality.
+Assume that the robot knows the coordinates of the goal and that it has some number of distance sensors oriented at equidistant angles in the interval $[\frac{\pi}{2},\frac{\pi}{2}]$ relative to the current heading.
+
+To prevent the robot from crashing into obstacles and encourage smooth motion, a potential field is defined over the state space that should `repel' the robot from obstacles but `attract' it to the goal.
+The obtacle potential is a function that decays exponentially with the distance to the nearest obstacle (measured by the distance sensors) that could be of a form similar to
+\begin{equation}
+    O(d_i) = 
+    \begin{cases} 
+        \frac{1}{d_i} e^{-\frac{1}{d_i^2-S^2}} & 0 \leq d_i < S  \\
+        0 & d_i \geq S
+   \end{cases}
+\end{equation}
+where $d_i$ is the distance to the obstacle measured by the distance sensor and $S$ is the so-called fall-off range \cite{weir2006}.
+The goal potential could be of the form
+$G(d_g)=d^2$
+for a distance $d_g$ to the goal. The combined potential is then given by
+\begin{equation}
+    \label{eq:combined_potential}
+    U = G(d_a) + \sum_i{O(d_i)}.
+\end{equation}
+
+The idea of neural surfing actually originated from its analogy to robot navigation using potential field techniques, so it could also be applied backwards from neural surfing to robot path planning.
+The control space for robots is its wheels, and for neural networks that is the weights and biases (i.e. the weight space $\mathcal{W}$).
+The output space for robots is the movement achieved in the two-dimensional obstacle space, and for neural nets that is the activation of the output layer (i.e. the output space $\mathcal{O}$).
+Furthermore, the robot's sensors measure distances to obstacles which is comparable to the neural surfer probing samples in the local neighbourhood of its current configuration.
+Finally, the potential field from \ref{eq:combined_potential} is like a neural network's loss function.
+Therefore, it is conjectured that a neural surfer could be converted to become a potential field agent.
+Notice that potential fields also possess a local minimum problem which however for the two-dimensional case can be overcome \cite{weir2006}.
