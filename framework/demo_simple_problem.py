@@ -1,12 +1,16 @@
 """Demo of a simple neural problem for testing agents under normal conditions.
 """
 
-from agents import MSE, LossWithGoalLineDeviation, GreedyProbing, SimulatedAnnealing
-from agents.sampling import ExhaustiveSamplingTechnique, RandomSamplingTechnique
-from problems.simple_problem import SimpleProblem
+from nf.agents.mse import MSE
+from nf.agents.loss_with_goal_line_deviation import LossWithGoalLineDeviation
+from nf.agents.greedy_probing import GreedyProbing
+from nf.agents.simulated_annealing import SimulatedAnnealing
+from nf.agents.sampling import ExhaustiveSamplingTechnique, RandomSamplingTechnique
+from nf.problems.simple_problem import SimpleProblem
 
-from experiment import Experiment
-from experiment.visualisations import Scatter2D, Histogram
+from nf.experiment import Experiment
+from nf.experiment.visualisations.scatter2d import Scatter2D
+from nf.experiment.visualisations.histogram import Histogram
 from util import get_demo_args
 
 # Get command-line arguments

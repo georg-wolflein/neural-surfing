@@ -1,0 +1,539 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>nf.agents.sampling API documentation</title>
+<meta name="description" content="Sampling techniques for gradient-free agents." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>nf.agents.sampling</code></h1>
+</header>
+<section id="section-intro">
+<p>Sampling techniques for gradient-free agents.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Sampling techniques for gradient-free agents.
+&#34;&#34;&#34;
+
+import itertools
+import tensorflow as tf
+from abc import ABC, abstractmethod
+import typing
+
+from .util import scale_to_length
+
+
+class SamplingTechnique(ABC):
+    &#34;&#34;&#34;Abstract base class representing a sampling technique (for weight space).
+    &#34;&#34;&#34;
+
+    @abstractmethod
+    def initialize(self, num_weights: int):
+        &#34;&#34;&#34;Initialize the sampling technique.
+
+        This method should be called once before training. 
+        Its purpose is to pre-compute certain values such that they do not have to be computed over and over again during training.
+
+        Arguments:
+            num_weights {int} -- the dimensionality of the weight space
+        &#34;&#34;&#34;
+
+    @abstractmethod
+    def __call__(self, weights: tf.Tensor) -&gt; typing.Union[tf.Tensor, typing.Iterator[tf.Tensor]]:
+        &#34;&#34;&#34;Obtain a sample given the current weight state.
+
+        Arguments:
+            weights {tf.Tensor} -- the current weight state
+
+        Returns:
+            typing.Union[tf.Tensor, typing.Iterator[tf.Tensor]] -- depending on the type of sampling technique, this will be a tensor of all weight samples or a generator to arbitrarily generate weight samples for computational efficiency.
+        &#34;&#34;&#34;
+
+
+class ExhaustiveSamplingTechnique(SamplingTechnique):
+    &#34;&#34;&#34;Implementation of an exhaustive sampling technique that obtains samples with a specific radius along all possible 45° directions in a weight space of arbitrary dimensionality.
+
+    The number of samples will be 3^N-1 where N is the dimensionality of the weight space.
+    &#34;&#34;&#34;
+
+    def __init__(self, sample_radius: float, uniform_radius: bool = True):
+        &#34;&#34;&#34;Constructor.
+
+        Arguments:
+            sample_radius {float} -- the sample radius
+
+        Keyword Arguments:
+            uniform_radius {bool} -- whether or not to ensure that all samples have the same length (if False, the samples at 45° angles will be longer than the ones at 90° angles to any weight axis) (default: {True})
+        &#34;&#34;&#34;
+        self.sample_radius = sample_radius
+        self.uniform_radius = uniform_radius
+
+    def initialize(self, num_weights: int):
+        # We will use this method to pre-compute the weight changes, so they can just be added to the current weight state to get the samples later
+
+        # First, we will get all combinations of [-1,0,1] of dimensionality N (number of weight)
+        weight_changes = itertools.product([-1, 0, 1], repeat=num_weights)
+
+        # Remove the entry with all zeros (that would just be the current weight state)
+        weight_changes = filter(lambda x: not all(
+            map(int(0).__eq__, x)), weight_changes)
+
+        # Convert to TensorFlow constant
+        weight_changes = tf.constant(list(weight_changes), dtype=tf.float32)
+
+        # Scale weight changes
+        if self.uniform_radius:
+            weight_changes = scale_to_length(
+                weight_changes, self.sample_radius)
+        else:
+            weight_changes *= self.sample_radius
+        self.weight_changes = weight_changes
+
+    def __call__(self, weights: tf.Tensor) -&gt; tf.Tensor:
+        # Return the samples
+        return weights + self.weight_changes
+
+
+class RandomSamplingTechnique(SamplingTechnique):
+    &#34;&#34;&#34;Implementation of a random sampling technique that obtains samples within a specific radius in a weight space of arbitrary dimensionality.
+    &#34;&#34;&#34;
+
+    def __init__(self, sample_radius: float, num_samples: int, uniform_radius: bool = True):
+        &#34;&#34;&#34;Constructor.
+
+        Arguments:
+            sample_radius {float} -- the sample radius
+            num_samples {int} -- the number of random samples to generate
+
+        Keyword Arguments:
+            uniform_radius {bool} -- whether the samples should be along the circumference of the sampling circle (True) or in the area of the sampling circle (False) (default: {True})
+        &#34;&#34;&#34;
+        self.sample_radius = sample_radius
+        self.num_samples = num_samples
+        self.uniform_radius = uniform_radius
+
+    def initialize(self, num_weights: int):
+        # Remember the number of weights
+        self.num_weights = num_weights
+
+    def __call__(self, weights: tf.Tensor) -&gt; tf.Tensor:
+        # Get random samples in the interval (0, 1]
+        weight_changes = 1 - \
+            tf.random.uniform(
+                shape=(self.num_samples, self.num_weights), minval=0, maxval=1, dtype=tf.float32)
+
+        # Make some of these samples negative, so we get the range [-1,1], but excluding 0
+        sign = tf.sign(weight_changes - 0.5)
+        weight_changes *= tf.where(sign != 0., sign, 1.)
+
+        # Scale the samples
+        if self.uniform_radius:
+            weight_changes = scale_to_length(
+                weight_changes, self.sample_radius)
+        else:
+            weight_changes *= self.sample_radius
+        return weights + weight_changes
+
+
+class RandomSamplingGenerator(SamplingTechnique):
+    &#34;&#34;&#34;Similar to RandomSamplingTechnique, except that samples are obtained on-demand using a generator.
+
+    This should be used when the number of samples needed is not known beforehand, and each sample is processed separately until reaching a termination condition.
+    &#34;&#34;&#34;
+
+    def __init__(self, sample_radius: float, uniform_radius: bool = True):
+        &#34;&#34;&#34;Constructor.
+
+        Arguments:
+            sample_radius {float} -- the sample radius
+            num_samples {int} -- the number of random samples to generate
+
+        Keyword Arguments:
+            uniform_radius {bool} -- whether the samples should be along the circumference of the sampling circle (True) or in the area of the sampling circle (False) (default: {True})
+        &#34;&#34;&#34;
+        self.sample_radius = sample_radius
+        self.uniform_radius = uniform_radius
+
+    def initialize(self, num_weights: int):
+        # Record the number of weights
+        self.num_weights = num_weights
+
+    def __call__(self, weights: tf.Tensor) -&gt; tf.Tensor:
+        # Generator loop
+        while True:
+
+            # Get random samples in the interval (0, 1]
+            weight_changes = 1 - tf.random.uniform(shape=(self.num_weights,),
+                                                   minval=0, maxval=1, dtype=tf.float32)
+            # Make some of these samples negative, so we get the range [-1,1], but excluding 0
+            sign = tf.sign(weight_changes - 0.5)
+            weight_changes *= tf.where(sign == 0., 1., sign)
+
+            # Scale the samples
+            if self.uniform_radius:
+                weight_changes = scale_to_length(
+                    weight_changes, self.sample_radius)
+            else:
+                weight_changes *= self.sample_radius
+
+            # Yield on demand
+            yield weights + weight_changes</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="nf.agents.sampling.ExhaustiveSamplingTechnique"><code class="flex name class">
+<span>class <span class="ident">ExhaustiveSamplingTechnique</span></span>
+<span>(</span><span>sample_radius: float, uniform_radius: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of an exhaustive sampling technique that obtains samples with a specific radius along all possible 45° directions in a weight space of arbitrary dimensionality.</p>
+<p>The number of samples will be 3^N-1 where N is the dimensionality of the weight space.</p>
+<p>Constructor.</p>
+<h2 id="arguments">Arguments</h2>
+<p>sample_radius {float} &ndash; the sample radius</p>
+<p>Keyword Arguments:
+uniform_radius {bool} &ndash; whether or not to ensure that all samples have the same length (if False, the samples at 45° angles will be longer than the ones at 90° angles to any weight axis) (default: {True})</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class ExhaustiveSamplingTechnique(SamplingTechnique):
+    &#34;&#34;&#34;Implementation of an exhaustive sampling technique that obtains samples with a specific radius along all possible 45° directions in a weight space of arbitrary dimensionality.
+
+    The number of samples will be 3^N-1 where N is the dimensionality of the weight space.
+    &#34;&#34;&#34;
+
+    def __init__(self, sample_radius: float, uniform_radius: bool = True):
+        &#34;&#34;&#34;Constructor.
+
+        Arguments:
+            sample_radius {float} -- the sample radius
+
+        Keyword Arguments:
+            uniform_radius {bool} -- whether or not to ensure that all samples have the same length (if False, the samples at 45° angles will be longer than the ones at 90° angles to any weight axis) (default: {True})
+        &#34;&#34;&#34;
+        self.sample_radius = sample_radius
+        self.uniform_radius = uniform_radius
+
+    def initialize(self, num_weights: int):
+        # We will use this method to pre-compute the weight changes, so they can just be added to the current weight state to get the samples later
+
+        # First, we will get all combinations of [-1,0,1] of dimensionality N (number of weight)
+        weight_changes = itertools.product([-1, 0, 1], repeat=num_weights)
+
+        # Remove the entry with all zeros (that would just be the current weight state)
+        weight_changes = filter(lambda x: not all(
+            map(int(0).__eq__, x)), weight_changes)
+
+        # Convert to TensorFlow constant
+        weight_changes = tf.constant(list(weight_changes), dtype=tf.float32)
+
+        # Scale weight changes
+        if self.uniform_radius:
+            weight_changes = scale_to_length(
+                weight_changes, self.sample_radius)
+        else:
+            weight_changes *= self.sample_radius
+        self.weight_changes = weight_changes
+
+    def __call__(self, weights: tf.Tensor) -&gt; tf.Tensor:
+        # Return the samples
+        return weights + self.weight_changes</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="nf.agents.sampling.SamplingTechnique" href="#nf.agents.sampling.SamplingTechnique">SamplingTechnique</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="nf.agents.sampling.SamplingTechnique" href="#nf.agents.sampling.SamplingTechnique">SamplingTechnique</a></b></code>:
+<ul class="hlist">
+<li><code><a title="nf.agents.sampling.SamplingTechnique.initialize" href="#nf.agents.sampling.SamplingTechnique.initialize">initialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="nf.agents.sampling.RandomSamplingGenerator"><code class="flex name class">
+<span>class <span class="ident">RandomSamplingGenerator</span></span>
+<span>(</span><span>sample_radius: float, uniform_radius: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Similar to RandomSamplingTechnique, except that samples are obtained on-demand using a generator.</p>
+<p>This should be used when the number of samples needed is not known beforehand, and each sample is processed separately until reaching a termination condition.</p>
+<p>Constructor.</p>
+<h2 id="arguments">Arguments</h2>
+<p>sample_radius {float} &ndash; the sample radius
+num_samples {int} &ndash; the number of random samples to generate</p>
+<p>Keyword Arguments:
+uniform_radius {bool} &ndash; whether the samples should be along the circumference of the sampling circle (True) or in the area of the sampling circle (False) (default: {True})</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RandomSamplingGenerator(SamplingTechnique):
+    &#34;&#34;&#34;Similar to RandomSamplingTechnique, except that samples are obtained on-demand using a generator.
+
+    This should be used when the number of samples needed is not known beforehand, and each sample is processed separately until reaching a termination condition.
+    &#34;&#34;&#34;
+
+    def __init__(self, sample_radius: float, uniform_radius: bool = True):
+        &#34;&#34;&#34;Constructor.
+
+        Arguments:
+            sample_radius {float} -- the sample radius
+            num_samples {int} -- the number of random samples to generate
+
+        Keyword Arguments:
+            uniform_radius {bool} -- whether the samples should be along the circumference of the sampling circle (True) or in the area of the sampling circle (False) (default: {True})
+        &#34;&#34;&#34;
+        self.sample_radius = sample_radius
+        self.uniform_radius = uniform_radius
+
+    def initialize(self, num_weights: int):
+        # Record the number of weights
+        self.num_weights = num_weights
+
+    def __call__(self, weights: tf.Tensor) -&gt; tf.Tensor:
+        # Generator loop
+        while True:
+
+            # Get random samples in the interval (0, 1]
+            weight_changes = 1 - tf.random.uniform(shape=(self.num_weights,),
+                                                   minval=0, maxval=1, dtype=tf.float32)
+            # Make some of these samples negative, so we get the range [-1,1], but excluding 0
+            sign = tf.sign(weight_changes - 0.5)
+            weight_changes *= tf.where(sign == 0., 1., sign)
+
+            # Scale the samples
+            if self.uniform_radius:
+                weight_changes = scale_to_length(
+                    weight_changes, self.sample_radius)
+            else:
+                weight_changes *= self.sample_radius
+
+            # Yield on demand
+            yield weights + weight_changes</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="nf.agents.sampling.SamplingTechnique" href="#nf.agents.sampling.SamplingTechnique">SamplingTechnique</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="nf.agents.sampling.SamplingTechnique" href="#nf.agents.sampling.SamplingTechnique">SamplingTechnique</a></b></code>:
+<ul class="hlist">
+<li><code><a title="nf.agents.sampling.SamplingTechnique.initialize" href="#nf.agents.sampling.SamplingTechnique.initialize">initialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="nf.agents.sampling.RandomSamplingTechnique"><code class="flex name class">
+<span>class <span class="ident">RandomSamplingTechnique</span></span>
+<span>(</span><span>sample_radius: float, num_samples: int, uniform_radius: bool = True)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Implementation of a random sampling technique that obtains samples within a specific radius in a weight space of arbitrary dimensionality.</p>
+<p>Constructor.</p>
+<h2 id="arguments">Arguments</h2>
+<p>sample_radius {float} &ndash; the sample radius
+num_samples {int} &ndash; the number of random samples to generate</p>
+<p>Keyword Arguments:
+uniform_radius {bool} &ndash; whether the samples should be along the circumference of the sampling circle (True) or in the area of the sampling circle (False) (default: {True})</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class RandomSamplingTechnique(SamplingTechnique):
+    &#34;&#34;&#34;Implementation of a random sampling technique that obtains samples within a specific radius in a weight space of arbitrary dimensionality.
+    &#34;&#34;&#34;
+
+    def __init__(self, sample_radius: float, num_samples: int, uniform_radius: bool = True):
+        &#34;&#34;&#34;Constructor.
+
+        Arguments:
+            sample_radius {float} -- the sample radius
+            num_samples {int} -- the number of random samples to generate
+
+        Keyword Arguments:
+            uniform_radius {bool} -- whether the samples should be along the circumference of the sampling circle (True) or in the area of the sampling circle (False) (default: {True})
+        &#34;&#34;&#34;
+        self.sample_radius = sample_radius
+        self.num_samples = num_samples
+        self.uniform_radius = uniform_radius
+
+    def initialize(self, num_weights: int):
+        # Remember the number of weights
+        self.num_weights = num_weights
+
+    def __call__(self, weights: tf.Tensor) -&gt; tf.Tensor:
+        # Get random samples in the interval (0, 1]
+        weight_changes = 1 - \
+            tf.random.uniform(
+                shape=(self.num_samples, self.num_weights), minval=0, maxval=1, dtype=tf.float32)
+
+        # Make some of these samples negative, so we get the range [-1,1], but excluding 0
+        sign = tf.sign(weight_changes - 0.5)
+        weight_changes *= tf.where(sign != 0., sign, 1.)
+
+        # Scale the samples
+        if self.uniform_radius:
+            weight_changes = scale_to_length(
+                weight_changes, self.sample_radius)
+        else:
+            weight_changes *= self.sample_radius
+        return weights + weight_changes</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="nf.agents.sampling.SamplingTechnique" href="#nf.agents.sampling.SamplingTechnique">SamplingTechnique</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="nf.agents.sampling.SamplingTechnique" href="#nf.agents.sampling.SamplingTechnique">SamplingTechnique</a></b></code>:
+<ul class="hlist">
+<li><code><a title="nf.agents.sampling.SamplingTechnique.initialize" href="#nf.agents.sampling.SamplingTechnique.initialize">initialize</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="nf.agents.sampling.SamplingTechnique"><code class="flex name class">
+<span>class <span class="ident">SamplingTechnique</span></span>
+</code></dt>
+<dd>
+<div class="desc"><p>Abstract base class representing a sampling technique (for weight space).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class SamplingTechnique(ABC):
+    &#34;&#34;&#34;Abstract base class representing a sampling technique (for weight space).
+    &#34;&#34;&#34;
+
+    @abstractmethod
+    def initialize(self, num_weights: int):
+        &#34;&#34;&#34;Initialize the sampling technique.
+
+        This method should be called once before training. 
+        Its purpose is to pre-compute certain values such that they do not have to be computed over and over again during training.
+
+        Arguments:
+            num_weights {int} -- the dimensionality of the weight space
+        &#34;&#34;&#34;
+
+    @abstractmethod
+    def __call__(self, weights: tf.Tensor) -&gt; typing.Union[tf.Tensor, typing.Iterator[tf.Tensor]]:
+        &#34;&#34;&#34;Obtain a sample given the current weight state.
+
+        Arguments:
+            weights {tf.Tensor} -- the current weight state
+
+        Returns:
+            typing.Union[tf.Tensor, typing.Iterator[tf.Tensor]] -- depending on the type of sampling technique, this will be a tensor of all weight samples or a generator to arbitrarily generate weight samples for computational efficiency.
+        &#34;&#34;&#34;</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="nf.agents.sampling.ExhaustiveSamplingTechnique" href="#nf.agents.sampling.ExhaustiveSamplingTechnique">ExhaustiveSamplingTechnique</a></li>
+<li><a title="nf.agents.sampling.RandomSamplingGenerator" href="#nf.agents.sampling.RandomSamplingGenerator">RandomSamplingGenerator</a></li>
+<li><a title="nf.agents.sampling.RandomSamplingTechnique" href="#nf.agents.sampling.RandomSamplingTechnique">RandomSamplingTechnique</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="nf.agents.sampling.SamplingTechnique.initialize"><code class="name flex">
+<span>def <span class="ident">initialize</span></span>(<span>self, num_weights: int)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Initialize the sampling technique.</p>
+<p>This method should be called once before training.
+Its purpose is to pre-compute certain values such that they do not have to be computed over and over again during training.</p>
+<h2 id="arguments">Arguments</h2>
+<p>num_weights {int} &ndash; the dimensionality of the weight space</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def initialize(self, num_weights: int):
+    &#34;&#34;&#34;Initialize the sampling technique.
+
+    This method should be called once before training. 
+    Its purpose is to pre-compute certain values such that they do not have to be computed over and over again during training.
+
+    Arguments:
+        num_weights {int} -- the dimensionality of the weight space
+    &#34;&#34;&#34;</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="nf.agents" href="index.html">nf.agents</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="nf.agents.sampling.ExhaustiveSamplingTechnique" href="#nf.agents.sampling.ExhaustiveSamplingTechnique">ExhaustiveSamplingTechnique</a></code></h4>
+</li>
+<li>
+<h4><code><a title="nf.agents.sampling.RandomSamplingGenerator" href="#nf.agents.sampling.RandomSamplingGenerator">RandomSamplingGenerator</a></code></h4>
+</li>
+<li>
+<h4><code><a title="nf.agents.sampling.RandomSamplingTechnique" href="#nf.agents.sampling.RandomSamplingTechnique">RandomSamplingTechnique</a></code></h4>
+</li>
+<li>
+<h4><code><a title="nf.agents.sampling.SamplingTechnique" href="#nf.agents.sampling.SamplingTechnique">SamplingTechnique</a></code></h4>
+<ul class="">
+<li><code><a title="nf.agents.sampling.SamplingTechnique.initialize" href="#nf.agents.sampling.SamplingTechnique.initialize">initialize</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

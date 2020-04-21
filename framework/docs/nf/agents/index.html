@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.8.1" />
+<title>nf.agents API documentation</title>
+<meta name="description" content="The agents module provides an interface for defining neural agents along with some agent implementations." />
+<link href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.0/normalize.min.css' rel='stylesheet'>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/8.0.0/sanitize.min.css' rel='stylesheet'>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/github.min.css" rel="stylesheet">
+<style>.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>nf.agents</code></h1>
+</header>
+<section id="section-intro">
+<p>The agents module provides an interface for defining neural agents along with some agent implementations.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;The agents module provides an interface for defining neural agents along with some agent implementations.
+&#34;&#34;&#34;
+
+from abc import ABC, abstractmethod
+import typing
+import functools
+import numpy as np
+import tensorflow as tf
+from tensorflow.python.keras.callbacks import configure_callbacks
+from tensorflow.python.keras.utils.mode_keys import ModeKeys
+
+from ..problems import Problem
+from .sampling import SamplingTechnique
+from .util import get_num_weights
+
+
+class Agent(ABC):
+    &#34;&#34;&#34;Abstract class representing a neural agent.
+    &#34;&#34;&#34;
+
+    def __init__(self, problem: Problem):
+        &#34;&#34;&#34;Constructor.
+
+        Arguments:
+            problem {Problem} -- the instance of the problem that this agent will train on
+        &#34;&#34;&#34;
+        self.problem = problem
+
+    @abstractmethod
+    def compile(self):
+        &#34;&#34;&#34;Set up the agent.
+
+        This method is called once before training and must be overridden
+        &#34;&#34;&#34;
+
+    @abstractmethod
+    def fit(self, X: tf.Tensor, y: tf.Tensor, epochs: int, callbacks: typing.List[tf.keras.callbacks.Callback]):
+        &#34;&#34;&#34;Abstract method to perform training. Akin to keras&#39; fit method: the aim is to fit the model to the dataset.
+
+        Arguments:
+            X {tf.Tensor} -- input matrix
+            y {tf.Tensor} -- output samples
+            epochs {int} -- number of epochs to train for
+            callbacks {typing.List[tf.keras.callbacks.Callback]} -- list of keras callbacks to be registered
+        &#34;&#34;&#34;
+
+    def train(self, epochs: int, metrics: typing.List[str] = None) -&gt; typing.Dict[str, np.ndarray]:
+        &#34;&#34;&#34;Train the agent for a specific number of epochs, logging the required metrics.
+
+        Arguments:
+            epochs {int} -- the number of epochs to train for
+
+        Keyword Arguments:
+            metrics {typing.List[str]} -- the epochs to log (need to be specified as part of the Problem instance) (default: {None})
+
+        Returns:
+            typing.Dict[str, np.ndarray] -- dictionary of collected metrics indexed by their name
+        &#34;&#34;&#34;
+
+        data = {}
+
+        def callback(epoch, logs={}):
+            calculated_metrics = self.problem.evaluate_metrics(metrics=metrics)
+            if len(data) == 0:
+                data.update({
+                    name: np.zeros(shape=(epochs, *value.shape),
+                                   dtype=value.dtype)
+                    for name, value in calculated_metrics.items()
+                })
+            for name, value in calculated_metrics.items():
+                data[name][epoch] = value
+
+        self.fit(self.problem.X, self.problem.y,
+                 epochs=epochs,
+                 callbacks=[tf.keras.callbacks.LambdaCallback(on_epoch_end=callback)])
+
+        return data
+
+
+class GradientBasedAgent(Agent, ABC):
+    &#34;&#34;&#34;An abstract class representing an agent that uses derivatives (i.e. can train normally using the keras fit method).
+    &#34;&#34;&#34;
+
+    def fit(self, *args, **kwargs):
+        self.problem.model.fit(*args, **kwargs)
+
+
+class GradientFreeAgent(Agent, ABC):
+    &#34;&#34;&#34;An abstract class representing a derivative-free agent. This means that the agent uses a sampling technique instead of relying on derivative information.
+    &#34;&#34;&#34;
+
+    def __init__(self, problem: Problem, sampler: SamplingTechnique):
+        &#34;&#34;&#34;Constructor
+
+        Arguments:
+            problem {Problem} -- the instance of the problem that this agent will train on
+            sampler {SamplingTechnique} -- the sampling technique to employ
+        &#34;&#34;&#34;
+
+        super().__init__(problem)
+
+        # Keep a record of the shape of the weights; will be required later to get and set weights
+        self.weights_shape = list(
+            map(tf.shape, self.problem.model.get_weights()))
+        self.num_weights = get_num_weights(self.problem.model)
+
+        # Initialize the sampler
+        self.sampler = sampler
+        sampler.initialize(self.num_weights)
+
+    def get_weights(self) -&gt; tf.Tensor:
+        &#34;&#34;&#34;Get the current weight state as a concatenated vector.
+
+        Returns:
+            tf.Tensor -- the weight vector
+        &#34;&#34;&#34;
+
+        return tf.concat([tf.reshape(x, [-1]) for x in self.problem.model.get_weights()], axis=0)
+
+    def set_weights(self, weights: tf.Tensor):
+        &#34;&#34;&#34;Set the weight vector.
+
+        Internally, the weights are formed back into the shape required by keras.
+
+        Arguments:
+            weights {tf.Tensor} -- the weight vector
+        &#34;&#34;&#34;
+
+        weights = tf.split(weights, list(
+            map(tf.reduce_prod, self.weights_shape)))
+        weights = [tf.reshape(x, shape)
+                   for (x, shape) in zip(weights, self.weights_shape)]
+        self.problem.model.set_weights(weights)
+
+    def predict_for_weights(self, weights: tf.Tensor, X: tf.Tensor) -&gt; tf.Tensor:
+        &#34;&#34;&#34;Get the prediction output for the model given a specific weight state.
+
+        Note: this function does *not* change the weights back!
+
+        Arguments:
+            weights {tf.Tensor} -- the weight vector
+            X {tf.Tensor} -- the input matrix
+
+        Returns:
+            tf.Tensor -- the outputs (predictions)
+        &#34;&#34;&#34;
+
+        self.set_weights(weights)
+        return self.problem.model.predict(X)
+
+    def predict_for_multiple_weights(self, weights: tf.Tensor, X: tf.Tensor) -&gt; tf.Tensor:
+        &#34;&#34;&#34;A batched version of the predict_for_weights function. 
+
+        Batching is performed over the first dimension of the weights tensor.
+
+        Arguments:
+            weights {tf.Tensor} -- the weight matrix (collection of weight vectors)
+            X {tf.Tensor} -- the input samples
+
+        Returns:
+            tf.Tensor -- the outputs for each weight vector
+        &#34;&#34;&#34;
+        outputs = tf.map_fn(functools.partial(self.predict_for_weights, X=X),
+                            weights,
+                            parallel_iterations=1,
+                            back_prop=False)
+        return tf.reshape(outputs, (weights.shape[0], -1))
+
+    def compile(self):
+        # We can safely override this method to no-op because we require no initialisation
+        pass
+
+    @abstractmethod
+    def choose_best_weight_update(self, weight_samples: tf.Tensor, weight_history: tf.Tensor, output_history: tf.Tensor, X: tf.Tensor, y: tf.Tensor) -&gt; tf.Tensor:
+        &#34;&#34;&#34;Abstract method that decides which weight update to choose.
+
+        This is the only method that needs to be overridden by the agent implementation.
+        Given a set of samples in weight space (produced by the sampling techniques) as well as other information (history of weights and outputs, as well as input samples and output targets),
+        this function should return the new weight state that should be chosen.
+        This method is called once per epoch.
+
+        Arguments:
+            weight_samples {tf.Tensor} -- the samples in weight space produced by the sampling technique
+            weight_history {tf.Tensor} -- the history of weight states
+            output_history {tf.Tensor} -- the history of predictions (output states)
+            X {tf.Tensor} -- the input matrix
+            y {tf.Tensor} -- the output targets
+
+        Returns:
+            tf.Tensor -- the new weight state chosen by the agent
+        &#34;&#34;&#34;
+
+    def fit(self, X: tf.Tensor, y: tf.Tensor, epochs: int, callbacks: typing.List[tf.keras.callbacks.Callback]):
+        # We provide a custom implementation of the fit method here, to make it easier for gradient-free agents to be implemented.
+        # This method takes care of all the administrative tasks such as registering callbacks.
+        # The user will only need to override the choose_best_weight_update method because this function will call it once per epoch to determine the new weight state.
+
+        # Configure keras callbacks
+        callbacks = configure_callbacks(callbacks, self.problem.model,
+                                        epochs=epochs)
+        callbacks._call_begin_hook(ModeKeys.TRAIN)
+
+        # Keep a record of the weight and output history.
+        # We will use numpy arrays instead of Python lists for performance, since we know the length of the history beforehand.
+        # W cannot use the TensorFlow tensors themselves here because their values will change, but we want to record the *historical* values, hence we will be using numpy arrays.
+        weight_history = np.zeros((epochs, self.num_weights))
+        output_history = np.zeros((epochs, *y.shape))
+
+        # Training loop (iterate over the epochs)
+        for epoch in range(epochs):
+
+            # If one of the keras callbacks caused early stopping, we will exit the training loop
+            if callbacks.model.stop_training:
+                break
+
+            # Register the beginning of the epoch
+            callbacks.on_epoch_begin(epoch, {})
+
+            # Record the current weights and outputs
+            weights = self.get_weights()
+            outputs = self.problem.model.predict(X)
+            weight_history[epoch] = weights
+            output_history[epoch] = np.reshape(outputs, y.shape)
+
+            # Get the weight samples from the sampler
+            weight_samples = self.sampler(self.get_weights())
+
+            # Consult the agent implementation for the best weight state to choose
+            new_weights = self.choose_best_weight_update(weight_samples,
+                                                         weight_history[:epoch+1],
+                                                         output_history[:epoch+1],
+                                                         X, y)
+
+            # Set the weights
+            self.set_weights(new_weights)
+
+            # Signify end of epoch
+            callbacks.on_epoch_end(epoch, {})
+
+        # Signify end of training
+        callbacks._call_end_hook(ModeKeys.TRAIN)</code></pre>
+</details>
+</section>
+<section>
+<h2 class="section-title" id="header-submodules">Sub-modules</h2>
+<dl>
+<dt><code class="name"><a title="nf.agents.greedy_probing" href="greedy_probing.html">nf.agents.greedy_probing</a></code></dt>
+<dd>
+<div class="desc"><p>The greedy probing agent.</p></div>
+</dd>
+<dt><code class="name"><a title="nf.agents.loss_with_goal_line_deviation" href="loss_with_goal_line_deviation.html">nf.agents.loss_with_goal_line_deviation</a></code></dt>
+<dd>
+<div class="desc"><p>A gradient-based agent with a custom loss function that tries to minimise the distance to the goal line.</p></div>
+</dd>
+<dt><code class="name"><a title="nf.agents.mse" href="mse.html">nf.agents.mse</a></code></dt>
+<dd>
+<div class="desc"><p>The classical steepest gradient descent agent with mean squared eror.</p></div>
+</dd>
+<dt><code class="name"><a title="nf.agents.sampling" href="sampling.html">nf.agents.sampling</a></code></dt>
+<dd>
+<div class="desc"><p>Sampling techniques for gradient-free agents.</p></div>
+</dd>
+<dt><code class="name"><a title="nf.agents.simulated_annealing" href="simulated_annealing.html">nf.agents.simulated_annealing</a></code></dt>
+<dd>
+<div class="desc"><p>The simulated annealing agent.</p></div>
+</dd>
+<dt><code class="name"><a title="nf.agents.util" href="util.html">nf.agents.util</a></code></dt>
+<dd>
+<div class="desc"><p>Utilities for the agents module.</p></div>
+</dd>
+</dl>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="nf.agents.Agent"><code class="flex name class">
+<span>class <span class="ident">Agent</span></span>
+<span>(</span><span>problem: <a title="nf.problems.Problem" href="../problems/index.html#nf.problems.Problem">Problem</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Abstract class representing a neural agent.</p>
+<p>Constructor.</p>
+<h2 id="arguments">Arguments</h2>
+<p>problem {Problem} &ndash; the instance of the problem that this agent will train on</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class Agent(ABC):
+    &#34;&#34;&#34;Abstract class representing a neural agent.
+    &#34;&#34;&#34;
+
+    def __init__(self, problem: Problem):
+        &#34;&#34;&#34;Constructor.
+
+        Arguments:
+            problem {Problem} -- the instance of the problem that this agent will train on
+        &#34;&#34;&#34;
+        self.problem = problem
+
+    @abstractmethod
+    def compile(self):
+        &#34;&#34;&#34;Set up the agent.
+
+        This method is called once before training and must be overridden
+        &#34;&#34;&#34;
+
+    @abstractmethod
+    def fit(self, X: tf.Tensor, y: tf.Tensor, epochs: int, callbacks: typing.List[tf.keras.callbacks.Callback]):
+        &#34;&#34;&#34;Abstract method to perform training. Akin to keras&#39; fit method: the aim is to fit the model to the dataset.
+
+        Arguments:
+            X {tf.Tensor} -- input matrix
+            y {tf.Tensor} -- output samples
+            epochs {int} -- number of epochs to train for
+            callbacks {typing.List[tf.keras.callbacks.Callback]} -- list of keras callbacks to be registered
+        &#34;&#34;&#34;
+
+    def train(self, epochs: int, metrics: typing.List[str] = None) -&gt; typing.Dict[str, np.ndarray]:
+        &#34;&#34;&#34;Train the agent for a specific number of epochs, logging the required metrics.
+
+        Arguments:
+            epochs {int} -- the number of epochs to train for
+
+        Keyword Arguments:
+            metrics {typing.List[str]} -- the epochs to log (need to be specified as part of the Problem instance) (default: {None})
+
+        Returns:
+            typing.Dict[str, np.ndarray] -- dictionary of collected metrics indexed by their name
+        &#34;&#34;&#34;
+
+        data = {}
+
+        def callback(epoch, logs={}):
+            calculated_metrics = self.problem.evaluate_metrics(metrics=metrics)
+            if len(data) == 0:
+                data.update({
+                    name: np.zeros(shape=(epochs, *value.shape),
+                                   dtype=value.dtype)
+                    for name, value in calculated_metrics.items()
+                })
+            for name, value in calculated_metrics.items():
+                data[name][epoch] = value
+
+        self.fit(self.problem.X, self.problem.y,
+                 epochs=epochs,
+                 callbacks=[tf.keras.callbacks.LambdaCallback(on_epoch_end=callback)])
+
+        return data</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="nf.agents.GradientBasedAgent" href="#nf.agents.GradientBasedAgent">GradientBasedAgent</a></li>
+<li><a title="nf.agents.GradientFreeAgent" href="#nf.agents.GradientFreeAgent">GradientFreeAgent</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="nf.agents.Agent.compile"><code class="name flex">
+<span>def <span class="ident">compile</span></span>(<span>self)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set up the agent.</p>
+<p>This method is called once before training and must be overridden</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def compile(self):
+    &#34;&#34;&#34;Set up the agent.
+
+    This method is called once before training and must be overridden
+    &#34;&#34;&#34;</code></pre>
+</details>
+</dd>
+<dt id="nf.agents.Agent.fit"><code class="name flex">
+<span>def <span class="ident">fit</span></span>(<span>self, X: tensorflow.python.framework.ops.Tensor, y: tensorflow.python.framework.ops.Tensor, epochs: int, callbacks: List[tensorflow.python.keras.callbacks.Callback])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Abstract method to perform training. Akin to keras' fit method: the aim is to fit the model to the dataset.</p>
+<h2 id="arguments">Arguments</h2>
+<p>X {tf.Tensor} &ndash; input matrix
+y {tf.Tensor} &ndash; output samples
+epochs {int} &ndash; number of epochs to train for
+callbacks {typing.List[tf.keras.callbacks.Callback]} &ndash; list of keras callbacks to be registered</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def fit(self, X: tf.Tensor, y: tf.Tensor, epochs: int, callbacks: typing.List[tf.keras.callbacks.Callback]):
+    &#34;&#34;&#34;Abstract method to perform training. Akin to keras&#39; fit method: the aim is to fit the model to the dataset.
+
+    Arguments:
+        X {tf.Tensor} -- input matrix
+        y {tf.Tensor} -- output samples
+        epochs {int} -- number of epochs to train for
+        callbacks {typing.List[tf.keras.callbacks.Callback]} -- list of keras callbacks to be registered
+    &#34;&#34;&#34;</code></pre>
+</details>
+</dd>
+<dt id="nf.agents.Agent.train"><code class="name flex">
+<span>def <span class="ident">train</span></span>(<span>self, epochs: int, metrics: List[str] = None) -> Dict[str, numpy.ndarray]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Train the agent for a specific number of epochs, logging the required metrics.</p>
+<h2 id="arguments">Arguments</h2>
+<p>epochs {int} &ndash; the number of epochs to train for</p>
+<p>Keyword Arguments:
+metrics {typing.List[str]} &ndash; the epochs to log (need to be specified as part of the Problem instance) (default: {None})</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>typing.Dict[str, np.ndarray] -- dictionary</code> of <code>collected metrics indexed by their name</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def train(self, epochs: int, metrics: typing.List[str] = None) -&gt; typing.Dict[str, np.ndarray]:
+    &#34;&#34;&#34;Train the agent for a specific number of epochs, logging the required metrics.
+
+    Arguments:
+        epochs {int} -- the number of epochs to train for
+
+    Keyword Arguments:
+        metrics {typing.List[str]} -- the epochs to log (need to be specified as part of the Problem instance) (default: {None})
+
+    Returns:
+        typing.Dict[str, np.ndarray] -- dictionary of collected metrics indexed by their name
+    &#34;&#34;&#34;
+
+    data = {}
+
+    def callback(epoch, logs={}):
+        calculated_metrics = self.problem.evaluate_metrics(metrics=metrics)
+        if len(data) == 0:
+            data.update({
+                name: np.zeros(shape=(epochs, *value.shape),
+                               dtype=value.dtype)
+                for name, value in calculated_metrics.items()
+            })
+        for name, value in calculated_metrics.items():
+            data[name][epoch] = value
+
+    self.fit(self.problem.X, self.problem.y,
+             epochs=epochs,
+             callbacks=[tf.keras.callbacks.LambdaCallback(on_epoch_end=callback)])
+
+    return data</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+<dt id="nf.agents.GradientBasedAgent"><code class="flex name class">
+<span>class <span class="ident">GradientBasedAgent</span></span>
+<span>(</span><span>problem: <a title="nf.problems.Problem" href="../problems/index.html#nf.problems.Problem">Problem</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An abstract class representing an agent that uses derivatives (i.e. can train normally using the keras fit method).</p>
+<p>Constructor.</p>
+<h2 id="arguments">Arguments</h2>
+<p>problem {Problem} &ndash; the instance of the problem that this agent will train on</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GradientBasedAgent(Agent, ABC):
+    &#34;&#34;&#34;An abstract class representing an agent that uses derivatives (i.e. can train normally using the keras fit method).
+    &#34;&#34;&#34;
+
+    def fit(self, *args, **kwargs):
+        self.problem.model.fit(*args, **kwargs)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="nf.agents.Agent" href="#nf.agents.Agent">Agent</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="nf.agents.loss_with_goal_line_deviation.LossWithGoalLineDeviation" href="loss_with_goal_line_deviation.html#nf.agents.loss_with_goal_line_deviation.LossWithGoalLineDeviation">LossWithGoalLineDeviation</a></li>
+<li><a title="nf.agents.mse.MSE" href="mse.html#nf.agents.mse.MSE">MSE</a></li>
+</ul>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="nf.agents.Agent" href="#nf.agents.Agent">Agent</a></b></code>:
+<ul class="hlist">
+<li><code><a title="nf.agents.Agent.compile" href="#nf.agents.Agent.compile">compile</a></code></li>
+<li><code><a title="nf.agents.Agent.fit" href="#nf.agents.Agent.fit">fit</a></code></li>
+<li><code><a title="nf.agents.Agent.train" href="#nf.agents.Agent.train">train</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+<dt id="nf.agents.GradientFreeAgent"><code class="flex name class">
+<span>class <span class="ident">GradientFreeAgent</span></span>
+<span>(</span><span>problem: <a title="nf.problems.Problem" href="../problems/index.html#nf.problems.Problem">Problem</a>, sampler: <a title="nf.agents.sampling.SamplingTechnique" href="sampling.html#nf.agents.sampling.SamplingTechnique">SamplingTechnique</a>)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>An abstract class representing a derivative-free agent. This means that the agent uses a sampling technique instead of relying on derivative information.</p>
+<p>Constructor</p>
+<h2 id="arguments">Arguments</h2>
+<p>problem {Problem} &ndash; the instance of the problem that this agent will train on
+sampler {SamplingTechnique} &ndash; the sampling technique to employ</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class GradientFreeAgent(Agent, ABC):
+    &#34;&#34;&#34;An abstract class representing a derivative-free agent. This means that the agent uses a sampling technique instead of relying on derivative information.
+    &#34;&#34;&#34;
+
+    def __init__(self, problem: Problem, sampler: SamplingTechnique):
+        &#34;&#34;&#34;Constructor
+
+        Arguments:
+            problem {Problem} -- the instance of the problem that this agent will train on
+            sampler {SamplingTechnique} -- the sampling technique to employ
+        &#34;&#34;&#34;
+
+        super().__init__(problem)
+
+        # Keep a record of the shape of the weights; will be required later to get and set weights
+        self.weights_shape = list(
+            map(tf.shape, self.problem.model.get_weights()))
+        self.num_weights = get_num_weights(self.problem.model)
+
+        # Initialize the sampler
+        self.sampler = sampler
+        sampler.initialize(self.num_weights)
+
+    def get_weights(self) -&gt; tf.Tensor:
+        &#34;&#34;&#34;Get the current weight state as a concatenated vector.
+
+        Returns:
+            tf.Tensor -- the weight vector
+        &#34;&#34;&#34;
+
+        return tf.concat([tf.reshape(x, [-1]) for x in self.problem.model.get_weights()], axis=0)
+
+    def set_weights(self, weights: tf.Tensor):
+        &#34;&#34;&#34;Set the weight vector.
+
+        Internally, the weights are formed back into the shape required by keras.
+
+        Arguments:
+            weights {tf.Tensor} -- the weight vector
+        &#34;&#34;&#34;
+
+        weights = tf.split(weights, list(
+            map(tf.reduce_prod, self.weights_shape)))
+        weights = [tf.reshape(x, shape)
+                   for (x, shape) in zip(weights, self.weights_shape)]
+        self.problem.model.set_weights(weights)
+
+    def predict_for_weights(self, weights: tf.Tensor, X: tf.Tensor) -&gt; tf.Tensor:
+        &#34;&#34;&#34;Get the prediction output for the model given a specific weight state.
+
+        Note: this function does *not* change the weights back!
+
+        Arguments:
+            weights {tf.Tensor} -- the weight vector
+            X {tf.Tensor} -- the input matrix
+
+        Returns:
+            tf.Tensor -- the outputs (predictions)
+        &#34;&#34;&#34;
+
+        self.set_weights(weights)
+        return self.problem.model.predict(X)
+
+    def predict_for_multiple_weights(self, weights: tf.Tensor, X: tf.Tensor) -&gt; tf.Tensor:
+        &#34;&#34;&#34;A batched version of the predict_for_weights function. 
+
+        Batching is performed over the first dimension of the weights tensor.
+
+        Arguments:
+            weights {tf.Tensor} -- the weight matrix (collection of weight vectors)
+            X {tf.Tensor} -- the input samples
+
+        Returns:
+            tf.Tensor -- the outputs for each weight vector
+        &#34;&#34;&#34;
+        outputs = tf.map_fn(functools.partial(self.predict_for_weights, X=X),
+                            weights,
+                            parallel_iterations=1,
+                            back_prop=False)
+        return tf.reshape(outputs, (weights.shape[0], -1))
+
+    def compile(self):
+        # We can safely override this method to no-op because we require no initialisation
+        pass
+
+    @abstractmethod
+    def choose_best_weight_update(self, weight_samples: tf.Tensor, weight_history: tf.Tensor, output_history: tf.Tensor, X: tf.Tensor, y: tf.Tensor) -&gt; tf.Tensor:
+        &#34;&#34;&#34;Abstract method that decides which weight update to choose.
+
+        This is the only method that needs to be overridden by the agent implementation.
+        Given a set of samples in weight space (produced by the sampling techniques) as well as other information (history of weights and outputs, as well as input samples and output targets),
+        this function should return the new weight state that should be chosen.
+        This method is called once per epoch.
+
+        Arguments:
+            weight_samples {tf.Tensor} -- the samples in weight space produced by the sampling technique
+            weight_history {tf.Tensor} -- the history of weight states
+            output_history {tf.Tensor} -- the history of predictions (output states)
+            X {tf.Tensor} -- the input matrix
+            y {tf.Tensor} -- the output targets
+
+        Returns:
+            tf.Tensor -- the new weight state chosen by the agent
+        &#34;&#34;&#34;
+
+    def fit(self, X: tf.Tensor, y: tf.Tensor, epochs: int, callbacks: typing.List[tf.keras.callbacks.Callback]):
+        # We provide a custom implementation of the fit method here, to make it easier for gradient-free agents to be implemented.
+        # This method takes care of all the administrative tasks such as registering callbacks.
+        # The user will only need to override the choose_best_weight_update method because this function will call it once per epoch to determine the new weight state.
+
+        # Configure keras callbacks
+        callbacks = configure_callbacks(callbacks, self.problem.model,
+                                        epochs=epochs)
+        callbacks._call_begin_hook(ModeKeys.TRAIN)
+
+        # Keep a record of the weight and output history.
+        # We will use numpy arrays instead of Python lists for performance, since we know the length of the history beforehand.
+        # W cannot use the TensorFlow tensors themselves here because their values will change, but we want to record the *historical* values, hence we will be using numpy arrays.
+        weight_history = np.zeros((epochs, self.num_weights))
+        output_history = np.zeros((epochs, *y.shape))
+
+        # Training loop (iterate over the epochs)
+        for epoch in range(epochs):
+
+            # If one of the keras callbacks caused early stopping, we will exit the training loop
+            if callbacks.model.stop_training:
+                break
+
+            # Register the beginning of the epoch
+            callbacks.on_epoch_begin(epoch, {})
+
+            # Record the current weights and outputs
+            weights = self.get_weights()
+            outputs = self.problem.model.predict(X)
+            weight_history[epoch] = weights
+            output_history[epoch] = np.reshape(outputs, y.shape)
+
+            # Get the weight samples from the sampler
+            weight_samples = self.sampler(self.get_weights())
+
+            # Consult the agent implementation for the best weight state to choose
+            new_weights = self.choose_best_weight_update(weight_samples,
+                                                         weight_history[:epoch+1],
+                                                         output_history[:epoch+1],
+                                                         X, y)
+
+            # Set the weights
+            self.set_weights(new_weights)
+
+            # Signify end of epoch
+            callbacks.on_epoch_end(epoch, {})
+
+        # Signify end of training
+        callbacks._call_end_hook(ModeKeys.TRAIN)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="nf.agents.Agent" href="#nf.agents.Agent">Agent</a></li>
+<li>abc.ABC</li>
+</ul>
+<h3>Subclasses</h3>
+<ul class="hlist">
+<li><a title="nf.agents.greedy_probing.GreedyProbing" href="greedy_probing.html#nf.agents.greedy_probing.GreedyProbing">GreedyProbing</a></li>
+<li><a title="nf.agents.simulated_annealing.SimulatedAnnealing" href="simulated_annealing.html#nf.agents.simulated_annealing.SimulatedAnnealing">SimulatedAnnealing</a></li>
+</ul>
+<h3>Methods</h3>
+<dl>
+<dt id="nf.agents.GradientFreeAgent.choose_best_weight_update"><code class="name flex">
+<span>def <span class="ident">choose_best_weight_update</span></span>(<span>self, weight_samples: tensorflow.python.framework.ops.Tensor, weight_history: tensorflow.python.framework.ops.Tensor, output_history: tensorflow.python.framework.ops.Tensor, X: tensorflow.python.framework.ops.Tensor, y: tensorflow.python.framework.ops.Tensor) -> tensorflow.python.framework.ops.Tensor</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Abstract method that decides which weight update to choose.</p>
+<p>This is the only method that needs to be overridden by the agent implementation.
+Given a set of samples in weight space (produced by the sampling techniques) as well as other information (history of weights and outputs, as well as input samples and output targets),
+this function should return the new weight state that should be chosen.
+This method is called once per epoch.</p>
+<h2 id="arguments">Arguments</h2>
+<p>weight_samples {tf.Tensor} &ndash; the samples in weight space produced by the sampling technique
+weight_history {tf.Tensor} &ndash; the history of weight states
+output_history {tf.Tensor} &ndash; the history of predictions (output states)
+X {tf.Tensor} &ndash; the input matrix
+y {tf.Tensor} &ndash; the output targets</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tf.Tensor -- the new weight state chosen by the agent</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@abstractmethod
+def choose_best_weight_update(self, weight_samples: tf.Tensor, weight_history: tf.Tensor, output_history: tf.Tensor, X: tf.Tensor, y: tf.Tensor) -&gt; tf.Tensor:
+    &#34;&#34;&#34;Abstract method that decides which weight update to choose.
+
+    This is the only method that needs to be overridden by the agent implementation.
+    Given a set of samples in weight space (produced by the sampling techniques) as well as other information (history of weights and outputs, as well as input samples and output targets),
+    this function should return the new weight state that should be chosen.
+    This method is called once per epoch.
+
+    Arguments:
+        weight_samples {tf.Tensor} -- the samples in weight space produced by the sampling technique
+        weight_history {tf.Tensor} -- the history of weight states
+        output_history {tf.Tensor} -- the history of predictions (output states)
+        X {tf.Tensor} -- the input matrix
+        y {tf.Tensor} -- the output targets
+
+    Returns:
+        tf.Tensor -- the new weight state chosen by the agent
+    &#34;&#34;&#34;</code></pre>
+</details>
+</dd>
+<dt id="nf.agents.GradientFreeAgent.get_weights"><code class="name flex">
+<span>def <span class="ident">get_weights</span></span>(<span>self) -> tensorflow.python.framework.ops.Tensor</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the current weight state as a concatenated vector.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tf.Tensor -- the weight vector</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def get_weights(self) -&gt; tf.Tensor:
+    &#34;&#34;&#34;Get the current weight state as a concatenated vector.
+
+    Returns:
+        tf.Tensor -- the weight vector
+    &#34;&#34;&#34;
+
+    return tf.concat([tf.reshape(x, [-1]) for x in self.problem.model.get_weights()], axis=0)</code></pre>
+</details>
+</dd>
+<dt id="nf.agents.GradientFreeAgent.predict_for_multiple_weights"><code class="name flex">
+<span>def <span class="ident">predict_for_multiple_weights</span></span>(<span>self, weights: tensorflow.python.framework.ops.Tensor, X: tensorflow.python.framework.ops.Tensor) -> tensorflow.python.framework.ops.Tensor</span>
+</code></dt>
+<dd>
+<div class="desc"><p>A batched version of the predict_for_weights function. </p>
+<p>Batching is performed over the first dimension of the weights tensor.</p>
+<h2 id="arguments">Arguments</h2>
+<p>weights {tf.Tensor} &ndash; the weight matrix (collection of weight vectors)
+X {tf.Tensor} &ndash; the input samples</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tf.Tensor -- the outputs for each weight vector</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def predict_for_multiple_weights(self, weights: tf.Tensor, X: tf.Tensor) -&gt; tf.Tensor:
+    &#34;&#34;&#34;A batched version of the predict_for_weights function. 
+
+    Batching is performed over the first dimension of the weights tensor.
+
+    Arguments:
+        weights {tf.Tensor} -- the weight matrix (collection of weight vectors)
+        X {tf.Tensor} -- the input samples
+
+    Returns:
+        tf.Tensor -- the outputs for each weight vector
+    &#34;&#34;&#34;
+    outputs = tf.map_fn(functools.partial(self.predict_for_weights, X=X),
+                        weights,
+                        parallel_iterations=1,
+                        back_prop=False)
+    return tf.reshape(outputs, (weights.shape[0], -1))</code></pre>
+</details>
+</dd>
+<dt id="nf.agents.GradientFreeAgent.predict_for_weights"><code class="name flex">
+<span>def <span class="ident">predict_for_weights</span></span>(<span>self, weights: tensorflow.python.framework.ops.Tensor, X: tensorflow.python.framework.ops.Tensor) -> tensorflow.python.framework.ops.Tensor</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Get the prediction output for the model given a specific weight state.</p>
+<p>Note: this function does <em>not</em> change the weights back!</p>
+<h2 id="arguments">Arguments</h2>
+<p>weights {tf.Tensor} &ndash; the weight vector
+X {tf.Tensor} &ndash; the input matrix</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>tf.Tensor -- the outputs (predictions)</code></dt>
+<dd>&nbsp;</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def predict_for_weights(self, weights: tf.Tensor, X: tf.Tensor) -&gt; tf.Tensor:
+    &#34;&#34;&#34;Get the prediction output for the model given a specific weight state.
+
+    Note: this function does *not* change the weights back!
+
+    Arguments:
+        weights {tf.Tensor} -- the weight vector
+        X {tf.Tensor} -- the input matrix
+
+    Returns:
+        tf.Tensor -- the outputs (predictions)
+    &#34;&#34;&#34;
+
+    self.set_weights(weights)
+    return self.problem.model.predict(X)</code></pre>
+</details>
+</dd>
+<dt id="nf.agents.GradientFreeAgent.set_weights"><code class="name flex">
+<span>def <span class="ident">set_weights</span></span>(<span>self, weights: tensorflow.python.framework.ops.Tensor)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Set the weight vector.</p>
+<p>Internally, the weights are formed back into the shape required by keras.</p>
+<h2 id="arguments">Arguments</h2>
+<p>weights {tf.Tensor} &ndash; the weight vector</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def set_weights(self, weights: tf.Tensor):
+    &#34;&#34;&#34;Set the weight vector.
+
+    Internally, the weights are formed back into the shape required by keras.
+
+    Arguments:
+        weights {tf.Tensor} -- the weight vector
+    &#34;&#34;&#34;
+
+    weights = tf.split(weights, list(
+        map(tf.reduce_prod, self.weights_shape)))
+    weights = [tf.reshape(x, shape)
+               for (x, shape) in zip(weights, self.weights_shape)]
+    self.problem.model.set_weights(weights)</code></pre>
+</details>
+</dd>
+</dl>
+<h3>Inherited members</h3>
+<ul class="hlist">
+<li><code><b><a title="nf.agents.Agent" href="#nf.agents.Agent">Agent</a></b></code>:
+<ul class="hlist">
+<li><code><a title="nf.agents.Agent.compile" href="#nf.agents.Agent.compile">compile</a></code></li>
+<li><code><a title="nf.agents.Agent.fit" href="#nf.agents.Agent.fit">fit</a></code></li>
+<li><code><a title="nf.agents.Agent.train" href="#nf.agents.Agent.train">train</a></code></li>
+</ul>
+</li>
+</ul>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="nf" href="../index.html">nf</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-submodules">Sub-modules</a></h3>
+<ul>
+<li><code><a title="nf.agents.greedy_probing" href="greedy_probing.html">nf.agents.greedy_probing</a></code></li>
+<li><code><a title="nf.agents.loss_with_goal_line_deviation" href="loss_with_goal_line_deviation.html">nf.agents.loss_with_goal_line_deviation</a></code></li>
+<li><code><a title="nf.agents.mse" href="mse.html">nf.agents.mse</a></code></li>
+<li><code><a title="nf.agents.sampling" href="sampling.html">nf.agents.sampling</a></code></li>
+<li><code><a title="nf.agents.simulated_annealing" href="simulated_annealing.html">nf.agents.simulated_annealing</a></code></li>
+<li><code><a title="nf.agents.util" href="util.html">nf.agents.util</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="nf.agents.Agent" href="#nf.agents.Agent">Agent</a></code></h4>
+<ul class="">
+<li><code><a title="nf.agents.Agent.compile" href="#nf.agents.Agent.compile">compile</a></code></li>
+<li><code><a title="nf.agents.Agent.fit" href="#nf.agents.Agent.fit">fit</a></code></li>
+<li><code><a title="nf.agents.Agent.train" href="#nf.agents.Agent.train">train</a></code></li>
+</ul>
+</li>
+<li>
+<h4><code><a title="nf.agents.GradientBasedAgent" href="#nf.agents.GradientBasedAgent">GradientBasedAgent</a></code></h4>
+</li>
+<li>
+<h4><code><a title="nf.agents.GradientFreeAgent" href="#nf.agents.GradientFreeAgent">GradientFreeAgent</a></code></h4>
+<ul class="">
+<li><code><a title="nf.agents.GradientFreeAgent.choose_best_weight_update" href="#nf.agents.GradientFreeAgent.choose_best_weight_update">choose_best_weight_update</a></code></li>
+<li><code><a title="nf.agents.GradientFreeAgent.get_weights" href="#nf.agents.GradientFreeAgent.get_weights">get_weights</a></code></li>
+<li><code><a title="nf.agents.GradientFreeAgent.predict_for_multiple_weights" href="#nf.agents.GradientFreeAgent.predict_for_multiple_weights">predict_for_multiple_weights</a></code></li>
+<li><code><a title="nf.agents.GradientFreeAgent.predict_for_weights" href="#nf.agents.GradientFreeAgent.predict_for_weights">predict_for_weights</a></code></li>
+<li><code><a title="nf.agents.GradientFreeAgent.set_weights" href="#nf.agents.GradientFreeAgent.set_weights">set_weights</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc"><cite>pdoc</cite> 0.8.1</a>.</p>
+</footer>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+<script>hljs.initHighlightingOnLoad()</script>
+</body>
+</html>

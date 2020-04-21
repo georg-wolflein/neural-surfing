@@ -1,12 +1,16 @@
 """Demo for the shallow problem (see Figure 7 in ../progress/main.pdf).
 """
 
-from agents import MSE, LossWithGoalLineDeviation, GreedyProbing, SimulatedAnnealing
-from agents.sampling import ExhaustiveSamplingTechnique, RandomSamplingTechnique
-from problems.shallow_problem import ShallowProblem
+from nf.agents.mse import MSE
+from nf.agents.loss_with_goal_line_deviation import LossWithGoalLineDeviation
+from nf.agents.greedy_probing import GreedyProbing
+from nf.agents.simulated_annealing import SimulatedAnnealing
+from nf.agents.sampling import ExhaustiveSamplingTechnique, RandomSamplingTechnique
+from nf.problems.shallow_problem import ShallowProblem
 
-from experiment import Experiment
-from experiment.visualisations import Scatter2D, Histogram
+from nf.experiment import Experiment
+from nf.experiment.visualisations.scatter2d import Scatter2D
+from nf.experiment.visualisations.histogram import Histogram
 from util import get_demo_args
 
 # Get command-line arguments

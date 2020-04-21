@@ -8,7 +8,8 @@ def get_demo_args() -> dict:
         dict -- the arguments as key-value pairs
     """
 
-    parser = ArgumentParser(description="Demo tool")
+    parser = ArgumentParser(
+        description="A demonstrational tool for the neural framework")
     parser.add_argument("--batch-size",
                         dest="epoch_batch_size",
                         help="Number of epochs to train for per agent per batch",
