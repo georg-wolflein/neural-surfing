@@ -5,18 +5,22 @@ from .util import DenseWithFixedBias
 
 
 class SimpleProblem(Problem):
+    """Implementation a simple neural problem that likely has no suboptimal local minima; can be used for testing that agents work under normal circumstances.
+    """
 
     def __init__(self):
 
+        # Initial weights and bias
         bias = 0
         initial_weights = np.array([0., 0.])[..., np.newaxis]
 
+        # Define neural network architecture using keras
         model = tf.keras.models.Sequential([
             tf.keras.layers.Input(shape=(2,)),
             DenseWithFixedBias(1, bias, initial_weights)
-            # tf.keras.layers.Activation("sigmoid")
         ])
 
+        # Call problem constructor with the dataset
         super().__init__(
             X=np.array([
                 (0, 0),

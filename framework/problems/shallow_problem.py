@@ -5,18 +5,23 @@ from .util import DenseWithFixedBias
 
 
 class ShallowProblem(Problem):
+    """Implementation of the shallow excitation problem (see Figure 7 in "../../progress/main.pdf").
+    """
 
     def __init__(self):
 
+        # Initial weights and bias
         bias = 0.4
         initial_weights = np.array([.1, .0005])[..., np.newaxis]
 
+        # Define neural network architecture using keras
         model = tf.keras.models.Sequential([
             tf.keras.layers.Input(shape=(2,)),
             DenseWithFixedBias(1, bias, initial_weights),
             tf.keras.layers.Activation("sigmoid")
         ])
 
+        # Call problem constructor with the dataset
         super().__init__(
             X=np.array([
                 (.6, .4),

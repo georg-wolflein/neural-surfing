@@ -1,10 +1,18 @@
+"""Demo of a simple neural problem for testing agents under normal conditions.
+"""
+
 from agents import MSE, LossWithGoalLineDeviation, GreedyProbing, SimulatedAnnealing
 from agents.sampling import ExhaustiveSamplingTechnique, RandomSamplingTechnique
 from problems.simple_problem import SimpleProblem
 
 from experiment import Experiment
 from experiment.visualisations import Scatter2D, Histogram
+from util import get_demo_args
 
+# Get command-line arguments
+args = get_demo_args()
+
+# Initialise problem and agents
 p = SimpleProblem
 learning_rate = 0.01
 agents = {
@@ -15,8 +23,9 @@ agents = {
     "Simulated annealing": SimulatedAnnealing(p(), learning_rate)
 }
 
+# Run the experiment with the visualisations
 experiment = Experiment(agents)
-experiment.run([
+experiment.run_server([
     Scatter2D("weights"),
     Histogram("loss"),
     Histogram("output:0"),
@@ -26,4 +35,4 @@ experiment.run([
     Scatter2D("output:0", "output:1"),
     Scatter2D("output:2", "output:3"),
     Histogram("run_time")
-], epoch_batch_size=10, title="Simple problem")
+], title="Simple problem", **args)

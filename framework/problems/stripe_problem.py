@@ -9,9 +9,12 @@ def rbf(x: tf.Tensor) -> tf.Tensor:
 
 
 class StripeProblem(Problem):
+    """Implementation of the RBF stripe problem.
+    """
 
     def __init__(self):
 
+        # Define neural network architecture using keras
         model = tf.keras.models.Sequential([
             tf.keras.layers.Dense(1,
                                   use_bias=False,
@@ -19,9 +22,11 @@ class StripeProblem(Problem):
                                   activation=rbf)
         ])
 
+        # Assign initial weights
         initial_weights = np.array([1, 1])[:, np.newaxis].astype(np.float32)
         model.weights[0].assign(tf.constant(initial_weights))
 
+        # Call problem constructor with the dataset
         super().__init__(
             X=np.array([
                 (2, 2),

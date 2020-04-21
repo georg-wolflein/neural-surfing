@@ -1,10 +1,18 @@
+"""Demo for the shallow problem (see Figure 7 in ../progress/main.pdf).
+"""
+
 from agents import MSE, LossWithGoalLineDeviation, GreedyProbing, SimulatedAnnealing
 from agents.sampling import ExhaustiveSamplingTechnique, RandomSamplingTechnique
 from problems.shallow_problem import ShallowProblem
 
 from experiment import Experiment
 from experiment.visualisations import Scatter2D, Histogram
+from util import get_demo_args
 
+# Get command-line arguments
+args = get_demo_args()
+
+# Initialise problem and agents
 p = ShallowProblem
 learning_rate = 0.01
 agents = {
@@ -15,8 +23,9 @@ agents = {
     "Simulated annealing": SimulatedAnnealing(p(), learning_rate)
 }
 
+# Run the experiment with the visualisations
 experiment = Experiment(agents)
-experiment.run([
+experiment.run_server([
     Scatter2D("weights"),
     Histogram("loss"),
     Histogram("output:0"),
@@ -26,4 +35,4 @@ experiment.run([
     Scatter2D("output:0", "output:1"),
     Scatter2D("output:2", "output:3"),
     Histogram("run_time")
-], epoch_batch_size=10, title="Stripe problem")
+], title="Shallow problem", **args)

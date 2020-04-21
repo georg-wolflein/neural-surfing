@@ -1,10 +1,18 @@
+"""Demo of agents on the stripe problem.
+"""
+
 from agents import MSE, LossWithGoalLineDeviation, GreedyProbing, SimulatedAnnealing
 from agents.sampling import ExhaustiveSamplingTechnique, RandomSamplingTechnique
 from problems.stripe_problem import StripeProblem
 
 from experiment import Experiment
 from experiment.visualisations import Scatter2D, Histogram
+from util import get_demo_args
 
+# Get command-line arguments
+args = get_demo_args()
+
+# Initialise problem and agents
 p = StripeProblem
 learning_rate = 0.01
 agents = {
@@ -15,8 +23,9 @@ agents = {
     "Simulated annealing": SimulatedAnnealing(p(), learning_rate, cooling_rate=.1)
 }
 
+# Run the experiment with the visualisations
 experiment = Experiment(agents)
-experiment.run([
+experiment.run_server([
     Scatter2D("weights"),
     Histogram("loss"),
     Scatter2D("output:0", "output:1"),
@@ -25,4 +34,4 @@ experiment.run([
     Histogram("output:1"),
     Histogram("output:2"),
     Histogram("run_time")
-], epoch_batch_size=10, title="Stripe problem")
+], title="Stripe problem", **args)
