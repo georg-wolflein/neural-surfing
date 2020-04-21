@@ -157,7 +157,7 @@ which are depicted in \ref{fig:activation_functions}.
     \caption{Plots of the the two most common activation functions.}
     \label{fig:activation_functions}
 \end{figure}
-Unlike $g_\text{step}$, these activation functions are differentiable which is an advantage for being able to use gradient descent \cite[p. 729]{russell2010}.
+Unlike $g_\text{step}$, these activation functions are differentiable which is an advantage for being able to use gradient descent \cite[729]{russell2010}.
 
 Rectified units do not suffer from the \textit{vanishing gradient effect} \cite{glorot2011}.
 This phenomenon occurs with sigmoid activation functions when they reach high saturation, i.e. when the input is significantly far from zero such that the gradient is almost horizontal.
@@ -404,7 +404,7 @@ This will allow us to examine the so-called decision boundary in input space whi
     with the same notation as in \ref{def:reg_model} except that we impose the additional restriction that $y,\hat{y}\in \left\{0,1 \right\}$ such that the signature of the function becomes $C:\mathbb{R}^D\rightarrow \left\{0,1\right\}$.
 \end{definition}
 \begin{definition}[Decision boundary]
-    Given a binary classification model $C$, the decision boundary is the hypersurface\footnote{A hypersurface is a manifold with one fewer dimension. Since the input space is $D$-dimensional, the hypersurface representing the decision boundary will have $D-1$ dimensions.} in input space $\mathcal{I}_C$ that separates the two output classes \cite[p. 723]{russell2010}.
+    Given a binary classification model $C$, the decision boundary is the hypersurface\footnote{A hypersurface is a manifold with one fewer dimension. Since the input space is $D$-dimensional, the hypersurface representing the decision boundary will have $D-1$ dimensions.} in input space $\mathcal{I}_C$ that separates the two output classes \cite[723]{russell2010}.
     We will also use the term `hyperplane' to loosely refer to the decision boundary if it is flat/linear.
 \end{definition}
 
@@ -707,7 +707,7 @@ $\norm{\vec{p}_i - \vec{\hat{p}}} = r$.
 The rationale of the simulated annealing (SA) algorithm lies in its analogy to the behaviour that atoms exhibit in a substance that is slowly cooling down \cite{kirkpatrick1983}.
 At high temperatures, the atoms move around with high kinetic energy, but as the temperature cools down, they begin to move more slowly until completely losing thermal mobility. 
 When this process is carried out sufficiently slowly, the atoms will settle in a perfectly aligned crystal structure with minimum energy. 
-However, if the cooling process is too fast, the final structure will be chaotic and hence not be at the minimum energy state \cite[p. 444]{press1992}.
+However, if the cooling process is too fast, the final structure will be chaotic and hence not be at the minimum energy state \cite[444]{press1992}.
 
 At each iteration, the algorithm will explore random sample points one after another in the local neighbourhood of the current configuration $\vec{p}_i$ until one is accepted. 
 The probability of accepting a candidate sample point $\vec{\hat{p}}$ at the $i$th iteration is given by the probability distribution
@@ -746,7 +746,7 @@ In that sense, the DFO algorithms will be slower.
 However, BP has other efficiency drawbacks as a result of relying solely on derivatives: it is more sensitive to local `noise' in the loss function, and it becomes quite slow in long, narrow valleys \cite{press1992} as explained in \ref{fig:gradient_descent_narrow_valley}.
 \begin{figure}
     \includegraphics[width=\textwidth]{press_steepest_gradient_descent.png}
-    \caption{Contour plot of the method of steepest gradient descent in a long, narrow valley \cite[p. 421]{press1992}. Travel proceeds in near right angles due to the gradients.}
+    \caption{Contour plot of the method of steepest gradient descent in a long, narrow valley \cite[421]{press1992}. Travel proceeds in near right angles due to the gradients.}
     \label{fig:gradient_descent_narrow_valley}
 \end{figure}
 Per contra, DFO algorithms are not as sensitive to local noise, and their probing approach will facilitate more efficient progress along narrow valleys.
@@ -1115,7 +1115,7 @@ Let us look at a couple of examples of unrealisable regions.
     \label{ex:unrealisable_xor}
     Let us look at a less contrived example.
     While it ``is well known that any Boolean function \elide can be approximated by a suitable two-layer feed-forward network'' \cite{blum1989}, 
-    single-layer networks with non-decreasing activation functions can only learn a Boolean mapping that is \textit{linearly separable} \cite[p. 723]{russell2010}.
+    single-layer networks with non-decreasing activation functions can only learn a Boolean mapping that is \textit{linearly separable} \cite[723]{russell2010}.
     A linearly separable mapping has a linear decision boundary which means that there is only one linear hyperplane separating the two classes (true and false).
     
     The XOR function is not linearly separable because it requires at least two linear decision boundaries, as shown in \ref{fig:xor}.
@@ -1478,7 +1478,7 @@ We will prove a simple technique for showing that a $2 \times 2$ matrix is posit
 \end{theorem}
 We will require this theorem to prove that training converges to a local minimum in \ref{sec:stripe_problem}.
 However, the proof of this theorem exceeds the scope of this report.
-The interested reader may consult \textcite[p. 190]{loomis1990}.
+The interested reader may consult \textcite[190]{loomis1990}.
 
 
 \section{The stripe problem}
@@ -2627,7 +2627,7 @@ It is evident that each trial converges to the local minimum point in the quadra
 This means that trials 1-3 and 7-9 converge to a suboptimal local minimum (Q1 and Q3), whereas trials 4-6 and 10-12 converge to a global minimum (Q2 and Q4), thus empirically affirming the claim made in \ref{sec:stripe_gradient_descent_theory}.
 
 Even with a relatively large learning rate and despite the use of momentum, the fact that training requires around 10000 epochs to converge highlights one of the core issues of gradient descent.
-As discussed in \ref{sec:neural_training_issues}, specifically \ref{fig:gradient_descent_narrow_valley}, the classical BP algorithm becomes quite slow in ``long, narrow valleys`` \cite[p. 421]{press1992} due to the gradient alternating in near right-angle directions.
+As discussed in \ref{sec:neural_training_issues}, specifically \ref{fig:gradient_descent_narrow_valley}, the classical BP algorithm becomes quite slow in ``long, narrow valleys`` \cite[421]{press1992} due to the gradient alternating in near right-angle directions.
 Although the motivation of the stripe problem is to highlight another issue (that of suboptimal local minima), it is noteworthy that this example is quite potent in highlighting other issues as well.
 The error-weight surface in \ref{fig:stripe_error_surface_gaussian} shows examples of this phenomenon quite convincingly because the area marked in blue is a long, narrow valley.
 
@@ -3200,8 +3200,8 @@ A common task in robotics is to smoothly navigate an obstacle course to reach a 
 It is convenient to consider this obstacle course in a two-dimensional space, but the approach can be generalised to arbitrary dimensionality.
 Assume that the robot knows the coordinates of the goal and that it has some number of distance sensors oriented at equidistant angles in the interval $[\frac{\pi}{2},\frac{\pi}{2}]$ relative to the current heading.
 
-To prevent the robot from crashing into obstacles and encourage smooth motion, a potential field is defined over the state space that should `repel' the robot from obstacles but `attract' it to the goal.
-The obtacle potential is a function that decays exponentially with the distance to the nearest obstacle (measured by the distance sensors) that could be of a form similar to
+To prevent the robot from crashing into obstacles and encourage smooth motion, a potential field is defined over the state space that should `repel' the robot from obstacles but `attract' it to the goal \cite[999--1000]{russell2010}.
+The obtacle potential is a function that decays exponentially with the distance to the nearest obstacle (measured by the distance sensor) that could be of a form similar to
 \begin{equation}
     O(d_i) = 
     \begin{cases} 
@@ -3209,7 +3209,7 @@ The obtacle potential is a function that decays exponentially with the distance 
         0 & d_i \geq S
    \end{cases}
 \end{equation}
-where $d_i$ is the distance to the obstacle measured by the distance sensor and $S$ is the so-called fall-off range \cite{weir2006}.
+where $d_i$ is the distance to the obstacle measured by the $i$th distance sensor and $S$ is the so-called fall-off range \cite{weir2006}.
 The goal potential could be of the form
 $G(d_g)=d^2$
 for a distance $d_g$ to the goal. The combined potential is then given by

@@ -17,9 +17,9 @@
 \usepackage{subcaption}
 \usepackage{cleveref} % should be loaded last
 \usepackage[
-    backend=biber,
-    style=apa,
-    citestyle=authoryear
+	backend=biber,
+	style=apa,
+	citestyle=authoryear
 ]{biblatex}
 
 \pagestyle{fancy}
@@ -30,15 +30,15 @@
 
 \makeatletter
 \newrobustcmd*{\parentexttrack}[1]{%
-  \begingroup
-  \blx@blxinit
-  \blx@setsfcodes
-  \blx@bibopenparen#1\blx@bibcloseparen
-  \endgroup}
+    \begingroup
+    \blx@blxinit
+    \blx@setsfcodes
+    \blx@bibopenparen#1\blx@bibcloseparen
+    \endgroup}
 \AtEveryCite{%
-  \let\parentext=\parentexttrack%
-  \let\bibopenparen=\bibopenbracket%
-  \let\bibcloseparen=\bibclosebracket}
+    \let\parentext=\parentexttrack%
+    \let\bibopenparen=\bibopenbracket%
+    \let\bibcloseparen=\bibclosebracket}
 \makeatother
 
 \addbibresource{bibliography.bib}
@@ -58,8 +58,8 @@
 \newcommand{\todo}{{\color{red} \textbf{TODO} }}
 
 \newcommand{\quickwordcount}[1]{%
-  \immediate\write18{texcount -1 -sum -merge #1.tex > #1-words}%
-  \input{#1-words}words%
+    \immediate\write18{texcount -1 -sum -merge #1.tex > #1-words}%
+    \input{#1-words}words%
 }
 
 \newtheorem{theorem}{Theorem}
@@ -75,9 +75,9 @@
 
 \makeatletter
 \AtBeginDocument{%
-  \renewcommand*{\ref}{\Cref}%
-  \renewcommand{\contentsname}{Contents}%
-  \renewcommand{\listfigurename}{List of figures}%
+    \renewcommand*{\ref}{\Cref}%
+    \renewcommand{\contentsname}{Contents}%
+    \renewcommand{\listfigurename}{List of figures}%
 }
 \makeatother
 
@@ -86,25 +86,38 @@
 
 \frontmatter
 \begin{titlepage}
-    \centering
-    
-    {\scshape\LARGE Senior Honours Project\par}
-    \vspace{0.25cm}
-    {\includegraphics[width=0.8\textwidth]{logo.png} \par}
-    \vspace{0.25cm}
-    {\huge\bfseries Freeing Neural Training Through Surfing\par}
-    \vspace{0.5cm}
+	\centering
+	
+	{\scshape\LARGE Senior Honours Project\par}
+	\vspace{0.25cm}
+	{\includegraphics[width=0.8\textwidth]{logo.png} \par}
+	\vspace{0.25cm}
+	{\huge\bfseries Freeing Neural Training Through Surfing\par}
+	\vspace{0.5cm}
 
-    \vfill
-    {\large \textit{Georg Wölflein\\170011885} \par}
-    {\large \textit{Supervisor: Dr. Mike Weir} \par}
+	\vfill
 
-    \vspace{0.5cm}
+	\noindent
+	\begin{minipage}{0.45\textwidth}
+		\begin{center} \large
+		  \textit{Author:}\\
+          Georg \textsc{Wölflein}\\
+		\end{center}
+    \end{minipage}%
+    \begin{minipage}{0.45\textwidth}
+		\begin{center} \large
+		\textit{Supervisor:} \\
+		Dr.~Michael \textsc{Weir}
+		\end{center}
+	\end{minipage}%
 
-    {April 27, 2020\par}
+	% \vspace{0.5cm}
+	\vfill
 
-    %\vfill
-    %Word count: \quickwordcount{report}
+	{April 27, 2020\par}
+
+	%\vfill
+	%Word count: \quickwordcount{report}
 \end{titlepage}
 
 \chapter*{Abstract}
@@ -121,7 +134,9 @@ This framework can be used to reproduce the findings of how classical algorithms
 \chapter*{Declaration}
 ``I declare that the material submitted for assessment is my own work except where credit is explicitly given to others by citation or acknowledgement.
 This work was performed during the current academic year except where otherwise stated.
+
 The main text of this project report is \quickwordcount{report} long, including project specification and plan.
+
 In submitting this project report to the University of St Andrews, I give permission for it to be made available for use in accordance with the regulations of the University Library. 
 I also give permission for the title and abstract to be published and for copies of the report to be made and supplied at cost to any bona fide library or research worker, and to be made available on the World Wide Web.
 I retain the copyright in this work.''
