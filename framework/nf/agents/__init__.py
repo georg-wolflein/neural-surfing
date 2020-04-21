@@ -108,7 +108,7 @@ class GradientFreeAgent(Agent, ABC):
         self.sampler = sampler
         sampler.initialize(self.num_weights)
 
-    def get_weights(self) -> tf.Tensor:
+    def _get_weights(self) -> tf.Tensor:
         """Get the current weight state as a concatenated vector.
 
         Returns:
@@ -117,7 +117,7 @@ class GradientFreeAgent(Agent, ABC):
 
         return tf.concat([tf.reshape(x, [-1]) for x in self.problem.model.get_weights()], axis=0)
 
-    def set_weights(self, weights: tf.Tensor):
+    def _set_weights(self, weights: tf.Tensor):
         """Set the weight vector.
 
         Internally, the weights are formed back into the shape required by keras.
@@ -145,7 +145,7 @@ class GradientFreeAgent(Agent, ABC):
             tf.Tensor -- the outputs (predictions)
         """
 
-        self.set_weights(weights)
+        self._set_weights(weights)
         return self.problem.model.predict(X)
 
     def predict_for_multiple_weights(self, weights: tf.Tensor, X: tf.Tensor) -> tf.Tensor:
@@ -217,13 +217,13 @@ class GradientFreeAgent(Agent, ABC):
             callbacks.on_epoch_begin(epoch, {})
 
             # Record the current weights and outputs
-            weights = self.get_weights()
+            weights = self._get_weights()
             outputs = self.problem.model.predict(X)
             weight_history[epoch] = weights
             output_history[epoch] = np.reshape(outputs, y.shape)
 
             # Get the weight samples from the sampler
-            weight_samples = self.sampler(self.get_weights())
+            weight_samples = self.sampler(weights)
 
             # Consult the agent implementation for the best weight state to choose
             new_weights = self.choose_best_weight_update(weight_samples,
@@ -232,7 +232,7 @@ class GradientFreeAgent(Agent, ABC):
                                                          X, y)
 
             # Set the weights
-            self.set_weights(new_weights)
+            self._set_weights(new_weights)
 
             # Signify end of epoch
             callbacks.on_epoch_end(epoch, {})

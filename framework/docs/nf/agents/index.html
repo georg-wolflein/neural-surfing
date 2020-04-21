@@ -135,7 +135,7 @@ class GradientFreeAgent(Agent, ABC):
         self.sampler = sampler
         sampler.initialize(self.num_weights)
 
-    def get_weights(self) -&gt; tf.Tensor:
+    def _get_weights(self) -&gt; tf.Tensor:
         &#34;&#34;&#34;Get the current weight state as a concatenated vector.
 
         Returns:
@@ -144,7 +144,7 @@ class GradientFreeAgent(Agent, ABC):
 
         return tf.concat([tf.reshape(x, [-1]) for x in self.problem.model.get_weights()], axis=0)
 
-    def set_weights(self, weights: tf.Tensor):
+    def _set_weights(self, weights: tf.Tensor):
         &#34;&#34;&#34;Set the weight vector.
 
         Internally, the weights are formed back into the shape required by keras.
@@ -172,7 +172,7 @@ class GradientFreeAgent(Agent, ABC):
             tf.Tensor -- the outputs (predictions)
         &#34;&#34;&#34;
 
-        self.set_weights(weights)
+        self._set_weights(weights)
         return self.problem.model.predict(X)
 
     def predict_for_multiple_weights(self, weights: tf.Tensor, X: tf.Tensor) -&gt; tf.Tensor:
@@ -244,13 +244,13 @@ class GradientFreeAgent(Agent, ABC):
             callbacks.on_epoch_begin(epoch, {})
 
             # Record the current weights and outputs
-            weights = self.get_weights()
+            weights = self._get_weights()
             outputs = self.problem.model.predict(X)
             weight_history[epoch] = weights
             output_history[epoch] = np.reshape(outputs, y.shape)
 
             # Get the weight samples from the sampler
-            weight_samples = self.sampler(self.get_weights())
+            weight_samples = self.sampler(weights)
 
             # Consult the agent implementation for the best weight state to choose
             new_weights = self.choose_best_weight_update(weight_samples,
@@ -259,7 +259,7 @@ class GradientFreeAgent(Agent, ABC):
                                                          X, y)
 
             # Set the weights
-            self.set_weights(new_weights)
+            self._set_weights(new_weights)
 
             # Signify end of epoch
             callbacks.on_epoch_end(epoch, {})
@@ -565,7 +565,7 @@ sampler {SamplingTechnique} &ndash; the sampling technique to employ</p></div>
         self.sampler = sampler
         sampler.initialize(self.num_weights)
 
-    def get_weights(self) -&gt; tf.Tensor:
+    def _get_weights(self) -&gt; tf.Tensor:
         &#34;&#34;&#34;Get the current weight state as a concatenated vector.
 
         Returns:
@@ -574,7 +574,7 @@ sampler {SamplingTechnique} &ndash; the sampling technique to employ</p></div>
 
         return tf.concat([tf.reshape(x, [-1]) for x in self.problem.model.get_weights()], axis=0)
 
-    def set_weights(self, weights: tf.Tensor):
+    def _set_weights(self, weights: tf.Tensor):
         &#34;&#34;&#34;Set the weight vector.
 
         Internally, the weights are formed back into the shape required by keras.
@@ -602,7 +602,7 @@ sampler {SamplingTechnique} &ndash; the sampling technique to employ</p></div>
             tf.Tensor -- the outputs (predictions)
         &#34;&#34;&#34;
 
-        self.set_weights(weights)
+        self._set_weights(weights)
         return self.problem.model.predict(X)
 
     def predict_for_multiple_weights(self, weights: tf.Tensor, X: tf.Tensor) -&gt; tf.Tensor:
@@ -674,13 +674,13 @@ sampler {SamplingTechnique} &ndash; the sampling technique to employ</p></div>
             callbacks.on_epoch_begin(epoch, {})
 
             # Record the current weights and outputs
-            weights = self.get_weights()
+            weights = self._get_weights()
             outputs = self.problem.model.predict(X)
             weight_history[epoch] = weights
             output_history[epoch] = np.reshape(outputs, y.shape)
 
             # Get the weight samples from the sampler
-            weight_samples = self.sampler(self.get_weights())
+            weight_samples = self.sampler(weights)
 
             # Consult the agent implementation for the best weight state to choose
             new_weights = self.choose_best_weight_update(weight_samples,
@@ -689,7 +689,7 @@ sampler {SamplingTechnique} &ndash; the sampling technique to employ</p></div>
                                                          X, y)
 
             # Set the weights
-            self.set_weights(new_weights)
+            self._set_weights(new_weights)
 
             # Signify end of epoch
             callbacks.on_epoch_end(epoch, {})
@@ -752,30 +752,6 @@ def choose_best_weight_update(self, weight_samples: tf.Tensor, weight_history: t
     Returns:
         tf.Tensor -- the new weight state chosen by the agent
     &#34;&#34;&#34;</code></pre>
-</details>
-</dd>
-<dt id="nf.agents.GradientFreeAgent.get_weights"><code class="name flex">
-<span>def <span class="ident">get_weights</span></span>(<span>self) -> tensorflow.python.framework.ops.Tensor</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Get the current weight state as a concatenated vector.</p>
-<h2 id="returns">Returns</h2>
-<dl>
-<dt><code>tf.Tensor -- the weight vector</code></dt>
-<dd>&nbsp;</dd>
-</dl></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def get_weights(self) -&gt; tf.Tensor:
-    &#34;&#34;&#34;Get the current weight state as a concatenated vector.
-
-    Returns:
-        tf.Tensor -- the weight vector
-    &#34;&#34;&#34;
-
-    return tf.concat([tf.reshape(x, [-1]) for x in self.problem.model.get_weights()], axis=0)</code></pre>
 </details>
 </dd>
 <dt id="nf.agents.GradientFreeAgent.predict_for_multiple_weights"><code class="name flex">
@@ -846,36 +822,8 @@ X {tf.Tensor} &ndash; the input matrix</p>
         tf.Tensor -- the outputs (predictions)
     &#34;&#34;&#34;
 
-    self.set_weights(weights)
+    self._set_weights(weights)
     return self.problem.model.predict(X)</code></pre>
-</details>
-</dd>
-<dt id="nf.agents.GradientFreeAgent.set_weights"><code class="name flex">
-<span>def <span class="ident">set_weights</span></span>(<span>self, weights: tensorflow.python.framework.ops.Tensor)</span>
-</code></dt>
-<dd>
-<div class="desc"><p>Set the weight vector.</p>
-<p>Internally, the weights are formed back into the shape required by keras.</p>
-<h2 id="arguments">Arguments</h2>
-<p>weights {tf.Tensor} &ndash; the weight vector</p></div>
-<details class="source">
-<summary>
-<span>Expand source code</span>
-</summary>
-<pre><code class="python">def set_weights(self, weights: tf.Tensor):
-    &#34;&#34;&#34;Set the weight vector.
-
-    Internally, the weights are formed back into the shape required by keras.
-
-    Arguments:
-        weights {tf.Tensor} -- the weight vector
-    &#34;&#34;&#34;
-
-    weights = tf.split(weights, list(
-        map(tf.reduce_prod, self.weights_shape)))
-    weights = [tf.reshape(x, shape)
-               for (x, shape) in zip(weights, self.weights_shape)]
-    self.problem.model.set_weights(weights)</code></pre>
 </details>
 </dd>
 </dl>
@@ -931,10 +879,8 @@ X {tf.Tensor} &ndash; the input matrix</p>
 <h4><code><a title="nf.agents.GradientFreeAgent" href="#nf.agents.GradientFreeAgent">GradientFreeAgent</a></code></h4>
 <ul class="">
 <li><code><a title="nf.agents.GradientFreeAgent.choose_best_weight_update" href="#nf.agents.GradientFreeAgent.choose_best_weight_update">choose_best_weight_update</a></code></li>
-<li><code><a title="nf.agents.GradientFreeAgent.get_weights" href="#nf.agents.GradientFreeAgent.get_weights">get_weights</a></code></li>
 <li><code><a title="nf.agents.GradientFreeAgent.predict_for_multiple_weights" href="#nf.agents.GradientFreeAgent.predict_for_multiple_weights">predict_for_multiple_weights</a></code></li>
 <li><code><a title="nf.agents.GradientFreeAgent.predict_for_weights" href="#nf.agents.GradientFreeAgent.predict_for_weights">predict_for_weights</a></code></li>
-<li><code><a title="nf.agents.GradientFreeAgent.set_weights" href="#nf.agents.GradientFreeAgent.set_weights">set_weights</a></code></li>
 </ul>
 </li>
 </ul>
