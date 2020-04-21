@@ -2600,18 +2600,18 @@ The hyperparameters had to be adjusted depending on the initial weight configura
             enlargelimits={true,abs value=.25},
             legend pos=outer north east
         ]
-            \addplot[mark=none,blue]  table {data/stripe_problem_weights_history_1.dat};
-            \addplot[mark=none,red]   table {data/stripe_problem_weights_history_2.dat};
-            \addplot[mark=none,black] table {data/stripe_problem_weights_history_3.dat};
-            \addplot[mark=none,blue]  table {data/stripe_problem_weights_history_4.dat};
-            \addplot[mark=none,red]   table {data/stripe_problem_weights_history_5.dat};
-            \addplot[mark=none,black] table {data/stripe_problem_weights_history_6.dat};
-            \addplot[mark=none,blue]  table {data/stripe_problem_weights_history_7.dat};
-            \addplot[mark=none,red]   table {data/stripe_problem_weights_history_8.dat};
-            \addplot[mark=none,black] table {data/stripe_problem_weights_history_9.dat};
-            \addplot[mark=none,blue]  table {data/stripe_problem_weights_history_10.dat};
-            \addplot[mark=none,red]   table {data/stripe_problem_weights_history_11.dat};
-            \addplot[mark=none,black] table {data/stripe_problem_weights_history_12.dat};
+            \addplot[mark=none,blue]  table {../research/data/report/stripe_problem_weights_history_1.dat};
+            \addplot[mark=none,red]   table {../research/data/report/stripe_problem_weights_history_2.dat};
+            \addplot[mark=none,black] table {../research/data/report/stripe_problem_weights_history_3.dat};
+            \addplot[mark=none,blue]  table {../research/data/report/stripe_problem_weights_history_4.dat};
+            \addplot[mark=none,red]   table {../research/data/report/stripe_problem_weights_history_5.dat};
+            \addplot[mark=none,black] table {../research/data/report/stripe_problem_weights_history_6.dat};
+            \addplot[mark=none,blue]  table {../research/data/report/stripe_problem_weights_history_7.dat};
+            \addplot[mark=none,red]   table {../research/data/report/stripe_problem_weights_history_8.dat};
+            \addplot[mark=none,black] table {../research/data/report/stripe_problem_weights_history_9.dat};
+            \addplot[mark=none,blue]  table {../research/data/report/stripe_problem_weights_history_10.dat};
+            \addplot[mark=none,red]   table {../research/data/report/stripe_problem_weights_history_11.dat};
+            \addplot[mark=none,black] table {../research/data/report/stripe_problem_weights_history_12.dat};
             \node[circle,fill,inner sep=1.5pt,pin=-90:{$\vec{p}_1$}] at (-1, 1) {};
             \node[circle,fill,inner sep=1.5pt,pin=90:{$\vec{p}_2$}] at (1, -1) {};
             \node[circle,fill,inner sep=1.5pt,pin=-90:{$\vec{p}_4$}] at (1, 1) {};
@@ -2658,8 +2658,8 @@ After empirically verifying in \ref{sec:stripe_gradient_descent} that the classi
                 legend entries = {subgoals,actual},
                 legend pos = north west
                 ]
-                \addplot+[mark=x] table {data/stripe_problem_gradient_descent_10_subgoals__subgoal_weights.dat};
-                \addplot+[mark=none] table {data/stripe_problem_gradient_descent_10_subgoals__training_weights.dat};
+                \addplot+[mark=x] table {../research/data/report/stripe_problem_gradient_descent_10_subgoals__subgoal_weights.dat};
+                \addplot+[mark=none] table {../research/data/report/stripe_problem_gradient_descent_10_subgoals__training_weights.dat};
                 \node[circle,fill,inner sep=1.5pt,pin=-170:{$\vec{w}_0$}] at (1, 1) {};
                 \node[circle,fill,inner sep=1.5pt,pin=170:{$\vec{w}_S$}] at (1, -1) {};
             \end{axis}
@@ -2682,8 +2682,8 @@ After empirically verifying in \ref{sec:stripe_gradient_descent} that the classi
                 legend entries = {subgoals,actual},
                 legend pos = north east
                 ]
-                \addplot+[mark=x] table {data/stripe_problem_gradient_descent_10_subgoals__subgoal_outputs.dat};
-                \addplot+[mark=none] table {data/stripe_problem_gradient_descent_10_subgoals__training_outputs.dat};
+                \addplot+[mark=x] table {../research/data/report/stripe_problem_gradient_descent_10_subgoals__subgoal_outputs.dat};
+                \addplot+[mark=none] table {../research/data/report/stripe_problem_gradient_descent_10_subgoals__training_outputs.dat};
                 \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{\hat{y}}_0$}] at ({rbf(4)}, {rbf(2)}) {};
                 \node[circle,fill,inner sep=1.5pt,pin=100:{$\vec{\hat{y}}_S$}] at (1, {rbf(2)}) {};
             \end{axis}
@@ -2734,8 +2734,8 @@ Furthermore, the gradient of the RBF is flat when the input is zero ($\phi'(0)=0
                 legend entries = {subgoals,actual},
                 legend pos = north west
                 ]
-                \addplot+[mark=x] table {data/stripe_problem_gradient_descent_2_subgoals__subgoal_weights.dat};
-                \addplot+[mark=none] table {data/stripe_problem_gradient_descent_2_subgoals__training_weights.dat};
+                \addplot+[mark=x] table {../research/data/report/stripe_problem_gradient_descent_2_subgoals__subgoal_weights.dat};
+                \addplot+[mark=none] table {../research/data/report/stripe_problem_gradient_descent_2_subgoals__training_weights.dat};
                 \node[circle,fill,inner sep=1.5pt,pin=-170:{$\vec{w}_0$}] at (1, 1) {};
                 \node[circle,fill,inner sep=1.5pt,pin=170:{$\vec{w}_S$}] at (1, -1) {};
             \end{axis}
@@ -2758,8 +2758,8 @@ Furthermore, the gradient of the RBF is flat when the input is zero ($\phi'(0)=0
                 legend entries = {subgoals,actual},
                 legend pos = north east
                 ]
-                \addplot+[mark=x] table {data/stripe_problem_gradient_descent_2_subgoals__subgoal_outputs.dat};
-                \addplot+[mark=none] table {data/stripe_problem_gradient_descent_2_subgoals__training_outputs.dat};
+                \addplot+[mark=x] table {../research/data/report/stripe_problem_gradient_descent_2_subgoals__subgoal_outputs.dat};
+                \addplot+[mark=none] table {../research/data/report/stripe_problem_gradient_descent_2_subgoals__training_outputs.dat};
                 \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{\hat{y}}_0$}] at ({rbf(4)}, {rbf(2)}) {};
                 \node[circle,fill,inner sep=1.5pt,pin=100:{$\vec{\hat{y}}_S$}] at (1, {rbf(2)}) {};
             \end{axis}
@@ -2846,10 +2846,10 @@ An alternative cost function was also tested for the greedy probing approach, ca
                 legend columns=-1,
                 legend to name=leg:stripe_greedy_probing_with_2_subgoals
                 ]
-                \addplot+[mark=x] table {data/stripe_problem_greedy_probing_2_subgoals__subgoal_weights.dat};
-                \addplot+[mark=none] table {data/stripe_problem_greedy_probing_2_subgoals__training_weights.dat};
-                \addplot+[mark=none] table {data/stripe_problem_greedy_probing_modified_cost_2_subgoals__training_weights.dat};
-                \addplot+[mark=none,magenta] table {data/stripe_problem_greedy_probing_random_sampling_2_subgoals__training_weights.dat};
+                \addplot+[mark=x] table {../research/data/report/stripe_problem_greedy_probing_2_subgoals__subgoal_weights.dat};
+                \addplot+[mark=none] table {../research/data/report/stripe_problem_greedy_probing_2_subgoals__training_weights.dat};
+                \addplot+[mark=none] table {../research/data/report/stripe_problem_greedy_probing_modified_cost_2_subgoals__training_weights.dat};
+                \addplot+[mark=none,magenta] table {../research/data/report/stripe_problem_greedy_probing_random_sampling_2_subgoals__training_weights.dat};
                 \node[circle,fill,inner sep=1.5pt,pin=-170:{$\vec{w}_0$}] at (1, 1) {};
                 \node[circle,fill,inner sep=1.5pt,pin=170:{$\vec{w}_S$}] at (1, -1) {};
             \end{axis}
@@ -2870,10 +2870,10 @@ An alternative cost function was also tested for the greedy probing approach, ca
                 xlabel = {$\hat{y}_1$},
                 ylabel = {$\hat{y}_3$}
                 ]
-                \addplot+[mark=x] table {data/stripe_problem_greedy_probing_2_subgoals__subgoal_outputs.dat};
-                \addplot+[mark=none] table {data/stripe_problem_greedy_probing_2_subgoals__training_outputs.dat};
-                \addplot+[mark=none] table {data/stripe_problem_greedy_probing_modified_cost_2_subgoals__training_outputs.dat};
-                \addplot+[mark=none,magenta] table {data/stripe_problem_greedy_probing_random_sampling_2_subgoals__training_outputs.dat};
+                \addplot+[mark=x] table {../research/data/report/stripe_problem_greedy_probing_2_subgoals__subgoal_outputs.dat};
+                \addplot+[mark=none] table {../research/data/report/stripe_problem_greedy_probing_2_subgoals__training_outputs.dat};
+                \addplot+[mark=none] table {../research/data/report/stripe_problem_greedy_probing_modified_cost_2_subgoals__training_outputs.dat};
+                \addplot+[mark=none,magenta] table {../research/data/report/stripe_problem_greedy_probing_random_sampling_2_subgoals__training_outputs.dat};
                 \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{\hat{y}}_0$}] at ({rbf(4)}, {rbf(2)}) {};
                 \node[circle,fill,inner sep=1.5pt,pin=100:{$\vec{\hat{y}}_S$}] at (1, {rbf(2)}) {};
             \end{axis}
@@ -2955,7 +2955,7 @@ In \ref{fig:clothoid_segment}, these angles are marked $\alpha$ and $\beta$, res
             ticks=none,
             clip=false
         ]
-            \addplot[mark=none] table {data/clothoid_segment.dat};
+            \addplot[mark=none] table {../research/data/report/clothoid_segment.dat};
         
             % File: clothoid_segment.dat
             %   p0: (6.0, 0.0)
@@ -3020,7 +3020,7 @@ As a consequence, the Euler spiral never forms a complete loop (or circle), a tr
             xlabel={$x=F_C(t)$}, xlabel style={anchor=west},
             ylabel={$y=F_S(t)$}, ylabel style={anchor=south}
         ]
-            \addplot[mark=none] table {data/clothoid.dat};
+            \addplot[mark=none] table {../research/data/report/clothoid.dat};
         \end{axis}
     \end{tikzpicture}
     \caption{Plot of the Euler spiral.}
@@ -3071,7 +3071,7 @@ Let us use the notation $\mathcal{A},\mathcal{B},\mathcal{C}$ to denote the corr
             ticks=none,
             clip=false
         ]
-            \addplot[mark=none] table {data/clothoid_small.dat};
+            \addplot[mark=none] table {../research/data/report/clothoid_small.dat};
 
             % points:
             % (0.0, 0.0)

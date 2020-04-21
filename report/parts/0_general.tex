@@ -115,8 +115,24 @@ It is assumed that the user of the framework is familiar with Python, TensorFlow
 \end{enumerate}
 
 \section{Software engineering process}
-\LaTeX
-GitHub
+A very agile approach was adopted due to the primarily research-oriented character of the project.
+Weekly supervisor meetings were held where progress was discussed, and tasks were set for the next week.
+This ensured that changes could be made quickly depending on the outcomes of the experiments that were conducted.
+The most important aspects were written up in \LaTeX{} document on a week-by-week basis\footnote{This document is available at \texttt{research/progress/main.pdf} in the code submission.} and sent to the supervisor before each meeting, so the new content could be discussed.
+Apart from providing a structured set of notes for reference later on, some of the text and figures could be reused for this report.
+
+The experiments themselves were conducted in interactive Python notebooks\footnote{The interactive notebooks are found in the \texttt{research/notebooks} folder.}, mostly using the Google Colab service to leverage free GPU acceleration.
+Important statistics and results were persisted in data files\footnote{The data files are available in the \texttt{*.dat} format in the \texttt{research/data} folder.} so they could be used for analysis and plotting later.
+
+The first version of the software framework\footnote{The software framework, as described in \ref{chap:framework} is available in the \texttt{framework} folder.} was developed over the inter-semester break and presented to the supervisor.
+This version included only one agent and one problem as a proof of concept. 
+Initially, visualisations were achieved using the Python library \texttt{matplotlib}, but as additional requirements unfolded (such as that the user should be able to interact with the live-updating graphs to toggle the visibility of agents), a web-based front-end was developed over the second semster using the \texttt{bokeh} library.
+At the same time, more agents were implemented, and some of the experiments from the interactive notebooks were ported to the framework, too.
+
+All code related to this project (including this report's \LaTeX{} markup itself) was maintained using the version control system Git in a single repository hosted on GitHub\footnote{The repository can be found at \href{https://github.com/georgw777/neural-surfing}{\texttt{https://github.com/georgw777/neural-surfing}}.}.
+This approach was undertaken for the reason of avoiding file and code duplication: the data files produced using the interactive notebooks could be used directly to generate the plots for the weekly notes as well as this report.
+Due to the fact there was only one developer, all commits were made to the \texttt{master} branch; adopting a more sophisticated model utilising feature branches or pull requests would cause more overhead than benefit in the single-developer scenario.
+Furthermore, no continuous integration system with automated testing was employed because that, too, would be excessive for a research project of this scale. 
 
 \section{Ethics}
 There are no ethical considerations. 
