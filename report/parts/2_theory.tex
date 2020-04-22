@@ -538,10 +538,12 @@ This will allow us to examine the so-called decision boundary in input space whi
 
 \chapter{Neural network training}
 \label{chap:neural_training}
-This chapter will introduce two methods of training neural networks to provide an intuition on how this can be achieved.
-Later in this report, we will look at some issues related to these methods as a means of setting the scene for the neural surfing technique.
+We will now introduce the two neural training techniques outlined in \ref{sec:motivation} (gradient descent and simulated annealing) more formally in the context of how we defined neural networks in the previous chapter.
+For gradient descent, we will derive the famous backpropagation algorithm, but we will also look at a derivative-free notion of gradient descent which we will call \textit{greedy probing}.
+Simulated annealing is of course derivative-free in nature.
+We also define some issues related to these methods more precisely as a means of setting the scene for the neural surfing technique later on.
 
-In this context, \textit{training} refers to the process of altering the network's weights and biases with the goal of achieving an optimal configuration that reduces the error of the predictions, i.e. how far they are `off'. 
+\textit{Training} with regard to neural networks refers to the process of altering a network's weights and biases with the goal of achieving an optimal configuration that reduces the error of the predictions, i.e. how far they are `off'. 
 This how the network facilitates \textit{learning} the input-output function from \ref{def:supervised_learning}.
 We will use a simple loss function that uses mean squared error for this purpose.
 \begin{definition}[Mean squared error]
@@ -567,9 +569,9 @@ We will use a simple loss function that uses mean squared error for this purpose
     We use the term \textit{error-weight surface} to refer to the graph of this function.
 \end{definition}
 
-\section{Backpropagation via gradient descent}
+\section{Backpropagation with gradient descent}
 \label{sec:backpropagation}
-Backpropagation (BP) via gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum}.
+Backpropagation (BP) with gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum}.
 The main idea is as follows:
 \begin{enumerate}
     \item Calculate the derivative of the loss function with respect to the current trainable parameters $\vec{p}$ as
@@ -729,13 +731,26 @@ where $c$ is a cooling rate typically of the order of $10^{-1}$ or $10^{-2}$.
 Already, this simple SA algorithm has three hyperparameters: the energy coefficient $k$, the initial temperature $T_0$, and the cooling rate $c$. 
 More sophisticated implementations will require even more hyperparameters (such as the algorithm proposed by \textcite{press1992} which will be remarked upon in \ref{sec:eval_sim_annealing}) that makes it increasingly difficult to design SA in a generic fashion to suit the training of neural networks. 
 
-\section{Issues}
+\section{Issues and outlook}
 \label{sec:neural_training_issues}
+In section \ref{sec:motivation}, we have intuitively identified one significant issue with these techniques: the local minimum problem.
+With the knowledge of the previous sections, we are now able to appreciate more profoundly how this problem affects the training techniques.
+Moreover, we can examine some of their issues of efficiency.
+
 \paragraph{Suboptimal local minima}
-One prevalant problem such optimisation techniques face is that of suboptimal local minima (also known simply as the `local minimum problem') which was introduced in \ref{sec:context_local_minimum_problem} and will be explored in great detail in \ref{chap:local_minimum_problem}.
-\ref{fig:gradient_descent_local_minimum} provides a simple example where gradient descent via BP fails to find the global minimum in favour of a local minimum.
-However, this issue is not unique to BP: greedy probing, being in effect a form of gradient descent itself, will suffer from the same problem as we will see later.
+It is clear that a prevalant problem these optimisation techniques face is that of suboptimal local minima (known simply as the `local minimum problem').
+\ref{fig:gradient_descent_local_minimum}, which was used to explain the process of gradient descent with BP, actually provides a simple example of said problem.
+In fact, this example is quite similar to the analogy to hiking in the mountains drawn in \ref{sec:motivation}: imagine the figure depicts the side-view of the mountain landscape, and you are at the position marked `local minimum'.
+Due to the fact that you cannot see behind the slight incline to the left, you would not know that there is a global minimum in that direction.
+
+The local minimum problem is not unique to gradient descent with BP.
+It is easy to see that greedy probing, being a form of gradient descent itself, will suffer from the same problem.
 SA tries to circumvent the local minimum problem by allowing intermediate states that are worse than their predecessors, but even this technique is not guaranteed to find the global minimum in a finite amount of time.
+In the hiking analogy, the SA algorithm would likely need to take a lot of suboptimal steps when starting off at the wrong peak.
+
+Due to the fact that the neural training techniques described above are guaranteed to converge to local minima, one could come to the conclusion to simply choose any of the techniques and run them multiple times using different starting points because this will increase the likelihood of finding a better local minimum.
+This is, in fact, a widely used approach known in practice as the \textit{random initialisation} technique.
+However, it is important to note that a finite number of initialisations is still not guaranteed to find a global optimum, and especially if the global minimum basin is quite small, it is quite unlikely to do so.
 
 \paragraph{Efficiency}
 In the context of computation time per epoch, BP will outperform the derivative-free techniques because it computes only the gradient of the loss function (along with the loss value itself). 
@@ -743,13 +758,17 @@ Both of these computations are in the order of the complexity of computing a for
 On the other hand, derivative-free techniques rely on probing, so they must compute as many forward passes as samples they require per epoch.
 In that sense, the DFO algorithms will be slower.
 
-However, BP has other efficiency drawbacks as a result of relying solely on derivatives: it is more sensitive to local `noise' in the loss function, and it becomes quite slow in long, narrow valleys \cite{press1992} as explained in \ref{fig:gradient_descent_narrow_valley}.
+However, BP has other efficiency drawbacks as a result of relying solely on derivatives.
+Firstly, it is more sensitive to local `noise' in the loss function.
+For the second point, consider the direction of the gradients at the edges of ravines, or ``long, narrow valleys'' \cite{press1992}, in the cost surface.
+When following the gradients with a specific step size, travel will becomes quite slow because it will proceed almost at right angles, as shown in \ref{fig:gradient_descent_narrow_valley}.
 \begin{figure}
     \includegraphics[width=\textwidth]{press_steepest_gradient_descent.png}
     \caption{Contour plot of the method of steepest gradient descent in a long, narrow valley \cite[421]{press1992}. Travel proceeds in near right angles due to the gradients.}
     \label{fig:gradient_descent_narrow_valley}
 \end{figure}
-Per contra, DFO algorithms are not as sensitive to local noise, and their probing approach will facilitate more efficient progress along narrow valleys.
+Furthermore, if the step size is too large, the algorithm might `jump' over the ravine which poses an issue if the ravine contains the global minimum.
+Per contra, DFO algorithms are not as sensitive to local noise, and their probing approach will facilitate more efficient progress along narrow valleys, although they will be more likely to accidentally jump over ravines if the step size is too large.
 
 \chapter{Neural surfing theory}
 \label{chap:neural_surfing_theory}
@@ -1327,12 +1346,13 @@ We will employ this technique in \ref{sec:stripe_gradient_descent_subgoals,sec:s
 \chapter{The local minimum problem}
 \label{chap:local_minimum_problem}
 The previous chapters explained the theory behind neural networks and their classical training algorithms. 
-We briefly looked at some of these algorithms' shortcomings in \ref{sec:neural_training_issues} and hypothesised that they would potentially fail to find global minima in the presence of suboptimal local minima.
+We looked at some of these algorithms' shortcomings in \ref{sec:neural_training_issues} and hypothesised why they would potentially fail to find global minima in the presence of suboptimal local minima.
 Now we can define the local minimum problem more accurately, contrive an example of said problem, and finally not only analyse it from the classical viewpoint of \ref{chap:neural_network_theory}, but also relate it to the paradigm of \ref{chap:neural_surfing_theory}.
 
 \section{The mathematics of local and global minima}
-Before contriving and analysing an instance of the local minimum problem, we must define what is meant by `local' and `global' minima.
-We will further introduce a theorem that we can later use as a tool to prove their existence.
+In order to contrive and analyse an instance of the local minimum problem, we must formally define what is meant by `local' and `global' minima and identify the necessary and sufficient conditions that prove their existence.
+We will do this by returning to the running analogy of hiking in the mountains to provide some intuition.
+Let us begin with the global minimum, which is simply a point with an elevation lower than any other point.
 \begin{definition}[Global minimum]
     \label{def:global_minimum}
     The function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ has a \textit{global minimum} at point
@@ -1343,6 +1363,8 @@ We will further introduce a theorem that we can later use as a tool to prove the
     $f(\vec{p}) \leq f(\vec{x})$.
 \end{definition}
 
+We claimed in \ref{sec:motivation} to have a local minimum if the surroundings of our one-metre radius of vision are of higher elevation than the ground beneath our feet.
+To define local minima, we will use the same concept, just allowing that the radius of the circle describing the visible surroundings can be arbitrarily small.
 \begin{definition}[Local minimum]
     \label{def:local_minimum}
     The function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ has a \textit{local minimum} at point
@@ -1355,6 +1377,14 @@ We will further introduce a theorem that we can later use as a tool to prove the
     A \textit{suboptimal local minimum} is a local minimum that is not a global minimum.
 \end{definition}
 
+Now it is possible to define the local minimum problem using these terms.
+\begin{problem}[Local minimum problem]
+    A training algorithm exhibits the local minimum problem if there exists a weight initialisation that leads to training converging to a suboptimal local minimum on the error-weight surface.
+\end{problem}
+
+In order to later analyse error-weight surfaces analytically, we must derive the conditions that are necessary and sufficient for local minima to exist.
+We must first realise that if our immediate surroundings are of higher elevation, then the infinitesimal slope beneath our feet is completely flat (because moving just a bit in any direction will lead to a higher elevation). 
+In formal terms, this infinitesimal slope is the gradient, or vector of first partial derivatives, which is given by the \textit{Jacobian}.
 \begin{definition}[Jacobian]
     Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a continuously differentiable function of the form
     $f=f\left(\vec{x}\right)$
@@ -1374,6 +1404,13 @@ We will further introduce a theorem that we can later use as a tool to prove the
         \end{bmatrix}.
     \end{equation*}
 \end{definition}
+
+Now that we have defined the Jacobian as representing the infinitesimal slope of the mountain, we must realise an important fact.
+Knowing that the slope of the mountain is flat at a specific point is not a sufficient condition for there being a local minimum; after all, we could be talking about a global maximum (or a saddle point).
+We will call these points \textit{critical points}.
+To determine whether a critical point constitutes a local minimum, we must examine its immediate surrounding, to see if these points are of higher elevation.
+This will be achieved by looking at the second partial derivatives given by the \textit{Hessian}, more specifically the existence of a local minima is predicated on whether the Hessian is \textit{positive definite}.
+Let us define these terms.
 \begin{definition}[Hessian]
     Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a function of the form
     $f=f\left(\vec{x}\right)$
@@ -1467,6 +1504,7 @@ We will prove a simple technique for showing that a $2 \times 2$ matrix is posit
     By \ref{def:positive_definite}, $\vec{M}$ must be positive definite.
 \end{proof}
 
+Let us finally introduce a theorem that we can later use as a tool to prove the existence of local minima.
 \begin{theorem}[Local minimum]
     Let $f: \mathbb{R}^n \rightarrow \mathbb{R}$ be a continuously differentiable function, and let the point
     $\vec{p} \in \mathbb{R}^n$
@@ -1476,10 +1514,9 @@ We will prove a simple technique for showing that a $2 \times 2$ matrix is posit
     $\vec{H}_f(\vec{p})$ is positive definite.
     Then $\vec{p}$ is a \textit{local minimum} of $f$.
 \end{theorem}
-We will require this theorem to prove that training converges to a local minimum in \ref{sec:stripe_problem}.
+We will require this theorem to justify that gradient-based training converges to a local minimum in \ref{sec:stripe_problem}.
 However, the proof of this theorem exceeds the scope of this report.
 The interested reader may consult \textcite[190]{loomis1990}.
-
 
 \section{The stripe problem}
 \label{sec:stripe_problem}
@@ -2892,6 +2929,8 @@ For the exhaustive sampling technique, it is interesting to see that like gradie
 A possible explanation for this could be the increased value of $\mu$ used for greedy probing.
 
 \chapter{The neural surfing technique}
+
+\section{Motivation}
 
 \section{Clothoids}
 Consider a scenario in two-dimensional output space, as is shown in \ref{fig:clothoid_motivation_scenario}.

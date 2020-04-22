@@ -6,6 +6,7 @@ More specifically, its main focus lies in contriving and investigating an exampl
 Of auxiliary importance is a software framework that should be developed to not only to compare different neural training techniques, but also to ensure that the main theoretical results obtained regarding the local minimum problem are empirically verified and reproducible.
 
 \section{Motivation}
+\label{sec:motivation}
 Imagine you are hiking up a mountain.
 The trail in front of you leads gradually upwards, and in the distance, you can spot a peak.
 After hiking for a while, you reach the top that peak, but then you realise it was not in fact the summit because now (from this new vantage point) you can see a small basin in front of you that leads to an even higher peak. 
@@ -79,10 +80,10 @@ More recently, a particular random search approach was affirmed in outperforming
 A very recent work presents a DFO technique for neural networks that uses a variant of local search belonging in the family of random search algorithms \cite{aly2019}.
 This technique parallels the finding from other works that DFOs are often able to escape some\footnote{Guaranteed convergence to a global minimum in every scenario is not asserted, although the results indicate that the local minima are not as `poor'.} local minima and thus produce better training results; however, they require more iterations and computational resources than BP. 
 
-\citeauthor{aly2019},\citeauthor{such2017}, and similar works studied the performance of their respective DFO algorithms for training neural networks with a large parameter space (in the order of $10^6$ parameters).
+\citeauthor{aly2019}, \citeauthor{such2017}, and similar works studied the performance of their respective DFO algorithms for training neural networks with a large parameter space (in the order of $10^6$ parameters).
 Although providing valuable practical insight, this made it infeasible to examine the structure of the loss surface analytically in order to assess issues such as severely suboptimal local minima.
 
-A common theme underlying these DFO algorithms is the promise that near-optimal solutions can be found given enough resources. 
+A common theme underlying DFO algorithms is the promise that near-optimal solutions can be found given enough resources. 
 To achieve this, they rely on stochasticity in some form or another: 
 \citeauthor{kirkpatrick1983}'s SA algorithm tolerates suboptimal moves with a certain probability, and the others employ variants of random search as part of their algorithms \cite{hirasawa1998,battiti1995,aly2019,such2017}.
 
