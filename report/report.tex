@@ -86,81 +86,20 @@
 \begin{document}
 
 \frontmatter
-\begin{titlepage}
-	\centering
-	
-	{\scshape\LARGE Senior Honours Project\par}
-	\vspace{0.25cm}
-	{\includegraphics[width=0.8\textwidth]{logo.png} \par}
-	\vspace{0.25cm}
-	{\huge\bfseries Freeing Neural Training Through Surfing\par}
-	\vspace{0.5cm}
-
-	\vfill
-
-	\noindent
-	\begin{minipage}{0.45\textwidth}
-		\begin{center} \large
-		  \textit{Author:}\\
-          Georg \textsc{Wölflein}\\
-		\end{center}
-    \end{minipage}%
-    \begin{minipage}{0.45\textwidth}
-		\begin{center} \large
-		\textit{Supervisor:} \\
-		Dr.~Michael \textsc{Weir}
-		\end{center}
-	\end{minipage}%
-
-	% \vspace{0.5cm}
-	\vfill
-
-	{April 27, 2020\par}
-
-	%\vfill
-	%Word count: \quickwordcount{report}
-\end{titlepage}
-
-\chapter*{Abstract}
-Gradient-based methods based on backpropagation are widely used in training multilayer feedforward neural networks. 
-However, such algorithms often converge to suboptimal weight configurations known as local minima. 
-This report presents a novel minimal example of the local minimum problem with only three training samples and demonstrates its suitability for investigating and resolving said problem by analysing its mathematical properties and conditions leading to the failure of conventional training regimes. 
-A different perspective of training neural networks is introduced that concerns itself with neural spaces and applied to study the local minimum example, giving rise to the concept of setting intermediate subgoals during training which is demonstrated to be a viable and effective means of overcoming the local minimum problem. 
-The versatility of subgoal-based approaches is highlighted by showing their generalisation potential. 
-An example of a subgoal-based training regime using sampling and an adaptive clothoid for establishing a goal-connecting path is suggested as a proof of concept for further research. 
-In addition, this project includes the design and implementation of a software framework for monitoring the performance of different neural training algorithms on a given problem simultaneously and in real time. 
-This framework can be used to reproduce the findings of how classical algorithms fail to find the global minimum in the aforementioned example.
-
-
-\chapter*{Declaration}
-``I declare that the material submitted for assessment is my own work except where credit is explicitly given to others by citation or acknowledgement.
-This work was performed during the current academic year except where otherwise stated.
-
-The main text of this project report is \quickwordcount{report} long, including project specification and plan.
-
-In submitting this project report to the University of St Andrews, I give permission for it to be made available for use in accordance with the regulations of the University Library. 
-I also give permission for the title and abstract to be published and for copies of the report to be made and supplied at cost to any bona fide library or research worker, and to be made available on the World Wide Web.
-I retain the copyright in this work.''
-
-\vspace{0.5cm}
-
-\textit{Georg Wölflein}
-
-\tableofcontents
-\listoffigures
+\input{parts/0_preface.tex}
 
 \mainmatter
 
-\input{parts/0_general.tex}
+\input{parts/1_introduction.tex}
 
-\input{parts/1_theory.tex}
+\input{parts/2_theory.tex}
 
-\input{parts/2_framework.tex}
+\input{parts/3_framework.tex}
 
-\input{parts/3_end.tex}
+\input{parts/4_end.tex}
 
 \appendix
-\input{parts/4_appendix.tex}
+\input{parts/5_appendix.tex}
 
 \addcontentsline{toc}{chapter}{Bibliography}
 \printbibliography
