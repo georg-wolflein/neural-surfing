@@ -1262,8 +1262,8 @@ The steps below explain the methodology of this technique, for $S$ subgoals (whe
             height=.4\textwidth,
             xmin=0, xmax=15,
             ymin=0, ymax=10,
-            xlabel={$y_1$},
-            ylabel={$y_2$},
+            xlabel={$\hat{y}_1$},
+            ylabel={$\hat{y}_2$},
             ticks=none,
             axis x line=bottom,
             axis y line=left
@@ -1276,11 +1276,11 @@ The steps below explain the methodology of this technique, for $S$ subgoals (whe
 
             \draw[->] (initial) (initial) to[curve through={(y1) .. (y2) .. (y3)}] (goal);
 
-            \node[label={180:{$\vec{\hat{y}_0}$}}, circle, fill, inner sep=1pt] at (initial) {};
-            \node[label={270:{$\vec{\hat{y}_1}$}}, circle, fill, inner sep=1pt] at (y1) {};
-            \node[label={90:{$\vec{\hat{y}_2}$}}, circle, fill, inner sep=1pt] at (y2) {};
-            \node[label={180:{$\vec{\hat{y}_3}$}}, circle, fill, inner sep=1pt] at (y3) {};
-            \node[label={90:{$\vec{\hat{y}_4}$}}, circle, fill, inner sep=1pt] at (goal) {};
+            \node[label={180:{$\vec{\hat{y}}_0$}}, circle, fill, inner sep=1pt] at (initial) {};
+            \node[label={270:{$\vec{\hat{y}}_1$}}, circle, fill, inner sep=1pt] at (y1) {};
+            \node[label={90:{$\vec{\hat{y}}_2$}}, circle, fill, inner sep=1pt] at (y2) {};
+            \node[label={180:{$\vec{\hat{y}}_3$}}, circle, fill, inner sep=1pt] at (y3) {};
+            \node[label={90:{$\vec{\hat{y}}_4$}}, circle, fill, inner sep=1pt] at (goal) {};
 
             \draw
                 let
