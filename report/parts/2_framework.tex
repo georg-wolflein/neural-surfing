@@ -5,17 +5,17 @@
     \centering
     \centerline{
         \begin{tikzpicture}
-            \begin{abstractclass}[text width=9cm]{Agent}{-2,0}
+            \begin{abstractclass}[text width=9cm]{Agent}{-3.5,0}
                 \attribute{problem: Problem}
                 \operation[0]{compile()}
                 \operation[0]{fit(X: Tensor, y: Tensor, epochs: int, callbacks: list)}
                 \operation{train(epochs: int, metrics: list): dict}
             \end{abstractclass}
-            \begin{abstractclass}[text width=5cm]{GradientBasedAgent}{-3.5,-5}
+            \begin{abstractclass}[text width=5cm]{GradientBasedAgent}{-5.5,-5}
                 \inherit{Agent}
                 \operation{fit(\dots)}
             \end{abstractclass}
-            \begin{abstractclass}[text width=7cm]{GradientFreeAgent}{4,-5}
+            \begin{abstractclass}[text width=8cm]{GradientFreeAgent}{3.5,-5}
                 \inherit{Agent}
                 % \attribute{sampler : SamplingTechnique}
                 \operation{fit(\dots)}
@@ -40,9 +40,9 @@
                 \inherit{GradientFreeAgent}
                 \operation{choose\_best\_weight\_update(\dots)}
             \end{class}
-            \begin{abstractclass}[text width=4cm]{SamplingTechnique}{5.5,0}
-                \operation[0]{initialize()}
-                \operation[0]{\_\_call\_\_(weights: Tensor)}
+            \begin{abstractclass}[text width=5cm]{SamplingTechnique}{5,0}
+                \operation[0]{initialize(num\_weights: int)}
+                \operation[0]{\_\_call\_\_(weights: Tensor): \dots}
             \end{abstractclass}
             \unidirectionalAssociation{SamplingTechnique}{sampler}{}{GradientFreeAgent}
         \end{tikzpicture}
