@@ -1,6 +1,35 @@
 \chapter{The framework}
 \label{chap:framework}
 \section{Design}
+
+\begin{figure}
+    \centering
+    \begin{tikzpicture}[
+        block/.style={
+            draw, 
+            rectangle, 
+            minimum height=1.5cm, 
+            minimum width=3cm, align=center
+        }, 
+        line/.style={->,>=latex'},
+        label/.style={midway,fill=white}
+    ]
+        \node[block] (problem) {Problem};
+        \node[block, right = 4cm of problem] (metric) {Metric};
+        \node[block, below = 2cm of problem] (agent) {Agent};
+        \node[block, below = 2cm of metric] (visualisation) {Visualisation};
+        \node[block] at ($(agent)!0.5!(visualisation)+(0,-3cm)$) (experiment) {Experiment};
+        
+        
+        \draw[line] (problem.east) -- (metric.west) node[above left] {0..*} node[label] {defines};
+        \draw[line] (agent.north) -- (problem.south) node[below right] {1} node[label] {trains on};
+        \draw[line] (experiment.west) -| (agent.south) node[below left] {0..*} node[label] {coordinates};
+        \draw[line] (visualisation.north) -- (metric.south) node[below right] {0..*} node[label] {plots};
+        \draw[line] (experiment.east) -| (visualisation.south) node[below right] {0..*} node[label] {shows};   
+    \end{tikzpicture}
+    \caption{}
+\end{figure}
+
 \begin{figure}
     \centering
     \centerline{
@@ -47,7 +76,7 @@
             \unidirectionalAssociation{SamplingTechnique}{sampler}{}{GradientFreeAgent}
         \end{tikzpicture}
     }
-    \caption{UML class diagram of the \texttt{agents} module, showing only the (non-underscored) public methods. Note that ``LossWithGoalLineDeviation'' is abbreviated as LWGLD.}
+    \caption{UML class diagram of the \texttt{agents} module, showing only the (non-underscored) public methods. Note that ``LossWithGoalLineDeviation'' is abbreviated as LWGLD and the subclasses of \texttt{SamplingTechnique} have been omitted.}
 \end{figure}
 
 
