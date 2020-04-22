@@ -17,10 +17,12 @@
 \usepackage{subcaption}
 \usepackage[simplified]{pgf-umlcd}
 \usepackage{cleveref} % should be loaded last
-\usepackage[
-	backend=biber,
-	style=apa,
-	citestyle=authoryear
+\usepackage[%
+	backend=biber,%
+	style=apa,%
+    citestyle=authoryear,%
+    sortcites,%
+    sorting=ynt%
 ]{biblatex}
 
 \pagestyle{fancy}
@@ -101,7 +103,9 @@
 \appendix
 \input{parts/5_appendix.tex}
 
-\addcontentsline{toc}{chapter}{Bibliography}
+\addcontentsline{toc}{chapter}{\refname{}}
+\begin{refcontext}[sorting=nyt]
 \printbibliography
+\end{refcontext}
 
 \end{document}

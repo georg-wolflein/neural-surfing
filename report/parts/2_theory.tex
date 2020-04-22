@@ -161,7 +161,7 @@ Unlike $g_\text{step}$, these activation functions are differentiable which is a
 
 Rectified units do not suffer from the \textit{vanishing gradient effect} \cite{glorot2011}.
 This phenomenon occurs with sigmoid activation functions when they reach high saturation, i.e. when the input is significantly far from zero such that the gradient is almost horizontal.
-However, the vanishing gradient problem is usually not prevelant in shallow\footnote{Shallow networks refer to ANNs with few layers.} networks so the sigmoid function still remains popular \cite{neal1992}.
+However, the vanishing gradient problem is usually not prevalant in shallow\footnote{Shallow networks refer to ANNs with few layers.} networks so the sigmoid function still remains popular \cite{neal1992}.
 
 Particularly in deep neural networks, different neurons (grouped in \textit{layers}, see \ref{sec:multi_layer_perceptron}) often have different activation functions \cite{burkov2019}, but for the purposes of this report it is more convenient (in terms of notation) to have the activation function be the same for all neurons, so it does not need to be supplied as a parameter to the function describing the particular neural network.
 Much of the work in this report can easily be generalised to designs with multple activation functions.
@@ -569,7 +569,7 @@ We will use a simple loss function that uses mean squared error for this purpose
 
 \section{Backpropagation via gradient descent}
 \label{sec:backpropagation}
-Backpropagation (BP) via gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum} (see \ref{chap:local_minimum_problem}).
+Backpropagation (BP) via gradient descent is an iterative algorithm for training neural networks that, provided a suitable learning rate $\alpha$, is guaranteed to converge to a \textit{local minimum}.
 The main idea is as follows:
 \begin{enumerate}
     \item Calculate the derivative of the loss function with respect to the current trainable parameters $\vec{p}$ as
@@ -594,7 +594,7 @@ The main idea is as follows:
             ylabel={$L(p)$}, ylabel style={anchor=south},
             ymin=-0, ymax=4.2,
             xmin=0, xmax=7.2,
-            samples=50,
+            samples=100,
             domain=0.1:7.5,
             ticks=none
         ]
@@ -732,9 +732,9 @@ More sophisticated implementations will require even more hyperparameters (such 
 \section{Issues}
 \label{sec:neural_training_issues}
 \paragraph{Suboptimal local minima}
-One prevelant problem such optimisation techniques face is that of suboptimal local minima (also known simply as the `local minimum problem') which was introduced in \ref{sec:context_local_minimum_problem} and will be explored in great detail in \ref{chap:local_minimum_problem}.
+One prevalant problem such optimisation techniques face is that of suboptimal local minima (also known simply as the `local minimum problem') which was introduced in \ref{sec:context_local_minimum_problem} and will be explored in great detail in \ref{chap:local_minimum_problem}.
 \ref{fig:gradient_descent_local_minimum} provides a simple example where gradient descent via BP fails to find the global minimum in favour of a local minimum.
-However, this issue is not unique to BP: greedy probing, being in effect a form of gradient descent itself, suffers from the same problem as the evidence suggests in \ref{sec:local_minimum_experiments_derivative_free}.
+However, this issue is not unique to BP: greedy probing, being in effect a form of gradient descent itself, will suffer from the same problem as we will see later.
 SA tries to circumvent the local minimum problem by allowing intermediate states that are worse than their predecessors, but even this technique is not guaranteed to find the global minimum in a finite amount of time.
 
 \paragraph{Efficiency}
@@ -1328,7 +1328,7 @@ We will employ this technique in \ref{sec:stripe_gradient_descent_subgoals,sec:s
 \label{chap:local_minimum_problem}
 The previous chapters explained the theory behind neural networks and their classical training algorithms. 
 We briefly looked at some of these algorithms' shortcomings in \ref{sec:neural_training_issues} and hypothesised that they would potentially fail to find global minima in the presence of suboptimal local minima.
-Now we can now define the local minimum problem more accurately, contrive an example of said problem, and finally not only analyse it from the classical viewpoint of \ref{chap:neural_network_theory}, but also relate it to the paradigm of \ref{chap:neural_surfing_theory}.
+Now we can define the local minimum problem more accurately, contrive an example of said problem, and finally not only analyse it from the classical viewpoint of \ref{chap:neural_network_theory}, but also relate it to the paradigm of \ref{chap:neural_surfing_theory}.
 
 \section{The mathematics of local and global minima}
 Before contriving and analysing an instance of the local minimum problem, we must define what is meant by `local' and `global' minima.

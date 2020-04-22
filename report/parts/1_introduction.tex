@@ -1,9 +1,49 @@
 \chapter{Introduction}
 
-This project is primarily a research project; its main focus lies in contriving and investigating an example of the local minimum problem in neural networks\footnote{Throughout this report, the terms \textit{neural network} and \textit{artifical neural network} (ANN) are used interchangeably.} and designing a training regime that tackles this issue. 
+This project is primarily a research-oriented project. 
+That is, it is a project investigating how research on the neural manifestation of a classical problem in numerical optimisation and heuristic search may be set up and progressed.
+More specifically, its main focus lies in contriving and investigating an example of the local minimum problem in neural networks\footnote{Throughout this report, the terms \textit{neural network} and \textit{artifical neural network} (ANN) are used interchangeably.} and designing a training regime that tackles this issue. 
 Of auxiliary importance is a software framework that should be developed to not only to compare different neural training techniques, but also to ensure that the main theoretical results obtained regarding the local minimum problem are empirically verified and reproducible.
 
-This report begins with a context survey identifying not only the classical neural training algorithms, but also the efforts that have been made to deal with the local minimum problem and their limitations.
+\section{Motivation}
+Imagine you are hiking up a mountain.
+The trail in front of you leads gradually upwards, and in the distance, you can spot a peak.
+After hiking for a while, you reach the top that peak, but then you realise it was not in fact the summit because now (from this new vantage point) you can see a small basin in front of you that leads to an even higher peak. 
+This process repeats until at some point the peak up ahead will have the summit cross -- to your great relief. 
+Then it is just a matter of hiking across that final valley and up to the summit.
+
+You could only ever see the next peak because it obstructed the view of subsequent peaks until you climbed it.
+This is an example of \textit{local information}: without prior knowledge or other aid there is no way of knowing if the peak in front is the penultimate one.
+In fact, in the absence of trails and signposts, how would you know which way to go, if you cannot see the summit cross?
+
+Let us continue with this thought experiment. 
+Assume you could only see a distance of one metre around you, and that is the only local information available to you.
+How would you find the summit?
+The most natural approach is just repeatedly taking a step in the direction of the steepest upwards slope.
+This method is called \textit{gradient ascent} (the gradient is just the slope).
+
+At some point, you will reach the highest point in the one-metre vicinity which means that you are at the top of a peak. 
+We call this a \textit{local optimum} because all points in the local neighbourhood are of lower elevation.
+If you are standing at the summit cross, then you are very lucky and have found the highest point of the mountain.
+In this case, your position marks the \textit{global optimum} because you are higher than all the other peaks this mountain has.
+
+How do you proceed once you are at a local optimum?
+When you have already reached it, your only option is to randomly move in any direction because you have no useful information.
+A more principled approach might be to throughout the process sometimes allow steps that go downwards in hopes of increasing the likelihood of finding a higher peak.
+This is essentially the idea behind \textit{simulated annealing} and related techniques.
+However, while this technique might find a better local optimum, it is still quite unlikely to find the global optimum.
+This is what we call the \textit{local optimum problem}.
+
+Another point to consider is that if the summit did not have a cross, it would be impossible to know whether a given peak is actually the global optimum using only the local information.
+
+To relate this thought experiment to numerical optimisation problems, let us turn it upside down: instead of trying to locate the highest peak, the goal is now to find the deepest valley, i.e. the lowest point in the landscape. 
+The same logic still applies, except that not we think of an optimum as being a \textit{minimum} instead of a \textit{maximum}, and the technique is called \textit{gradient descent}.
+The reason for applying this transformation is that aim of a numerical optimisation problem is to minimise a \textit{cost function} for a set of parameters. 
+The surface of this function is like a mountainous landscape, and in finding its global minimum, we run into the aforementioned problem of local optima which we in this context is called the \textit{local minimum problem}.
+
+This project will develop a technique that differs from gradient descent and simulated annealing (and other probabilistic techniques) by using a chain of intermediate targets (subgoals) along the cost surface to pull the process forwards analogous to a \textit{surfer} using a travelling wave to drive their motion. 
+
+This report will begin with a context survey identifying not only the classical neural training algorithms, but also the efforts that have been made to deal with the local minimum problem and their limitations.
 The classical theory of neural networks is presented from the ground up in \ref{chap:neural_network_theory} which naturally leads to the analysis of popular neural training techniques in \ref{chap:neural_training}.
 In \ref{chap:neural_surfing_theory}, a different paradigm of viewing neural training -- `neural surfing theory' -- is introduced.
 \ref{chap:local_minimum_problem} provides a precise definition of the local minimum problem, thereafter facilitating the design of an instance of said problem which is then analysed from both viewpoints described in \ref{chap:neural_network_theory,chap:neural_surfing_theory}.
@@ -13,20 +53,20 @@ Finally, an outlook is provided how this type of technique can be generalised to
 \section{Context survey}
 \subsection{Neural training}
 \label{sec:context_anns}
-The first mathematical model representing neurons in the human brain, so-called \textit{perceptons}, was formulated by \textcite{mcculloch1943} (see Section \ref{sec:ann}).
-In 1958, the psychologist Frank Rosenblatt published the first percepton learning algorithm \cite{rosenblatt1958}, but this type of network lacked the ability to learn mappings that were not \textit{linearly separable}.
+The first mathematical model representing neurons in the human brain, so-called \textit{perceptrons}, was formulated by \textcite{mcculloch1943} (see \ref{sec:ann}).
+In 1958, the psychologist Frank Rosenblatt published the first perceptron learning algorithm \cite{rosenblatt1958}, but this type of network lacked the ability to learn mappings that were not \textit{linearly separable}.
 It was not until the 1980s with the introduction of the backpropagation algorithm capable of training networks with hidden layers, that neural networks experienced a substantial rise in popularity.
 
 \paragraph{Backpropagation}
-To this date, the backpropagation (BP) algorithm, attributed to \textcite{rumelhart1986}, remains the prominent method of training neural networks.
-It involves computing the gradient of the loss function with respect to the weights and then using some gradient-based optimisation technique such as gradient descent to update the weights.
+The backpropagation (BP) algorithm -- discovered independently by multiple researchers in the 1960s and popularised for neural networks by \textcite{rumelhart1986} -- remains the prominent method of training neural networks to this date.
+It involves computing the derivative of the loss function with respect to the weights and then using some gradient-based optimisation technique (gradient descent or an approximation\footnote{Stochastic gradient descent (SGD) is often used as an approximation for gradient descent whereby the gradient is calculated on a random subset of the data (instead of the whole dataset) for computational efficiency.} thereof) to update the weights.
 With the rise in popularity of deep neural networks, methods have been developed to increase the speed of converging to a minimum. 
-The two main approaches are parallelising the computation and using adaptive learning rates like in the `Adam optimizer' \cite{kingma2014}.
+Two main approaches are parallelising the computation and using adaptive learning rates like in the `Adam optimizer' \cite{kingma2014}.
 It is well-established that BP, provided a suitable choice of hyperparameters, is guaranteed to converge to a local (but likely not global) minimum.
 A common technique to subdue the effect of this issue is to run BP multiple times with different random initialisations.
 
 \paragraph{Derivative-free optimisation}
-The class of derivative-free optimisation (DFO) algorithms are optimisation techniques that attempt to find a global optimum, requiring only an objective function, but no gradient information.
+The class of derivative-free optimisation (DFO) algorithms are optimisation techniques that attempt to find a global optimum, requiring only an objective function, but no derivative information.
 One example of such an algorithm is simulated annealing (SA), proposed by \citeauthor{kirkpatrick1983}, that mimics the motion of atoms in the physical process of a slowly cooling material \cite*{kirkpatrick1983}.
 Originally employed in discrete optimisation problems such as the combinatorial travelling salesman problem \cite{cerny1985}, it was later generalised and applied to problems with continuous domains \cite{belisle1993}.
 However, in a comparative study of derivative-free optimisation algorithms, \citeauthor{rios2009} found that SA performed relatively poorly in comparison to more modern DFOs on general optimisation problems\footnote{It is important to note that \citeauthor{rios2009} did not assess DFOs for the purpose of neural network optimisation, but rather compared their performances on general convex and non-convex optimisation problems.} \cite*{rios2009}.
@@ -39,7 +79,13 @@ More recently, a particular random search approach was affirmed in outperforming
 A very recent work presents a DFO technique for neural networks that uses a variant of local search belonging in the family of random search algorithms \cite{aly2019}.
 This technique parallels the finding from other works that DFOs are often able to escape some\footnote{Guaranteed convergence to a global minimum in every scenario is not asserted, although the results indicate that the local minima are not as `poor'.} local minima and thus produce better training results; however, they require more iterations and computational resources than BP. 
 
-\citeauthor{aly2019}, \citeauthor{such2017}, and similar works studied the performance of their respective DFO algorithms for training neural networks with a large parameter space (in the order of $10^6$ parameters) which, while providing valuable practical insight, made it infeasible to examine the structure of the loss surface analytically in order to assess issues such as severely suboptimal local minima.
+\citeauthor{aly2019},\citeauthor{such2017}, and similar works studied the performance of their respective DFO algorithms for training neural networks with a large parameter space (in the order of $10^6$ parameters).
+Although providing valuable practical insight, this made it infeasible to examine the structure of the loss surface analytically in order to assess issues such as severely suboptimal local minima.
+
+A common theme underlying these DFO algorithms is the promise that near-optimal solutions can be found given enough resources. 
+To achieve this, they rely on stochasticity in some form or another: 
+\citeauthor{kirkpatrick1983}'s SA algorithm tolerates suboptimal moves with a certain probability, and the others employ variants of random search as part of their algorithms \cite{hirasawa1998,battiti1995,aly2019,such2017}.
+
 
 \subsection{The local minimum problem}
 \label{sec:context_local_minimum_problem}
@@ -48,7 +94,7 @@ However, with regards to neural networks, there seems to be differing opinions o
 One frequently cited article claims that ``In practice, poor local minima are rarely a problem with large networks'' \cite{lecun2015}.
 This is underpinned in theory by other works which proved the nonexistence of suboptimal local minima, although they make varying assumptions on the structure of the underlying neural networks \cite{kawaguchi2016,nguyen2018,laurent2018}.
 On the other hand, a recent article asserts that ``The apparent scarcity of poor local minima has lead practitioners to develop the intuition that bad local minima \elide are practically non-existent'' \cite{goldblum2019}.
-Notwithstanding this apparent disagreement, the neural local minimum problem remains an active area of research.
+The neural local minimum problem remains an active area of research.
 
 There have been various approaches attempting to overcome the local minimum problem as it relates to neural training.
 \citeauthor{choi2008} presented a method whereby the network is split into two separate parts that are trained separately, but this technique works only on networks with one hidden layer \cite*{choi2008}.
@@ -62,6 +108,7 @@ However, setting these subgoals requires some finesse.
 A technique of setting and achieving subgoals that does not rely on BP has been explored in \textcite{weir2000}.
 
 \subsection{Implementation tools}
+% This project will adopt Python as the main programming language.
 In both acedemia and industry, Python is the de facto standard programming language for machine learning. 
 A 2019 analysis on the world-leading software development platform \href{https://www.github.com/}{GitHub} found that Python is the most popular language for open source machine learning repositories \cite{elliott2019}.
 Python is a simple yet versatile language that natively supports different programming paradigms (imperative, functional, object-oriented, and more).
