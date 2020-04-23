@@ -34,11 +34,11 @@ from functools import partial
 import typing
 
 from ..problems import Problem
-from . import GradientBasedAgent
+from . import DerivativeBasedAgent
 from .util import get_distance_to_line
 
 
-class LossWithGoalLineDeviation(GradientBasedAgent):
+class LossWithGoalLineDeviation(DerivativeBasedAgent):
     &#34;&#34;&#34;Implementation of a gradient-based agent with a custom loss function that tries to minimise the distance to the goal line.
     &#34;&#34;&#34;
 
@@ -101,7 +101,7 @@ momentum {float} &ndash; the momentum (default: {0.0})</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class LossWithGoalLineDeviation(GradientBasedAgent):
+<pre><code class="python">class LossWithGoalLineDeviation(DerivativeBasedAgent):
     &#34;&#34;&#34;Implementation of a gradient-based agent with a custom loss function that tries to minimise the distance to the goal line.
     &#34;&#34;&#34;
 
@@ -140,17 +140,17 @@ momentum {float} &ndash; the momentum (default: {0.0})</p></div>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="nf.agents.GradientBasedAgent" href="index.html#nf.agents.GradientBasedAgent">GradientBasedAgent</a></li>
+<li><a title="nf.agents.DerivativeBasedAgent" href="index.html#nf.agents.DerivativeBasedAgent">DerivativeBasedAgent</a></li>
 <li><a title="nf.agents.Agent" href="index.html#nf.agents.Agent">Agent</a></li>
 <li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="nf.agents.GradientBasedAgent" href="index.html#nf.agents.GradientBasedAgent">GradientBasedAgent</a></b></code>:
+<li><code><b><a title="nf.agents.DerivativeBasedAgent" href="index.html#nf.agents.DerivativeBasedAgent">DerivativeBasedAgent</a></b></code>:
 <ul class="hlist">
-<li><code><a title="nf.agents.GradientBasedAgent.compile" href="index.html#nf.agents.Agent.compile">compile</a></code></li>
-<li><code><a title="nf.agents.GradientBasedAgent.fit" href="index.html#nf.agents.Agent.fit">fit</a></code></li>
-<li><code><a title="nf.agents.GradientBasedAgent.train" href="index.html#nf.agents.Agent.train">train</a></code></li>
+<li><code><a title="nf.agents.DerivativeBasedAgent.compile" href="index.html#nf.agents.Agent.compile">compile</a></code></li>
+<li><code><a title="nf.agents.DerivativeBasedAgent.fit" href="index.html#nf.agents.Agent.fit">fit</a></code></li>
+<li><code><a title="nf.agents.DerivativeBasedAgent.train" href="index.html#nf.agents.Agent.train">train</a></code></li>
 </ul>
 </li>
 </ul>

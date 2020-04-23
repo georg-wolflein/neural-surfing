@@ -16,6 +16,7 @@
 \usepackage[inline]{enumitem}
 \usepackage{subcaption}
 \usepackage[simplified]{pgf-umlcd}
+\usepackage{minted}
 \usepackage{cleveref} % should be loaded last
 \usepackage[%
 	backend=biber,%
@@ -45,6 +46,8 @@
 \makeatother
 
 \addbibresource{bibliography.bib}
+
+\setminted{frame=lines}
 
 \graphicspath{ {./images/} }
 \pgfplotsset{compat=1.16}

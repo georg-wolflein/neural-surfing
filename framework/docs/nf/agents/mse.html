@@ -34,10 +34,10 @@ from functools import partial
 import typing
 
 from ..problems import Problem
-from . import GradientBasedAgent
+from . import DerivativeBasedAgent
 
 
-class MSE(GradientBasedAgent):
+class MSE(DerivativeBasedAgent):
     &#34;&#34;&#34;Implementation of the classical steepest gradient descent agent with mean squared eror.
     &#34;&#34;&#34;
 
@@ -89,7 +89,7 @@ momentum {float} &ndash; the momentum (default: {0.0})</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class MSE(GradientBasedAgent):
+<pre><code class="python">class MSE(DerivativeBasedAgent):
     &#34;&#34;&#34;Implementation of the classical steepest gradient descent agent with mean squared eror.
     &#34;&#34;&#34;
 
@@ -117,17 +117,17 @@ momentum {float} &ndash; the momentum (default: {0.0})</p></div>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="nf.agents.GradientBasedAgent" href="index.html#nf.agents.GradientBasedAgent">GradientBasedAgent</a></li>
+<li><a title="nf.agents.DerivativeBasedAgent" href="index.html#nf.agents.DerivativeBasedAgent">DerivativeBasedAgent</a></li>
 <li><a title="nf.agents.Agent" href="index.html#nf.agents.Agent">Agent</a></li>
 <li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="nf.agents.GradientBasedAgent" href="index.html#nf.agents.GradientBasedAgent">GradientBasedAgent</a></b></code>:
+<li><code><b><a title="nf.agents.DerivativeBasedAgent" href="index.html#nf.agents.DerivativeBasedAgent">DerivativeBasedAgent</a></b></code>:
 <ul class="hlist">
-<li><code><a title="nf.agents.GradientBasedAgent.compile" href="index.html#nf.agents.Agent.compile">compile</a></code></li>
-<li><code><a title="nf.agents.GradientBasedAgent.fit" href="index.html#nf.agents.Agent.fit">fit</a></code></li>
-<li><code><a title="nf.agents.GradientBasedAgent.train" href="index.html#nf.agents.Agent.train">train</a></code></li>
+<li><code><a title="nf.agents.DerivativeBasedAgent.compile" href="index.html#nf.agents.Agent.compile">compile</a></code></li>
+<li><code><a title="nf.agents.DerivativeBasedAgent.fit" href="index.html#nf.agents.Agent.fit">fit</a></code></li>
+<li><code><a title="nf.agents.DerivativeBasedAgent.train" href="index.html#nf.agents.Agent.train">train</a></code></li>
 </ul>
 </li>
 </ul>

@@ -1,7 +1,15 @@
 \chapter{The framework}
 \label{chap:framework}
-\section{Design}
 
+\section{Design}
+The requirements specification in \ref{sec:requirements} makes it clear that the framework must be made up of the following components:
+\begin{enumerate}
+    \item an interface to specify a neural \textit{problem} (as a labelled dataset with an initial weight configuration);
+    \item a mechanism to calculate problem-specific \textit{metrics} during training;
+    \item an interface for implementing custom \textit{visualisations} that plot metrics in real time;
+    \item an interface for implementing an \textit{agent} that can be used to train on a problem; and
+    \item the notion of an \textit{experiment} which coordinates the training and reporting (visualisation) aspects.
+\end{enumerate}
 \begin{figure}
     \centering
     \begin{tikzpicture}[
@@ -27,9 +35,68 @@
         \draw[line] (visualisation.north) -- (metric.south) node[below right] {0..*} node[label] {plots};
         \draw[line] (experiment.east) -| (visualisation.south) node[below right] {0..*} node[label] {shows};   
     \end{tikzpicture}
-    \caption{}
+    \caption{High-level view of the relationships between components of the \texttt{nf} framework.}
+    \label{fig:nf_components}
 \end{figure}
+\ref{fig:nf_components} shows a high-level view of these components and their associations. 
+The user should be able to provide their own implementations of problems, visualisations, agents, and metrics. 
+All but the latter are provided in the framework as abstract Python classes, such that the user can implement their own functionality.
 
+The design decision was made to provide the user with a different means of specifying metrics that is more user-friendly than having to inherit from an abstract base class.
+Due to the fact that metrics are defined on a per-problem basis and a metric is a function that can be evaluated on a problem in order to produce some data (tensor), it was decided to allow the user to specify these problems as \textit{decorated functions} in their implementation of the abstract \texttt{Problem} class, as shown in \ref{lst:metrics}.
+\begin{listing}[h]
+\begin{minted}{python}
+class MyNeuralProblem(Problem):
+    # ...
+    
+    @Problem.metric
+    def weights(self):
+        # Code to obtain the current weight state...
+        return weight_state
+\end{minted}
+\caption{Example of how a metric can be defined for a problem using a decorated function. Here, the metric will be called \texttt{weights}.}
+\label{lst:metrics}
+\end{listing}
+
+Finally, the \texttt{Experiment} class is not abstract because that is the class responsible for coordinating how all the user-defined components work together.
+The user would simply instantiate this class with a set of agents (each defined on a problem), and then call the \texttt{run\_server()} method with a list of visualisations to display. \ref{lst:experiment} provides a minimal example of this.
+\begin{listing}[h]
+\begin{minted}{python}
+agents = {
+    "Agent A": AgentA(MyNeuralProblem()),
+    "Agent B": AgentB(MyNeualProblem())
+}
+
+experiment = Experiment(agents)
+experiment.run_server([
+    Scatter2D("weights"),
+    Scatter2D("output:1", "weights:0"),
+    Histogram("output:0")
+])
+\end{minted}
+\caption{Minimum example of how an experiment can be specified and run. Here, \texttt{AgentA} and \texttt{AgentB} are agent implementations that the user has written, and \texttt{MyNeuralProblem} is defined like in \ref{lst:metrics} but with an additional metric named \texttt{output}. The visualisations \texttt{Scatter2D} and \texttt{Histogram} are provided as part of the framework.}
+\label{lst:experiment}
+\end{listing}
+
+\section{Implementation}
+The top-level package that constitutes this framework is named \texttt{nf} which is short for ``neural framework''.
+The framework code is provided in three main modules inside the \texttt{nf} package, which will be explained below.
+The main base classes are implemented in the respective \texttt{\_\_init\_\_.py} files so that they can be conveniently loaded using for example the syntax
+\mintinline{python}|from nf.agents import Agent|
+instead of the more verbose
+\mintinline{python}|from nf.agents.agent import Agent|
+which would arise when placing the \texttt{Agent} class inside a file named \texttt{agent.py}.
+This is common practice for these types of frameworks.
+
+\paragraph{The \texttt{problems} module}
+This module contains the abstract \texttt{Problem} class. 
+Some problem implementations are provided in submodules, such as the \texttt{StripeProblem} class in the \texttt{stripe\_problem} submodule.
+
+\paragraph{The \texttt{agents} module}
+This module contains the abstract \texttt{Agent} class which requires the subclasses to override a \texttt{fit()} method of the same form as in the \texttt{keras} library.
+In fact, the agents must support the same lifecycle methods and callback hooks as \texttt{keras} models.
+To take care of some of this for the user \texttt{Agent} class is provided alongside two abstract subclasses: \texttt{DerivativeBasedAgent} and \texttt{DerivativeFreeAgent} that provide more support in implementing each of these techniques. 
+A total of four agent implementations have been provided (two of each category). 
 \begin{figure}
     \centering
     \centerline{
@@ -40,11 +107,11 @@
                 \operation[0]{fit(X: Tensor, y: Tensor, epochs: int, callbacks: list)}
                 \operation{train(epochs: int, metrics: list): dict}
             \end{abstractclass}
-            \begin{abstractclass}[text width=5cm]{GradientBasedAgent}{-5.5,-5}
+            \begin{abstractclass}[text width=5cm]{DerivativeBasedAgent}{-5.5,-5}
                 \inherit{Agent}
                 \operation{fit(\dots)}
             \end{abstractclass}
-            \begin{abstractclass}[text width=8cm]{GradientFreeAgent}{3.5,-5}
+            \begin{abstractclass}[text width=8cm]{DerivativeFreeAgent}{3.5,-5}
                 \inherit{Agent}
                 % \attribute{sampler : SamplingTechnique}
                 \operation{fit(\dots)}
@@ -54,33 +121,83 @@
                 \operation[0]{choose\_best\_weight\_update(weight\_samples: Tensor, weight\_history: Tensor, output\_history: Tensor, X: Tensor, y: Tensor): Tensor}
             \end{abstractclass}
             \begin{class}[text width=2cm]{MSE}{-7,-11}
-                \inherit{GradientBasedAgent}
+                \inherit{DerivativeBasedAgent}
                 \operation{compile()}
             \end{class}
             \begin{class}[text width=2cm]{LWGLD}{-4.5,-11}
-                \inherit{GradientBasedAgent}
+                \inherit{DerivativeBasedAgent}
                 \operation{compile()}
             \end{class}
             \begin{class}[text width=5cm]{GreedyProbing}{-.25,-11}
-                \inherit{GradientFreeAgent}
+                \inherit{DerivativeFreeAgent}
                 \operation{choose\_best\_weight\_update(\dots)}
             \end{class}
             \begin{class}[text width=5cm]{SimulatedAnnealing}{5.25,-11}
-                \inherit{GradientFreeAgent}
+                \inherit{DerivativeFreeAgent}
                 \operation{choose\_best\_weight\_update(\dots)}
             \end{class}
             \begin{abstractclass}[text width=5cm]{SamplingTechnique}{5,0}
                 \operation[0]{initialize(num\_weights: int)}
                 \operation[0]{\_\_call\_\_(weights: Tensor): \dots}
             \end{abstractclass}
-            \unidirectionalAssociation{SamplingTechnique}{sampler}{}{GradientFreeAgent}
+            \unidirectionalAssociation{SamplingTechnique}{sampler}{}{DerivativeFreeAgent}
         \end{tikzpicture}
     }
     \caption{UML class diagram of the \texttt{agents} module, showing only the (non-underscored) public methods. Note that ``LossWithGoalLineDeviation'' is abbreviated as LWGLD and the subclasses of \texttt{SamplingTechnique} have been omitted.}
+    \label{fig:agents_uml}
 \end{figure}
+\ref{fig:agents_uml} provides a UML diagram of this module, showing how the implementations are related via inheritance.
 
+The \texttt{agents} module also contains a submodule, \texttt{sampling}, which defines the abstract \texttt{SamplingTechnique} class (this is shown in the diagram as well).
+It provides a common way that derivative-free agents can perform sampling in weight space. 
+A total of three sampling techniques have been implemented:
+the \texttt{ExhaustiveSamplingTechnique} and \texttt{RandomSamplingTechnique} have been explained in \ref{sec:greedy_probing}. 
+The third technique, \texttt{RandomSamplingGenerator} is a variant of the random sampling technique that does not require the number of samples to generate up front; instead, random samples are generated on demand using a so-called \texttt{generator} function in Python.
+This leads to efficiency benefits in the Simulated Annealing algorithm where it is not known a priori how many weight states need to be sampled before one is accepted.
 
-\section{Implementation}
-\todo
+\paragraph{The \texttt{experiment} module}
+This module contains not only the \texttt{Experiment} class, but also two major aspects that are linked closely to the experiment itself: visualisations and metrics.
+Let us briefly look at their implementation before examining the \texttt{Experiment} class itself.
 
-\texttt{pdoc3} documentation
+The visualisations are achieved using the \texttt{bokeh} library for Python which provides a web-based user interface.
+Originally, the classical plotting library \texttt{matplotlib} was used, but issues with regard to facilitating user interaction on plots that were updating in real time ultimately lead to the adoption of \texttt{bokeh}.
+The \texttt{visualisations} submodule contains an abstract \texttt{Visualisation} class which provides a common interface for creating viualisations, so that the user may implement custom ones using \texttt{bokeh}.
+Two useful types of visualisations are provided with the framework: a two-dimensional scatter plot (\texttt{Scatter2D}) that can plot arbitrary metrics on each axis, and a histogram (\texttt{Histogram}) that will plot data over time (epochs).
+Each agent's data is plotted in a unique colour, and that colour is consistent across all visualisations. 
+Furthermore, each visualisation supports toggling the visibility of each agent's data\footnote{On the front end, the user has a button to hide each of the agents separately. This is demonstrated in \ref{app:framework_user_manual}.}.
+
+The \texttt{Metric} class is contained in the \texttt{metrics} submodule which is how metrics are internally represented in the framework. 
+One interesting feature is the specification of metrics: \ref{lst:experiment} actually showed three different ways that the user may specify metrics for a visualisation.
+The default syntax is of the form
+\texttt{\textit{<name>}:\textit{<dim $1$>}:\textit{<dim $2$>}:\textit{\dots}:\textit{<dim $n$>}}
+where \texttt{\textit{<name>}} is the metric's name and \texttt{\textit{<dim $i$>}} is the index into the $i$th dimension of the rank-$n$ tensor representing the metric data.
+In the case of the \texttt{Scatter2D} visualisation which provides a two-dimensional scatter plot, one can also simply omit the last dimension index, in which case the metrics are unfolded among that dimension such that for example
+\mintinline{python}|Scatter2D("weights")| is equivalent to \mintinline{python}|Scatter2D("weights:0", "weights:1")|.
+
+Most importantly, this module contains the eponymous class \texttt{Experiment} which is responsible for coordinating all the aforementioned components.
+When running the experiment, this class uses a form of round-robin scheduling whereby each agent is run for a specific number epochs at a time parameterised by \texttt{epoch\_batch\_size} before moving on to the next agent.
+Once each agent had their turn, the collected metrics are aggregated and sent to update the front end in real time.
+
+There are two specific considerations that were made with regards to the collection and aggregation of metrics. 
+Firstly, a mechanism was developed that determines the minimal set of metrics that are necessary for the visualisations, and computes only these (instead of all) in order to speed up training.
+Furthermore, the experiment itself collects some default metrics that can be visualised by the user.
+These are
+\begin{enumerate*}[label=(\roman*)]
+    \item \texttt{epoch} which collects the epoch number at each epoch; and
+    \item \texttt{run\_time}\footnote{This metric is, in fact, used as the $x$-axis of the \texttt{Histogram} visualisation.} which collects the average run\_time per epoch\footnote{Since training is carried out in batches of \texttt{epoch\_batch\_size}, the experiment does not know the run time on a per-epoch basis, so it will assign each epoch in the batch the run time of the entire batch divided by \texttt{epoch\_batch\_size}.}.
+\end{enumerate*}
+Both contain a scalar value per epoch.
+
+\paragraph{Demonstrations}
+To supplement the framework, three demonstration scripts were written located in the parent directory of the framework.
+These showcase how the framework can be used to set up and run experiments and are explained in \ref{app:framework_user_manual}.
+Furthermore, screenshots of the demonstrations in action are provided in the \texttt{framework/screenshots} folder of the code submission.
+
+\section{Documentation}
+The quality of a framework is quite obviously predicated in part on the quality of its documentation.
+All classes and methods in the framework are documented using not only \textit{type annotations} in line with the PEP\footnote{PEP, short for Python Enhancement Proposal, is a collection of design documents containing best practices for developing Python code.} 484 standard, but also \textit{docstrings} according to the PEP 257 standard.
+This allowed the automatic generation of comprehensive documentation of the \texttt{nf} package using the \texttt{pdoc} tool. 
+The documentation is available in HTML format at \texttt{framework/docs/nf/index.html} and PDF format at \texttt{framework/docs.pdf}.
+
+Furthermore, a user manual is provided in \ref{app:framework_user_manual} of this report and the demonstration scripts mentioned in the previous section can be used as starter code.
+

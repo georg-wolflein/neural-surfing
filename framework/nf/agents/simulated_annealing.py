@@ -7,12 +7,12 @@ from functools import partial
 import typing
 
 from ..problems import Problem
-from . import GradientFreeAgent
+from . import DerivativeFreeAgent
 from .util import get_num_weights
 from .sampling import RandomSamplingGenerator
 
 
-class SimulatedAnnealing(GradientFreeAgent):
+class SimulatedAnnealing(DerivativeFreeAgent):
     """Implementation of the simulated annealing agent.
     """
 

@@ -34,10 +34,10 @@ from functools import partial
 import typing
 
 from ..problems import Problem
-from . import GradientFreeAgent
+from . import DerivativeFreeAgent
 
 
-class GreedyProbing(GradientFreeAgent):
+class GreedyProbing(DerivativeFreeAgent):
     &#34;&#34;&#34;Implementation of the greedy probing agent.
     &#34;&#34;&#34;
 
@@ -72,7 +72,7 @@ sampler {SamplingTechnique} &ndash; the sampling technique to employ</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class GreedyProbing(GradientFreeAgent):
+<pre><code class="python">class GreedyProbing(DerivativeFreeAgent):
     &#34;&#34;&#34;Implementation of the greedy probing agent.
     &#34;&#34;&#34;
 
@@ -85,20 +85,20 @@ sampler {SamplingTechnique} &ndash; the sampling technique to employ</p></div>
 </details>
 <h3>Ancestors</h3>
 <ul class="hlist">
-<li><a title="nf.agents.GradientFreeAgent" href="index.html#nf.agents.GradientFreeAgent">GradientFreeAgent</a></li>
+<li><a title="nf.agents.DerivativeFreeAgent" href="index.html#nf.agents.DerivativeFreeAgent">DerivativeFreeAgent</a></li>
 <li><a title="nf.agents.Agent" href="index.html#nf.agents.Agent">Agent</a></li>
 <li>abc.ABC</li>
 </ul>
 <h3>Inherited members</h3>
 <ul class="hlist">
-<li><code><b><a title="nf.agents.GradientFreeAgent" href="index.html#nf.agents.GradientFreeAgent">GradientFreeAgent</a></b></code>:
+<li><code><b><a title="nf.agents.DerivativeFreeAgent" href="index.html#nf.agents.DerivativeFreeAgent">DerivativeFreeAgent</a></b></code>:
 <ul class="hlist">
-<li><code><a title="nf.agents.GradientFreeAgent.choose_best_weight_update" href="index.html#nf.agents.GradientFreeAgent.choose_best_weight_update">choose_best_weight_update</a></code></li>
-<li><code><a title="nf.agents.GradientFreeAgent.compile" href="index.html#nf.agents.Agent.compile">compile</a></code></li>
-<li><code><a title="nf.agents.GradientFreeAgent.fit" href="index.html#nf.agents.Agent.fit">fit</a></code></li>
-<li><code><a title="nf.agents.GradientFreeAgent.predict_for_multiple_weights" href="index.html#nf.agents.GradientFreeAgent.predict_for_multiple_weights">predict_for_multiple_weights</a></code></li>
-<li><code><a title="nf.agents.GradientFreeAgent.predict_for_weights" href="index.html#nf.agents.GradientFreeAgent.predict_for_weights">predict_for_weights</a></code></li>
-<li><code><a title="nf.agents.GradientFreeAgent.train" href="index.html#nf.agents.Agent.train">train</a></code></li>
+<li><code><a title="nf.agents.DerivativeFreeAgent.choose_best_weight_update" href="index.html#nf.agents.DerivativeFreeAgent.choose_best_weight_update">choose_best_weight_update</a></code></li>
+<li><code><a title="nf.agents.DerivativeFreeAgent.compile" href="index.html#nf.agents.Agent.compile">compile</a></code></li>
+<li><code><a title="nf.agents.DerivativeFreeAgent.fit" href="index.html#nf.agents.Agent.fit">fit</a></code></li>
+<li><code><a title="nf.agents.DerivativeFreeAgent.predict_for_multiple_weights" href="index.html#nf.agents.DerivativeFreeAgent.predict_for_multiple_weights">predict_for_multiple_weights</a></code></li>
+<li><code><a title="nf.agents.DerivativeFreeAgent.predict_for_weights" href="index.html#nf.agents.DerivativeFreeAgent.predict_for_weights">predict_for_weights</a></code></li>
+<li><code><a title="nf.agents.DerivativeFreeAgent.train" href="index.html#nf.agents.Agent.train">train</a></code></li>
 </ul>
 </li>
 </ul>

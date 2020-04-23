@@ -104,7 +104,7 @@ class Agent(ABC):
         return data
 
 
-class GradientBasedAgent(Agent, ABC):
+class DerivativeBasedAgent(Agent, ABC):
     &#34;&#34;&#34;An abstract class representing an agent that uses derivatives (i.e. can train normally using the keras fit method).
     &#34;&#34;&#34;
 
@@ -112,7 +112,7 @@ class GradientBasedAgent(Agent, ABC):
         self.problem.model.fit(*args, **kwargs)
 
 
-class GradientFreeAgent(Agent, ABC):
+class DerivativeFreeAgent(Agent, ABC):
     &#34;&#34;&#34;An abstract class representing a derivative-free agent. This means that the agent uses a sampling technique instead of relying on derivative information.
     &#34;&#34;&#34;
 
@@ -385,8 +385,8 @@ class GradientFreeAgent(Agent, ABC):
 </ul>
 <h3>Subclasses</h3>
 <ul class="hlist">
-<li><a title="nf.agents.GradientBasedAgent" href="#nf.agents.GradientBasedAgent">GradientBasedAgent</a></li>
-<li><a title="nf.agents.GradientFreeAgent" href="#nf.agents.GradientFreeAgent">GradientFreeAgent</a></li>
+<li><a title="nf.agents.DerivativeBasedAgent" href="#nf.agents.DerivativeBasedAgent">DerivativeBasedAgent</a></li>
+<li><a title="nf.agents.DerivativeFreeAgent" href="#nf.agents.DerivativeFreeAgent">DerivativeFreeAgent</a></li>
 </ul>
 <h3>Methods</h3>
 <dl>
@@ -487,8 +487,8 @@ metrics {typing.List[str]} &ndash; the epochs to log (need to be specified as pa
 </dd>
 </dl>
 </dd>
-<dt id="nf.agents.GradientBasedAgent"><code class="flex name class">
-<span>class <span class="ident">GradientBasedAgent</span></span>
+<dt id="nf.agents.DerivativeBasedAgent"><code class="flex name class">
+<span>class <span class="ident">DerivativeBasedAgent</span></span>
 <span>(</span><span>problem: <a title="nf.problems.Problem" href="../problems/index.html#nf.problems.Problem">Problem</a>)</span>
 </code></dt>
 <dd>
@@ -500,7 +500,7 @@ metrics {typing.List[str]} &ndash; the epochs to log (need to be specified as pa
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class GradientBasedAgent(Agent, ABC):
+<pre><code class="python">class DerivativeBasedAgent(Agent, ABC):
     &#34;&#34;&#34;An abstract class representing an agent that uses derivatives (i.e. can train normally using the keras fit method).
     &#34;&#34;&#34;
 
@@ -528,8 +528,8 @@ metrics {typing.List[str]} &ndash; the epochs to log (need to be specified as pa
 </li>
 </ul>
 </dd>
-<dt id="nf.agents.GradientFreeAgent"><code class="flex name class">
-<span>class <span class="ident">GradientFreeAgent</span></span>
+<dt id="nf.agents.DerivativeFreeAgent"><code class="flex name class">
+<span>class <span class="ident">DerivativeFreeAgent</span></span>
 <span>(</span><span>problem: <a title="nf.problems.Problem" href="../problems/index.html#nf.problems.Problem">Problem</a>, sampler: <a title="nf.agents.sampling.SamplingTechnique" href="sampling.html#nf.agents.sampling.SamplingTechnique">SamplingTechnique</a>)</span>
 </code></dt>
 <dd>
@@ -542,7 +542,7 @@ sampler {SamplingTechnique} &ndash; the sampling technique to employ</p></div>
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">class GradientFreeAgent(Agent, ABC):
+<pre><code class="python">class DerivativeFreeAgent(Agent, ABC):
     &#34;&#34;&#34;An abstract class representing a derivative-free agent. This means that the agent uses a sampling technique instead of relying on derivative information.
     &#34;&#34;&#34;
 
@@ -709,7 +709,7 @@ sampler {SamplingTechnique} &ndash; the sampling technique to employ</p></div>
 </ul>
 <h3>Methods</h3>
 <dl>
-<dt id="nf.agents.GradientFreeAgent.choose_best_weight_update"><code class="name flex">
+<dt id="nf.agents.DerivativeFreeAgent.choose_best_weight_update"><code class="name flex">
 <span>def <span class="ident">choose_best_weight_update</span></span>(<span>self, weight_samples: tensorflow.python.framework.ops.Tensor, weight_history: tensorflow.python.framework.ops.Tensor, output_history: tensorflow.python.framework.ops.Tensor, X: tensorflow.python.framework.ops.Tensor, y: tensorflow.python.framework.ops.Tensor) -> tensorflow.python.framework.ops.Tensor</span>
 </code></dt>
 <dd>
@@ -754,7 +754,7 @@ def choose_best_weight_update(self, weight_samples: tf.Tensor, weight_history: t
     &#34;&#34;&#34;</code></pre>
 </details>
 </dd>
-<dt id="nf.agents.GradientFreeAgent.predict_for_multiple_weights"><code class="name flex">
+<dt id="nf.agents.DerivativeFreeAgent.predict_for_multiple_weights"><code class="name flex">
 <span>def <span class="ident">predict_for_multiple_weights</span></span>(<span>self, weights: tensorflow.python.framework.ops.Tensor, X: tensorflow.python.framework.ops.Tensor) -> tensorflow.python.framework.ops.Tensor</span>
 </code></dt>
 <dd>
@@ -791,7 +791,7 @@ X {tf.Tensor} &ndash; the input samples</p>
     return tf.reshape(outputs, (weights.shape[0], -1))</code></pre>
 </details>
 </dd>
-<dt id="nf.agents.GradientFreeAgent.predict_for_weights"><code class="name flex">
+<dt id="nf.agents.DerivativeFreeAgent.predict_for_weights"><code class="name flex">
 <span>def <span class="ident">predict_for_weights</span></span>(<span>self, weights: tensorflow.python.framework.ops.Tensor, X: tensorflow.python.framework.ops.Tensor) -> tensorflow.python.framework.ops.Tensor</span>
 </code></dt>
 <dd>
@@ -873,14 +873,14 @@ X {tf.Tensor} &ndash; the input matrix</p>
 </ul>
 </li>
 <li>
-<h4><code><a title="nf.agents.GradientBasedAgent" href="#nf.agents.GradientBasedAgent">GradientBasedAgent</a></code></h4>
+<h4><code><a title="nf.agents.DerivativeBasedAgent" href="#nf.agents.DerivativeBasedAgent">DerivativeBasedAgent</a></code></h4>
 </li>
 <li>
-<h4><code><a title="nf.agents.GradientFreeAgent" href="#nf.agents.GradientFreeAgent">GradientFreeAgent</a></code></h4>
+<h4><code><a title="nf.agents.DerivativeFreeAgent" href="#nf.agents.DerivativeFreeAgent">DerivativeFreeAgent</a></code></h4>
 <ul class="">
-<li><code><a title="nf.agents.GradientFreeAgent.choose_best_weight_update" href="#nf.agents.GradientFreeAgent.choose_best_weight_update">choose_best_weight_update</a></code></li>
-<li><code><a title="nf.agents.GradientFreeAgent.predict_for_multiple_weights" href="#nf.agents.GradientFreeAgent.predict_for_multiple_weights">predict_for_multiple_weights</a></code></li>
-<li><code><a title="nf.agents.GradientFreeAgent.predict_for_weights" href="#nf.agents.GradientFreeAgent.predict_for_weights">predict_for_weights</a></code></li>
+<li><code><a title="nf.agents.DerivativeFreeAgent.choose_best_weight_update" href="#nf.agents.DerivativeFreeAgent.choose_best_weight_update">choose_best_weight_update</a></code></li>
+<li><code><a title="nf.agents.DerivativeFreeAgent.predict_for_multiple_weights" href="#nf.agents.DerivativeFreeAgent.predict_for_multiple_weights">predict_for_multiple_weights</a></code></li>
+<li><code><a title="nf.agents.DerivativeFreeAgent.predict_for_weights" href="#nf.agents.DerivativeFreeAgent.predict_for_weights">predict_for_weights</a></code></li>
 </ul>
 </li>
 </ul>

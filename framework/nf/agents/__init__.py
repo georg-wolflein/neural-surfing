@@ -77,7 +77,7 @@ class Agent(ABC):
         return data
 
 
-class GradientBasedAgent(Agent, ABC):
+class DerivativeBasedAgent(Agent, ABC):
     """An abstract class representing an agent that uses derivatives (i.e. can train normally using the keras fit method).
     """
 
@@ -85,7 +85,7 @@ class GradientBasedAgent(Agent, ABC):
         self.problem.model.fit(*args, **kwargs)
 
 
-class GradientFreeAgent(Agent, ABC):
+class DerivativeFreeAgent(Agent, ABC):
     """An abstract class representing a derivative-free agent. This means that the agent uses a sampling technique instead of relying on derivative information.
     """
 

@@ -7,10 +7,10 @@ from functools import partial
 import typing
 
 from ..problems import Problem
-from . import GradientFreeAgent
+from . import DerivativeFreeAgent
 
 
-class GreedyProbing(GradientFreeAgent):
+class GreedyProbing(DerivativeFreeAgent):
     """Implementation of the greedy probing agent.
     """
 

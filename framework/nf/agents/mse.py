@@ -7,10 +7,10 @@ from functools import partial
 import typing
 
 from ..problems import Problem
-from . import GradientBasedAgent
+from . import DerivativeBasedAgent
 
 
-class MSE(GradientBasedAgent):
+class MSE(DerivativeBasedAgent):
     """Implementation of the classical steepest gradient descent agent with mean squared eror.
     """
 

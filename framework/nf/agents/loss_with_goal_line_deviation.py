@@ -7,11 +7,11 @@ from functools import partial
 import typing
 
 from ..problems import Problem
-from . import GradientBasedAgent
+from . import DerivativeBasedAgent
 from .util import get_distance_to_line
 
 
-class LossWithGoalLineDeviation(GradientBasedAgent):
+class LossWithGoalLineDeviation(DerivativeBasedAgent):
     """Implementation of a gradient-based agent with a custom loss function that tries to minimise the distance to the goal line.
     """
 
