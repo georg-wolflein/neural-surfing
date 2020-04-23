@@ -61,7 +61,7 @@ It was not until the 1980s with the introduction of the backpropagation algorith
 \paragraph{Backpropagation}
 The backpropagation (BP) algorithm -- discovered independently by multiple researchers in the 1960s and popularised for neural networks by \textcite{rumelhart1986} -- remains the prominent method of training neural networks to this date.
 It involves computing the derivative of the loss function with respect to the weights and then using some gradient-based optimisation technique (gradient descent or an approximation\footnote{Stochastic gradient descent (SGD) is often used as an approximation for gradient descent whereby the gradient is calculated on a random subset of the data (instead of the whole dataset) for computational efficiency.} thereof) to update the weights.
-With the rise in popularity of deep neural networks, methods have been developed to increase the speed of converging to a minimum. 
+With the rise in popularity of deep neural networks, methods have been developed to accelerate training and allow more complex networks to feasibly learn more complex problems.
 Two main approaches are parallelising the computation and using adaptive learning rates like in the `Adam optimizer' \cite{kingma2014}.
 It is well-established that BP, provided a suitable choice of hyperparameters, is guaranteed to converge to a local (but likely not global) minimum.
 A common technique to subdue the effect of this issue is to run BP multiple times with different random initialisations.
