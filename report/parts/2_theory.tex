@@ -772,8 +772,11 @@ Per contra, DFO algorithms are not as sensitive to local noise, and their probin
 
 \chapter{Neural surfing theory}
 \label{chap:neural_surfing_theory}
-The main idea behind the neural surfing technique lies in viewing the neural training problem from a different perspective. 
-Instead of only considering the error-weight space, the neural surfing technique looks at the so-called output space as well. 
+In the analogy of \ref{sec:motivation} we found that relying solely on our limited local information of the mountain landscape is not sufficient to effectively find the global minimum.
+Luckily, in the case of neural networks, we actually have more information than just the error-weight surface.
+This is the main idea behind the neural surfing technique. 
+Instead of only considering the error-weight space, we will also look at the so-called output space. 
+In doing so, we are viewing the neural training problem from a different perspective than it is classically studied. 
 This chapter will discuss the concepts of weight and output space, as well as issues related to these concepts such as unrealisable regions and what is meant by a goal-connecting path.
 
 \section{Weight and output spaces}
