@@ -25,7 +25,7 @@ def plot_clothoid(start: np.ndarray, intermediate: np.ndarray, goal: np.ndarray,
     params = calculator.lookup_points(start, intermediate, goal)
     print(params)
 
-    gamma1, gamma2, alpha, beta, t1, t2 = params
+    gamma1, gamma2, alpha, beta, t0, t1, t2 = params
     c0, c1, c2 = map(np.array, zip(*fresnel([np.zeros_like(t1), t1, t2])))
 
     P = np.array([goal, intermediate, start])
@@ -33,6 +33,7 @@ def plot_clothoid(start: np.ndarray, intermediate: np.ndarray, goal: np.ndarray,
 
     A = compute_transformation_matrix(C, P)
     plt.plot(*affine_transform(np.array(fresnel(np.linspace(0, t2, 200))).T, A).T, c="r")
+    plt.scatter(*affine_transform(np.array(fresnel([t0])).T, A).T, c="g")
 
 if __name__ == "__main__":
     # Create calculator

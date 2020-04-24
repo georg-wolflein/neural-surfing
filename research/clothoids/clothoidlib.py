@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.special import fresnel as _fresnel
 from scipy.spatial import KDTree
+from sklearn.metrics.pairwise import euclidean_distances
 import typing
 
 fresnel = lambda x: tuple(reversed(_fresnel(x)))
@@ -13,6 +14,7 @@ class ClothoidParameters(typing.NamedTuple):
     gamma2: np.ndarray
     alpha: np.ndarray
     beta: np.ndarray
+    t0: np.ndarray
     t1: np.ndarray
     t2: np.ndarray
 
@@ -34,7 +36,22 @@ def angle_between(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     v2 = np.expand_dims(v2, axis=-1)
     return np.arccos(np.matmul(v1, v2)).reshape(v1.shape[:-2])
 
-def calculate_clothoid_parameters(t1: np.ndarray, t2: np.ndarray) -> ClothoidParameters:
+def cartesian_product(*arrays):
+    # Compute the Cartesian product of arrays
+    # Thanks to https://stackoverflow.com/questions/11144513/cartesian-product-of-x-and-y-array-points-into-single-array-of-2d-points
+    la = len(arrays)
+    dtype = np.result_type(*arrays)
+    arr = np.empty([len(a) for a in arrays] + [la], dtype=dtype)
+    for i, a in enumerate(np.ix_(*arrays)):
+        arr[...,i] = a
+    return arr.reshape(-1, la)
+
+def argmin_where(arr, mask):
+    subset_index = np.argmin(arr[mask])
+    parent_index = np.arange(arr.shape[0])[mask][subset_index]
+    return parent_index
+
+def compute_clothoid_table(t_samples: np.ndarray) -> ClothoidParameters:
     """Calculate the clothoid parameters given t1 and t2.
 
     This method is vectorized, so when supplying vectors for the angles, they will be interpreted as collections of scalars.
@@ -47,6 +64,14 @@ def calculate_clothoid_parameters(t1: np.ndarray, t2: np.ndarray) -> ClothoidPar
         ClothoidParameters -- the calculated parameters
     """
 
+    # Create a matrix of all possible combinations of t1 and t2 values
+    t1, t2 = np.stack(np.meshgrid(t_samples, t_samples), axis=-1).reshape(-1, 2).T
+
+    # Discard the rows where t1 < t2
+    mask = (t1 < t2) & (t1 > 0)
+    t1 = t1[mask]
+    t2 = t2[mask]
+
     ts = np.stack((np.zeros_like(t1), t1, t2), axis=0)
 
     p0, p1, p2 = np.stack(fresnel(ts), axis=-1)
@@ -58,7 +83,23 @@ def calculate_clothoid_parameters(t1: np.ndarray, t2: np.ndarray) -> ClothoidPar
     beta = omega + np.pi - gamma1 - gamma2
     alpha = theta - beta
 
-    return ClothoidParameters(gamma1, gamma2, alpha, beta, t1, t2)
+    # Calculate t0
+    lengths = np.linalg.norm(p2 - p1, axis=-1)
+    t0 = np.zeros_like(t1)
+    print(len(t0))
+    for i, (length, current_t1) in enumerate(zip(lengths, t1)):
+        if i % 1000 == 0:
+            print(i)
+        mask = t2 == current_t1
+        masked_lengths = lengths[mask]
+        if masked_lengths.shape[0] == 0:
+            t0[i] = 0
+        else:
+            masked_index = np.argmin(np.abs(masked_lengths - length))
+            t0[i] = np.arange(t1.shape[0])[mask][masked_index]
+
+    return ClothoidParameters(gamma1, gamma2, alpha, beta, t0, t1, t2)
+
 
 class ClothoidCalculator:
     """Fast and efficient computation of clothoids.
@@ -67,16 +108,8 @@ class ClothoidCalculator:
     def __init__(self, samples: float = 1000, t_max: float = np.sqrt(3)):
         t_samples = np.linspace(0, t_max, samples)
 
-        # Create a matrix of all possible combinations of t1 and t2 values
-        t1, t2 = np.stack(np.meshgrid(t_samples, t_samples), axis=-1).reshape(-1, 2).T
-
-        # Discard the rows where t1 < t2
-        mask = (t1 < t2) & (t1 > 0)
-        t1 = t1[mask]
-        t2 = t2[mask]
-
         # Calculate clothoid parameters for each t1 and t2
-        gamma1, gamma2, *values = calculate_clothoid_parameters(t1, t2)
+        gamma1, gamma2, *values = compute_clothoid_table(t_samples)
 
         # Construct kd-tree
         indices = np.array((gamma1, gamma2)).T
