@@ -36,29 +36,11 @@ def angle_between(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     v2 = np.expand_dims(v2, axis=-1)
     return np.arccos(np.matmul(v1, v2)).reshape(v1.shape[:-2])
 
-def cartesian_product(*arrays):
-    # Compute the Cartesian product of arrays
-    # Thanks to https://stackoverflow.com/questions/11144513/cartesian-product-of-x-and-y-array-points-into-single-array-of-2d-points
-    la = len(arrays)
-    dtype = np.result_type(*arrays)
-    arr = np.empty([len(a) for a in arrays] + [la], dtype=dtype)
-    for i, a in enumerate(np.ix_(*arrays)):
-        arr[...,i] = a
-    return arr.reshape(-1, la)
-
-def argmin_where(arr, mask):
-    subset_index = np.argmin(arr[mask])
-    parent_index = np.arange(arr.shape[0])[mask][subset_index]
-    return parent_index
-
 def compute_clothoid_table(t_samples: np.ndarray) -> ClothoidParameters:
-    """Calculate the clothoid parameters given t1 and t2.
-
-    This method is vectorized, so when supplying vectors for the angles, they will be interpreted as collections of scalars.
+    """Calculate the clothoid parameter table for a given set of samples for t.
 
     Arguments:
-        t1 {np.ndarray} -- the value of t1
-        t2 {np.ndarray} -- the value of t2
+        t_samples {np.ndarray} -- the samples
 
     Returns:
         ClothoidParameters -- the calculated parameters
@@ -72,10 +54,11 @@ def compute_clothoid_table(t_samples: np.ndarray) -> ClothoidParameters:
     t1 = t1[mask]
     t2 = t2[mask]
 
+    # Calculate points
     ts = np.stack((np.zeros_like(t1), t1, t2), axis=0)
-
     p0, p1, p2 = np.stack(fresnel(ts), axis=-1)
 
+    # Calculate angles
     gamma1 = angle_between(p1-p0, p1-p2)
     gamma2 = angle_between(p2-p0, p2-p1)
     theta = np.pi * t2**2 / 2 # angle at end
@@ -86,17 +69,18 @@ def compute_clothoid_table(t_samples: np.ndarray) -> ClothoidParameters:
     # Calculate t0
     lengths = np.linalg.norm(p2 - p1, axis=-1)
     t0 = np.zeros_like(t1)
-    print(len(t0))
-    for i, (length, current_t1) in enumerate(zip(lengths, t1)):
-        if i % 1000 == 0:
-            print(i)
-        mask = t2 == current_t1
-        masked_lengths = lengths[mask]
-        if masked_lengths.shape[0] == 0:
-            t0[i] = 0
-        else:
-            masked_index = np.argmin(np.abs(masked_lengths - length))
-            t0[i] = np.arange(t1.shape[0])[mask][masked_index]
+    for current_t1 in t_samples:
+        t1_mask = t1 == current_t1
+        t2_mask = t2 == current_t1
+        t1_lengths = lengths[t1_mask]
+        t2_lengths = lengths[t2_mask]
+        if t1_mask.sum() == 0 or t2_mask.sum() == 0:
+            continue
+        distance_matrix = euclidean_distances(t1_lengths[:, np.newaxis], t2_lengths[:, np.newaxis])
+        t2_masked_indices = np.argmin(distance_matrix, axis=1)
+        t2_indices = np.arange(len(t2))[t2_mask][t2_masked_indices]
+        associated_t1_values = t1[t2_indices]
+        t0[t1_mask] = associated_t1_values
 
     return ClothoidParameters(gamma1, gamma2, alpha, beta, t0, t1, t2)
 
@@ -108,7 +92,7 @@ class ClothoidCalculator:
     def __init__(self, samples: float = 1000, t_max: float = np.sqrt(3)):
         t_samples = np.linspace(0, t_max, samples)
 
-        # Calculate clothoid parameters for each t1 and t2
+        # Calculate clothoid parameters
         gamma1, gamma2, *values = compute_clothoid_table(t_samples)
 
         # Construct kd-tree

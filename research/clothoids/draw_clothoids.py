@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import typing
 from clothoidlib import ClothoidCalculator, angle_between, fresnel
+import argparse
 
 def pad(X: np.ndarray) -> np.ndarray:
         return np.hstack([X, np.ones((X.shape[0], 1))])
@@ -19,7 +20,7 @@ def compute_transformation_matrix(I: np.ndarray, O: np.ndarray) -> np.ndarray:
 def affine_transform(I: np.ndarray, A: np.ndarray):
     return unpad(pad(I) @ A)
 
-def plot_clothoid(start: np.ndarray, intermediate: np.ndarray, goal: np.ndarray, calculator: ClothoidCalculator) -> np.ndarray:
+def plot_clothoid(start: np.ndarray, intermediate: np.ndarray, goal: np.ndarray, calculator: ClothoidCalculator, draw_subgoal: bool = True) -> np.ndarray:
     plt.plot(*list(zip(start, intermediate, goal, start)), c="k")
 
     params = calculator.lookup_points(start, intermediate, goal)
@@ -28,14 +29,24 @@ def plot_clothoid(start: np.ndarray, intermediate: np.ndarray, goal: np.ndarray,
     gamma1, gamma2, alpha, beta, t0, t1, t2 = params
     c0, c1, c2 = map(np.array, zip(*fresnel([np.zeros_like(t1), t1, t2])))
 
+    p0, p1, p2 = np.array(fresnel([t0, t1, t2])).T
+
     P = np.array([goal, intermediate, start])
     C = np.array([c0, c1, c2])
 
     A = compute_transformation_matrix(C, P)
     plt.plot(*affine_transform(np.array(fresnel(np.linspace(0, t2, 200))).T, A).T, c="r")
-    plt.scatter(*affine_transform(np.array(fresnel([t0])).T, A).T, c="g")
+    if draw_subgoal:
+        plt.scatter(*affine_transform(np.array(fresnel([t0])).T, A).T, c="k")
 
 if __name__ == "__main__":
+    # Parse command line args
+    parser = argparse.ArgumentParser(description="Clothoid drawing utility")
+    parser.add_argument("--subgoals",
+                        help="Whether to draw subgoals",
+                        action="store_true")
+    args = parser.parse_args()
+
     # Create calculator
     calculator = ClothoidCalculator()
 
@@ -55,6 +66,6 @@ if __name__ == "__main__":
             continue
         
         # Draw points
-        plot_clothoid(*points, calculator)
+        plot_clothoid(*points, calculator, draw_subgoal=args.subgoals)
         plt.show(block=False)
         fig.canvas.draw_idle()
