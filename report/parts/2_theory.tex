@@ -1383,9 +1383,11 @@ To define local minima, we will use the same concept, just allowing that the rad
 Now it is possible to define the local minimum problem using these terms.
 \begin{problem}[Local minimum problem]
     A training algorithm exhibits the local minimum problem if there exists a weight initialisation that leads to training converging to a suboptimal local minimum on the error-weight surface.
+
+    This problem arises when a gradient-based agent is initialised in a valley with a suboptimal local minimum, i.e. it is initialised at a weight configuration where following the gradients will ultimately lead to a suboptimal local minimum.
 \end{problem}
 
-In order to later analyse error-weight surfaces analytically, we must derive the conditions that are necessary and sufficient for local minima to exist.
+In order to later examine error-weight surfaces analytically, we must derive the conditions that are necessary and sufficient for local minima to exist.
 We must first realise that if our immediate surroundings are of higher elevation, then the infinitesimal slope beneath our feet is completely flat (because moving just a bit in any direction will lead to a higher elevation). 
 In formal terms, this infinitesimal slope is the gradient, or vector of first partial derivatives, which is given by the \textit{Jacobian}.
 \begin{definition}[Jacobian]
@@ -1523,12 +1525,13 @@ The interested reader may consult \textcite[190]{loomis1990}.
 
 \section{The stripe problem}
 \label{sec:stripe_problem}
-The stripe problem provides a practical example of the local minimum problem. 
-We will consider a two-dimensional input space with two (initially) parallel hyperplanes that form a stripe.
+The local minimum problem has been studied with regard to sigmoidal MLPs with one hidden layer by \textcite{blum1989}.
+Amongst others, \citeauthor{blum1989} proved the existence of suboptimal local minima in certain configurations. 
+
+The so-called \textit{stripe problem}, as given by \textcite{weir2019} is a practical example of how local minima arise in a 2-2-1 sigmoidal MLP.
+Consider a two-dimensional input space with two initially parallel hyperplanes that form a stripe.
 The initial configuration will have the hyperplanes arranged horizontally and misclassify some of the samples. 
 Changing the weights in the neural network will allow the hyperplanes to rotate, but when they do so, they are forced to misclassify even more samples (thereby increasing the mean squared error) until eventually reaching the target configuration with zero error.
-
-The stripe problem can be achieved by a 2-2-1 sigmoidal MLP \cite{weir2019}. 
 \ref{fig:stripe_original_hyperplanes} shows the initial and target configurations of the hyperplanes for this type of network.
 The hidden layer is required because without it, the sigmoid activation function will produce only one hyperplane, as proved in \ref{lmm:sigmoid_decision_boundary}.
 \begin{figure}
