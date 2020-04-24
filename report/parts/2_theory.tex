@@ -2934,9 +2934,8 @@ Another observation is that due to the randomness of the random sampling techniq
 For the exhaustive sampling technique, it is interesting to see that like gradient descent (\ref{fig:stripe_gradient_descent_with_2_subgoals}), the trajectory in weight space begins to deviate from the goal line in weight space after achieving the subgoal, but unlike gradient descent, it is actually able to find back to the goal line. 
 A possible explanation for this could be the increased value of $\mu$ used for greedy probing.
 
-\chapter{The neural surfing technique}
+\chapter{A neural surfing technique}
 
-\section{Motivation}
 
 \section{Clothoids}
 Consider a scenario in two-dimensional output space, as is shown in \ref{fig:clothoid_motivation_scenario}.
@@ -3189,6 +3188,7 @@ This completes the construction of the clothoid; we have found a na\"{i}ve algor
 
 
 \subsection{Lookup table}
+\label{sec:clothoid_lookup}
 A disadvantage of the algorithm from \ref{sec:clothoid_construction} is that it must compute $n$ points on the Euler spiral and then perform the angle calculations for $\mathcal{O}(n^2)$ triangles, \textit{for each sample point} and this is carried out \textit{at every training step}.
 Instead, we could sample $n$ points along the Euler spiral for values of $t$ in the interval $(0, \sqrt{3}]$, use these to construct the triangles as explained in step 2 of the algorithm, compute the angles $\gamma_1,\gamma_2,\alpha,\beta$ for each triangle and record these values in a table.
 This table will only need to be constructed once, thus the expensive calculations are not repeated.
@@ -3200,6 +3200,21 @@ In fact, this is equivalent to minimising \ref{eq:clothoid_construction_error} w
 
 The nearest neighbour can be found quite efficiently using a so-called $k$-d tree data structure with an average time complexity logarithmic to the number of points \cite{friedman1977}.
 Hence, using this technique, we can find the clothoid parameters for \ref{prob:clothoid_construction} in $\mathcal{O}(\log n)$ time\footnote{This is because we have $n^2$ points and $\mathcal{O}(\log{n^2})=\mathcal{O}(\log n)$.} on average.
+
+\subsection{Implementation}
+The algorithm for obtaining clothoid parameters using a lookup table has been implemented in Python using the \texttt{numpy} library and the $k$-d tree implementation from \texttt{scipy}.
+A simple yet efficient mini-library named \texttt{clothoidlib} has been provided alongside the code submission at \texttt{research/clothoids/clothoidlib.py} for calculating clothoid parameters in just a few lines of code, as shown in \ref{lst:clothoidlib}. 
+Furthermore, an interactive tool was developed, allowing the user to draw clothoids in a two-dimensional plane. 
+The usage of this tool and the mini-library itself are documented in \ref{app:clothoidlib}.
+\begin{listing}[h]
+\begin{minted}{python}
+from clothoidlib import ClothoidCalculator
+calculator = ClothoidCalculator()
+params = calculator.lookup_points(start, intermediate, goal)
+\end{minted}
+\caption{Example of how clothoid parameters can be calculated using \texttt{clothoidlib}. Here, \texttt{start} represents the point $C$, \texttt{intermediate} $B$, and \texttt{goal} $A$. The value stored in \texttt{params} is the named tuple $\langle \gamma_1, \gamma_2, \alpha, \beta, t_i, t_j \rangle$.}
+\label{lst:clothoidlib}
+\end{listing}
 
 \section{Adaptive clothoid technique}
 \todo
