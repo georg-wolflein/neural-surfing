@@ -180,5 +180,12 @@ class ClothoidCalculator:
         *_, lambda_b, lambda_c = params
         c = start - goal
         b = intermediate - goal
-        subgoal = goal + lambda_b * b + lambda_c * c
+        subgoal = goal + lambda_b[..., np.newaxis] * b + lambda_c[..., np.newaxis] * c
+
+        # When gamma1 is 180° then we approximate the subgoal
+        approximated_subgoal = 2 * intermediate - start
+        mask = np.isclose(np.pi, gamma1)
+        subgoal[mask] = approximated_subgoal[mask]
+
+        # Return
         return params, subgoal
