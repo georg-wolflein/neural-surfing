@@ -1,10 +1,41 @@
+"""Mini-library to calculate clothoid parameters.
+"""
+
 import numpy as np
 from scipy.special import fresnel as _fresnel
 from scipy.spatial import KDTree
 from sklearn.metrics.pairwise import euclidean_distances
 import typing
+from contextlib import AbstractContextManager
 
 fresnel = lambda x: tuple(reversed(_fresnel(x)))
+
+class ChangeOfBasis:
+    """Perform a change of bases for a system of vectors.
+    """
+
+    def __init__(self, v1: np.ndarray, v2: np.ndarray):
+        """The two linearly independent vectors that define the basis.
+
+        Arguments:
+            v1 {np.ndarray} -- the first vector
+            v2 {np.ndarray} -- the second vector
+        """
+
+        self.inverse = np.linalg.inv(np.stack((v1, v2), axis=-1))
+    
+    def __call__(self, v):
+        """Transform the vector v to the new basis.
+
+        Arguments:
+            v {np.ndarray} -- the vector
+
+        Returns:
+            np.ndarray -- the vector in the new basis
+        """
+
+        v = np.expand_dims(v, axis=-1)
+        return np.squeeze(self.inverse @ v, axis=-1)
 
 class ClothoidParameters(typing.NamedTuple):
     """A named tuple for storing clothoid parameters
@@ -17,6 +48,8 @@ class ClothoidParameters(typing.NamedTuple):
     t0: np.ndarray
     t1: np.ndarray
     t2: np.ndarray
+    lambda_b: np.ndarray
+    lambda_c: np.ndarray
 
 def angle_between(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     """Utility function to calculate the angle between two vectors.
@@ -81,9 +114,12 @@ def compute_clothoid_table(t_samples: np.ndarray) -> ClothoidParameters:
         t2_indices = np.arange(len(t2))[t2_mask][t2_masked_indices]
         associated_t1_values = t1[t2_indices]
         t0[t1_mask] = associated_t1_values
+    
+    # Calculate lambdas
+    subgoals = np.stack(fresnel(t0), axis=-1)
+    lambdas = ChangeOfBasis(p1, p2)(subgoals)
 
-    return ClothoidParameters(gamma1, gamma2, alpha, beta, t0, t1, t2)
-
+    return ClothoidParameters(gamma1, gamma2, alpha, beta, t0, t1, t2, *lambdas.T)
 
 class ClothoidCalculator:
     """Fast and efficient computation of clothoids.
@@ -118,7 +154,7 @@ class ClothoidCalculator:
         result = gamma1, gamma2, *self._values[i].T
         return ClothoidParameters(*map(np.array, result))
 
-    def lookup_points(self, start: np.ndarray, intermediate: np.ndarray, goal: np.ndarray) -> ClothoidParameters:
+    def lookup_points(self, start: np.ndarray, intermediate: np.ndarray, goal: np.ndarray) -> typing.Tuple[ClothoidParameters, np.ndarray]:
         """Lookup clothoid parameters by providing a triple of points. 
 
         This method is vectorized, so when supplying arrays of points, the parameters will be in array form too.
@@ -129,7 +165,7 @@ class ClothoidCalculator:
             goal {np.ndarray} -- the goal point
 
         Returns:
-            ClothoidParameters -- the calculated parameters
+            typing.Tuple[ClothoidParameters, np.ndarray] -- the calculated parameters and the subgoal location
         """
 
         # Calculate gamma1 and gamma2
@@ -138,4 +174,11 @@ class ClothoidCalculator:
         gamma2 = angle_between(p2-p1, p2-p0)
 
         # Perform lookup
-        return self.lookup_angles(gamma1, gamma2)
+        params =  self.lookup_angles(gamma1, gamma2)
+
+        # Calculate subgoal location
+        *_, lambda_b, lambda_c = params
+        c = start - goal
+        b = intermediate - goal
+        subgoal = goal + lambda_b * b + lambda_c * c
+        return params, subgoal
