@@ -57,7 +57,6 @@ if __name__ == "__main__":
     plt.show(block=False)
 
     # Continually wait for user input
-    i = 0
     while True:
         
         # Get user to add three points
@@ -65,14 +64,6 @@ if __name__ == "__main__":
         points = np.array(plt.ginput(3, timeout=0))
         if points.shape != (3, 2):
             continue
-        
-        if i == 0:
-            points = np.array([
-                [4., 2.],
-                [3.6, 1.6],
-                [0., -2]
-            ])
-            i += 1
         
         # Draw points
         plot_clothoid(*points, calculator, draw_subgoal=args.subgoals)
