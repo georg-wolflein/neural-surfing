@@ -3185,6 +3185,7 @@ Once we have determined $t_B$ and $t_C$ and thus know the coordinates of $B'$ an
 Since $\theta$ is the angle of the tangent at $C'$, we obtain from \ref{eq:clothoid_tangent_angle} that $\theta=\frac{\pi}{2} \left(t_C\right)^2$.
 Furthermore, we can deduce from  \ref{fig:clothoid_segment} that $\theta=\alpha+\beta$, so
 \begin{equation}
+    \label{eq:clothoid_alpha}
     \alpha = \theta - \beta = \frac{\pi}{2} \left(t_C\right)^2 - \beta.
 \end{equation}
 This completes the construction of the clothoid; we have found a na\"{i}ve algorithm for computing \ref{prob:clothoid_construction}.
@@ -3411,7 +3412,10 @@ params = calculator.lookup_points(start, intermediate, goal)
 Furthermore, an interactive tool was developed, allowing the user to draw clothoids in a two-dimensional plane, visualising as well the subgoal $Q$ on each clothoid. 
 The usage of this tool and the mini-library itself are documented in \ref{app:clothoidlib}.
 
-\section{Adaptive clothoid technique}
+\section{The adaptive clothoid technique}
+\todo
+
+\section{Experimental results and analysis}
 \todo
 
 \chapter{Generalising neural surfing}
@@ -3452,7 +3456,7 @@ Notice that now we can apply the same reasoning as in the previous section claim
 
 \section{Potential field navigation}
 A common task in robotics is to smoothly navigate an obstacle course to reach a goal.
-It is convenient to consider this obstacle course in a two-dimensional space, but the approach can be generalised to arbitrary dimensionality.
+We will consider this obstacle course in a two-dimensional space for simplicity.
 Assume that the robot knows the coordinates of the goal and that it has some number of distance sensors oriented at equidistant angles in the interval $[\frac{\pi}{2},\frac{\pi}{2}]$ relative to the current heading.
 
 To prevent the robot from crashing into obstacles and encourage smooth motion, a potential field is defined over the state space that should `repel' the robot from obstacles but `attract' it to the goal \cite[999--1000]{russell2010}.
