@@ -2936,6 +2936,12 @@ A possible explanation for this could be the increased value of $\mu$ used for g
 
 \chapter{A neural surfing technique}
 
+In the previous chapter, we have analysed an example of the local minimum problem in great detail, using the concepts of weight and output spaces introduced in \ref{chap:neural_surfing_theory}.
+Furthermore, we found in the context survey that existing algorithms attempting to combat the local minimum problem tend to rely on stochasticity in some form or another.
+We will design 
+follow a more principled approach
+\todo
+
 
 \section{Clothoids}
 Consider a scenario in two-dimensional output space, as is shown in \ref{fig:clothoid_motivation_scenario}.
@@ -3098,7 +3104,7 @@ so the angle $\omega$ of the clothoid's tangent at $\left(F_C(t),F_S(t)\right)$ 
 \subsection{Construction}
 \label{sec:clothoid_construction}
 \ref{fig:clothoid_segment} shows how the three points $A,B,C$ from the scenario in \ref{fig:clothoid_motivation_scenario} can be mapped to the Euler spiral.
-Let us use the notation $\mathcal{A},\mathcal{B},\mathcal{C}$ to denote the corresponding points in two-dimensional Cartesian coordinate plane of the Euler spiral. 
+Let us use the notation $A',B',C'$ to denote the corresponding points in two-dimensional Cartesian coordinate plane of the Euler spiral. 
 \begin{figure}
     \centering
     \begin{tikzpicture}
@@ -3140,9 +3146,9 @@ Let us use the notation $\mathcal{A},\mathcal{B},\mathcal{C}$ to denote the corr
             \draw (A) -- (C_extended);
             \draw[dashed] (intercept_extended) -- (intercept);
 
-            \fill (A) circle (2pt) node[below,align=center] {$\mathcal{A}$\\(goal/subgoal)};
-            \fill (B) circle (2pt) node[below,align=center] {$\mathcal{B}$\\(sample)};
-            \fill (C) circle (2pt) node[right] {$\mathcal{C}$ (current point)};
+            \fill (A) circle (2pt) node[below,align=center] {$A'$\\(goal/subgoal)};
+            \fill (B) circle (2pt) node[below,align=center] {$B'$\\(sample)};
+            \fill (C) circle (2pt) node[right] {$C'$ (current point)};
 
             \pic[draw, "$\theta$", angle eccentricity=1.5] {angle = dummy--intercept--C};
             \pic[draw, "$\gamma_1$", angle eccentricity=1.5] {angle = C--B--A};
@@ -3151,38 +3157,38 @@ Let us use the notation $\mathcal{A},\mathcal{B},\mathcal{C}$ to denote the corr
             \pic[draw, "$\alpha$", angle eccentricity=1.5] {angle = C_extended--C--intercept_extended};
         \end{axis}
     \end{tikzpicture}
-    \caption{Plot of a clothoid segment with three points of interest: $\mathcal{C}$ is the initial point, $\mathcal{B}$ is the sample point and $\mathcal{A}$ is the goal/subgoal (at the origin of the clothoid). The dashed line is tangential to the clothoid at $\mathcal{C}$.}
+    \caption{Plot of a clothoid segment with three points of interest: $C'$ is the initial point, $B'$ is the sample point and $A'$ is the goal/subgoal (at the origin of the clothoid). The dashed line is tangential to the clothoid at $C'$.}
     \label{fig:clothoid_segment}
 \end{figure}
-$\mathcal{A}$ must be at the origin of the spiral in order to ensure that the curvature is zero at the goal point.
-Then the two points $\mathcal{B}$ and $\mathcal{C}$ must be found along the curve such that the triangle formed by these points, $\triangle{\mathcal{ABC}}$, has angles $\measuredangle{\mathcal{ABC}}=\gamma_1$ and $\measuredangle{\mathcal{ACB}}=\gamma_2$.
+$A'$ must be at the origin of the spiral in order to ensure that the curvature is zero at the goal point.
+Then the two points $B'$ and $C'$ must be found along the curve such that the triangle formed by these points, $\triangle{A'B'C'}$, has angles $\measuredangle{A'B'C'}=\gamma_1$ and $\measuredangle{A'C'B'}=\gamma_2$.
 
-The problem of finding $\triangle{\mathcal{ABC}}$ is equivalent to finding the values $t_\mathcal{A},t_\mathcal{B},t_\mathcal{C}$ that produce the points $\mathcal{A},\mathcal{B},\mathcal{C}$ when plugged into \ref{eq:fresnel_sine,eq:fresnel_cosine}. 
-We have established previously that $\mathcal{A} = (0, 0)$; thus $t_\mathcal{A}=0$ but it remains to find $t_\mathcal{B}$ and $t_\mathcal{C}$.
+The problem of finding $\triangle{A'B'C'}$ is equivalent to finding the values $t_A,t_B,t_C$ that produce the points $A',B',C'$ when plugged into \ref{eq:fresnel_sine,eq:fresnel_cosine}. 
+We have established previously that $A' = (0, 0)$; thus $t_A=0$ but it remains to find $t_B$ and $t_C$.
 
-Let us constrain $t_\mathcal{A}$ and $t_\mathcal{B}$ to be in the interval $(0, \sqrt{3}]$ to ensure that the resulting clothoid will not wind too tight\footnote{In fact, the clothoid from \ref{fig:clothoid_segment} was plotted for $0 \leq t \leq \sqrt{3}$. At $t=\sqrt{3}$, the clothoid `points' downwards.}.
-Furthermore, it must be the case that $t_\mathcal{A}<t_\mathcal{B}<t_\mathcal{C}$ which is also why the interval above does not include zero.
-The steps below can be used to find $t_\mathcal{B}$ and $t_\mathcal{C}$.
+Let us constrain $t_A$ and $t_B$ to be in the interval $(0, \sqrt{3}]$ to ensure that the resulting clothoid will not wind too tight\footnote{In fact, the clothoid from \ref{fig:clothoid_segment} was plotted for $0 \leq t \leq \sqrt{3}$. At $t=\sqrt{3}$, the clothoid `points' downwards.}.
+Furthermore, it must be the case that $t_A<t_B<t_C$ which is also why the interval above does not include zero.
+The steps below can be used to find $t_B$ and $t_C$.
 \begin{enumerate}
     \item Create a sequence of $n$ sample values of $t$ such that $t_i = \frac{i}{n}\sqrt{3}$ for $i=1,2,\dots,n$.
     \item Calculate the points $P_1,P_2,\dots,P_n$ along the Euler spiral where the $i$th point is given by $P_i = (F_C(t_i),F_S(t_i))$.
-    \item For $b,c \in \mathbb{Z}^+$ subject to $b<c\leq n$, find the pair of values $b,c$ that minimises
+    \item For $b,c \in \mathbb{Z}^+$ subject to $b<c\leq n$, find the pair of values $\langle b,c \rangle$ that minimises
         \begin{equation}
             \label{eq:clothoid_construction_error}
             \left(\measuredangle{AP_bP_c} - \gamma_1\right)^2 + \left(\measuredangle{AP_cP_b} - \gamma_2\right)^2.
         \end{equation}
-        In other words, find the triangle formed by the points $P_b$, $P_c$, and $\mathcal{A}$ which is the most similar\footnote{Two triangles are \textit{similar} if their side lengths are proportional and hence angles are identical.} to $\triangle{ABC}$. 
-        When $n\to\infty$, we find $t_b=t_\mathcal{B}$ and $t_c=t_\mathcal{C}$ (equivalently, $P_b=\mathcal{B}$ and $P_c=\mathcal{C}$), but values of $n$ in the order of $1000$ will be suitable for practical purposes.
+        In other words, find the triangle formed by the points $P_b$, $P_c$, and $A'$ which is the most similar\footnote{Two triangles are \textit{similar} if their side lengths are proportional and hence angles are identical.} to $\triangle{ABC}$. 
+        When $n\to\infty$, we find $t_b=t_B$ and $t_c=t_C$ (equivalently, $P_b=B'$ and $P_c=C'$), but values of $n$ in the order of $1000$ will be suitable for practical purposes.
 \end{enumerate}
 
-Once we have determined $t_\mathcal{B}$ and $t_\mathcal{C}$ and thus know the coordinates of $\mathcal{B}$ and $\mathcal{C}$, we can find $\beta$ as the angle that $\mathcal{C}$ makes with the $x$-axis, giving
+Once we have determined $t_B$ and $t_C$ and thus know the coordinates of $B'$ and $C'$, we can find $\beta$ as the angle that $C'$ makes with the $x$-axis, giving
 \begin{equation}
-    \beta = \tan^{-1} \left( \frac{\mathcal{C}_y}{\mathcal{C}_x} \right).
+    \beta = \tan^{-1} \left( \frac{C'_y}{C'_x} \right).
 \end{equation}
-Since $\theta$ is the angle of the tangent at $\mathcal{C}$, we obtain from \ref{eq:clothoid_tangent_angle} that $\theta=\frac{\pi}{2} \left(t_\mathcal{C}\right)^2$.
+Since $\theta$ is the angle of the tangent at $C'$, we obtain from \ref{eq:clothoid_tangent_angle} that $\theta=\frac{\pi}{2} \left(t_C\right)^2$.
 Furthermore, we can deduce from  \ref{fig:clothoid_segment} that $\theta=\alpha+\beta$, so
 \begin{equation}
-    \alpha = \theta - \beta = \frac{\pi}{2} \left(t_\mathcal{C}\right)^2 - \beta.
+    \alpha = \theta - \beta = \frac{\pi}{2} \left(t_C\right)^2 - \beta.
 \end{equation}
 This completes the construction of the clothoid; we have found a na\"{i}ve algorithm for computing \ref{prob:clothoid_construction}.
 
@@ -3201,11 +3207,200 @@ In fact, this is equivalent to minimising \ref{eq:clothoid_construction_error} w
 The nearest neighbour can be found quite efficiently using a so-called $k$-d tree data structure with an average time complexity logarithmic to the number of points \cite{friedman1977}.
 Hence, using this technique, we can find the clothoid parameters for \ref{prob:clothoid_construction} in $\mathcal{O}(\log n)$ time\footnote{This is because we have $n^2$ points and $\mathcal{O}(\log{n^2})=\mathcal{O}(\log n)$.} on average.
 
+\subsection{Setting subgoals}
+\label{sec:setting_subgoals}
+We have seen how to construct the unique clothoid touching our three points of interest: the starting point $C$, sample point $B$, and goal $A$. 
+For implementing the neural surfing technique, we still need a means of setting subgoals along this clothoid. 
+Naturally, such a subgoal $Q$ should be placed along the clothoid between $B$ and $A$ to ensure progress along the goal-connecting path.
+Setting the subgoal too far along the path will likely lead to problems with our assumption of \textit{local linearity}\footnote{The practical assumption here is that for suitably small weight changes, the resulting changes in output space will be relatively linear.}.
+Hence we will ensure that $Q$ is as far away from $B$ as $C$ is. 
+In other words, we need to find $Q$ on the clothoid between $B$ and $A$ such that $\overline{BC}$ and $\overline{BQ}$ are congruent\footnote{Two line segments are congruent if they have the same length. We will henceforth use the notation $\overline{BC} \cong \overline{BQ}$.} as depicted in \ref{fig:clothoid_segment_with_subgoal_output_space}.
+\begin{figure}
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}
+            \begin{axis}[
+                scale only axis,
+                width=.9\textwidth,
+                xlabel={$y_1$},
+                ylabel={$y_2$},
+                xlabel style={at={(axis description cs:1,0)},anchor=west},
+                ylabel style={at={(axis description cs:0,1)},anchor=south,rotate=-90},
+                axis lines=left,
+                xmin=-1, xmax=6,
+                ymin=-3, ymax=4,
+                ticks=none,
+                clip=false
+            ]
+                % File: clothoid_segment_with_subgoal.dat
+                %   A: (6.0, 0.0)
+                %   B: (0.7, 1.5)
+                %   C: (0.0, 0.0)
+                %   Q: (2.2688673758889757, 2.0259456611567335)
+                %   t0: 0.6883124830879321
+                %   t1: 0.955315310280732
+                %   t2: 1.2275194912500151
+                %   gamma1: 1.7316175880199154 (99.2143795241645°)
+                %   gamma2: 1.1341691669813554 (64.98310652189998°)
+                %   alpha:  1.6211289253583432 (92.88384546961173°)
+                %   beta:   0.7457534223182132 (42.72852365627091°)
+                %   theta:  2.3668823476765564 (135.61236912588262°)
+                
+                \coordinate (O) at (-1, -3);
+                \coordinate (A) at (6.0, 0.0);
+                \coordinate (B) at (0.7, 1.5);
+                \coordinate (C) at (0.0, 0.0);
+                \coordinate (Q) at (2.2688673758889757, 2.0259456611567335);
+                
+                \fill (A) circle (2pt) node[right] {$A$};
+                \fill (B) circle (2pt) node[above left] {$B$};
+                \fill (C) circle (2pt) node[left] {$C$};
+                \fill (Q) circle (2pt) node[above] {$Q$};
+
+                \draw[-{Latex[length=2mm]}] (A) -- (Q) node[midway, fill=white] {$\vec{q}$};
+                \draw[-{Latex[length=2mm]}] (A) -- (B) node[midway, fill=white] {$\vec{b}$};
+                \draw[-{Latex[length=2mm]}] (A) -- (C) node[midway, fill=white] {$\vec{c}$};
+                \draw[-{Latex[length=2mm]}] (O) -- (A) node[midway, fill=white] {$\vec{a}$};
+
+                \draw
+                    (C) -- (B)
+                    (B) -- (Q);
+                \draw[decoration={markings, mark=at position .5  with {\node[transform shape] {$\parallel$};}}]
+                    (C) edge[decorate] (B)
+                    (B) edge[decorate] (Q);
+                
+                \addplot[mark=none] table {../research/data/report/clothoid_segment_with_subgoal.dat};
+                \fill (-1, -1) node[below right] {\phantom{$A'$}};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Output space.}
+        \label{fig:clothoid_segment_with_subgoal_output_space}
+    \end{subfigure}
+    \hspace*{\fill}
+    \begin{subfigure}{.45\textwidth}
+        \begin{tikzpicture}
+            \begin{axis}[
+                scale only axis,
+                width=.9\textwidth,
+                xmin=0, xmax=.85,
+                ymin=0, ymax=.85,
+                xlabel={$x$},
+                ylabel={$y$},
+                xlabel style={at={(axis description cs:1,0)},anchor=west},
+                ylabel style={at={(axis description cs:0,1)},anchor=south,rotate=-90},
+                axis lines=left,
+                ticks=none,
+                clip=false
+            ]
+                \addplot[mark=none] table {../research/data/report/clothoid_small.dat};
+
+                % points:
+                % (0.0, 0.0)
+                % (0.6511562142506384, 0.16411110416800556)
+                % (0.7768085512067798, 0.39371621465802603)
+                % (0.6968208156154215, 0.6436503252741711)
+
+
+                \coordinate (A) at (0, 0);
+                \coordinate (Q) at (0.6511562142506384, 0.16411110416800556);
+                \coordinate (B) at (0.7768085512067798, 0.39371621465802603);
+                \coordinate (C) at (0.6968208156154215, 0.6436503252741711);
+                
+                \draw[-{Latex[length=2mm]}] (A) -- (B) node[midway, fill=white] {$\vec{b'}$};
+                \draw[-{Latex[length=2mm]}] (A) -- (C) node[midway, fill=white] {$\vec{c'}$};
+                \draw[-{Latex[length=2mm]}] (A) -- (Q) node[midway, fill=white] {$\vec{q'}$};
+                \draw
+                    (C) -- (B)
+                    (B) -- (Q);
+                \draw[decoration={markings, mark=at position .5  with {\node[transform shape] {$\parallel$};}}]
+                    (C) edge[decorate] (B)
+                    (B) edge[decorate] (Q);
+                
+                \fill (A) circle (2pt) node[below left] {$A'$};
+                \fill (B) circle (2pt) node[right] {$B'$};
+                \fill (C) circle (2pt) node[right] {$C'$};
+                \fill (Q) circle (2pt) node[right] {$Q'$};
+
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Cartesian coordinate plane.}
+        \label{fig:clothoid_segment_with_subgoal_cartesian_plane}
+    \end{subfigure}
+    \caption{Construction of a clothoid with an equidistant subgoal $Q$ on the clothoid.}
+    \label{fig:clothoid_segment_with_subgoal}
+\end{figure}
+
+In \ref{sec:clothoid_construction} we used only the angles $\gamma_1$ and $\gamma_2$ (defining the triangle $\triangle{ABC}$) to construct the clothoid.
+This means that the clothoid parameters we found for a specific pair $\langle \gamma_1,\gamma_2 \rangle$ are invariant to scaling and rotating the triangle.
+By that same logic, finding $Q$ given the clothoid passing through the points $A,B,C$ is equivalent to finding $Q'$ on the original Euler spiral such that $\overline{B'C'} \cong \overline{B'Q'}$ holds for the mapped points $A', B', C'$, as illustrated in \ref{fig:clothoid_segment_with_subgoal_cartesian_plane}.
+
+On the original Euler spiral, it is not particularily difficult to find $Q'$. 
+For example, we could add another step to the algorithm from \ref{sec:clothoid_construction}.
+\begin{enumerate}
+    \setcounter{enumi}{3}
+    \item For $q \in \mathbb{Z}^+$ subject to $q < b$, find the value of $q$ that minimises the difference between
+        the lengths of $\overline{P_bP_c}$ and $\overline{P_bP_q}$.
+\end{enumerate}
+We would then have the point $Q'$ approximated by $P_q$.
+The quality of the approximation will increase with the total number of samples along the spiral.
+
+Let us now consider how we can transform $Q'$ back into output space.
+Remember that the output space can be of arbitrary dimensionality, but the Euler spiral is defined on the two-dimensional Cartesian coordinate space.
+When running the neural surfing algorithm, we will of course know the points $A,B,C$ in output space.
+In fact, these three points are sufficient to define a two-dimensional \textit{plane} in output space.
+On that plane, we wish to find $Q$.
+
+To do this, let us define the vectors $\vec{b'},\vec{c'},\vec{q'}$ that point from the origin ($A'$) to each of the points $B',C',Q'$ respectively as depicted in \ref{fig:clothoid_segment_with_subgoal_cartesian_plane}.
+Furthermore, we shall introduce the vectors $\vec{a},\vec{b},\vec{c},\vec{q}$ in output space as \ref{fig:clothoid_segment_with_subgoal_output_space} shows.
+If $\vec{b'}$ and $\vec{c'}$ are parallel, then we trivially have
+$\vec{q'} = 2\vec{c'} - \vec{b'}$
+because all three points will lie on the same line.
+By extension, we can then given $\vec{q}$ in output space in terms of $\vec{c}$ and $\vec{b}$ as $\vec{q} = 2\vec{c} - \vec{b}$.
+
+Otherwise, if $\vec{b'}$ and $\vec{c'}$ are not parallel, we can take advantage of the fact that they must be \textit{linearly independent} and thus are sufficient to define the two-dimensional plane that the clothoid lies in\footnote{A two-dimensional plane can be fully defined by two linearly independent basis vectors.}.
+For every point $\vec{p}$ on the plane of the clothoid there exists a unique $\lambda_b,\lambda_c \in \mathbb{R}$ such that $\vec{p} = \lambda_b \vec{b'} + \lambda_c \vec{c'}$. 
+Here, $\vec{b'}$ and $\vec{c'}$ act as the so-called basis vectors.
+
+Let us denote the coefficients more generally using the vector
+$\boldsymbol{\lambda} = \begin{bmatrix}
+    \lambda_b & \lambda_c
+\end{bmatrix}\tran$
+and define the matrix
+$\vec{A'} = \begin{bmatrix}
+    \vec{b'} & \vec{c'}
+\end{bmatrix}$
+where each column is a basis vector.
+Since $\vec{q'}$ is on the plane, there must exist a $\boldsymbol{\lambda}$ such that
+$\vec{A'} \boldsymbol{\lambda}\tran = \vec{q'}$.
+In fact, this will by given by
+\begin{equation}
+    \label{eq:vec_transformation_qprime_to_lambda}
+    \boldsymbol{\lambda} = \left(\vec{A'}^{-1} \vec{q'}\right)\tran.
+\end{equation}
+
+Since we determined the value of $\boldsymbol{\lambda}$ that yields $\vec{q'}$ in the basis of $\vec{b'}$ and $\vec{c'}$, 
+we can now perform a \textit{change of basis} to the corresponding plane in output space.
+This is the two-dimensional plane\footnote{This plane is a subspace of the output space, as the latter may well be of higher dimensionality.} given by our three known points $A,B,C$ or equivalently by the basis vectors $\vec{b}$ and $\vec{c}$ which we will denoted by the matrix
+$\vec{A} = \begin{bmatrix}
+    \vec{b} & \vec{c}
+\end{bmatrix}$.
+Finally, we are able to obtain the point $\vec{q}$ in output space as
+\begin{equation}
+    \label{eq:vec_transformation_lambda_to_q}
+    \vec{q} = \vec{a} + \vec{A} \boldsymbol{\lambda}\tran.
+\end{equation}
+The point $Q$ itself will now be given by $\vec{a}+\vec{q}$ as can be deduced from \ref{fig:clothoid_segment_with_subgoal_output_space}.
+
+We have come up with a two-step process of obtaining $\vec{q}$.
+The first step, given by \ref{eq:vec_transformation_qprime_to_lambda}, can actually be pre-computed because, as we established earlier, the proportions of the points $A,B,C,Q$ are invariant to transformations with respect to scaling, translating, and rotating.
+It therefore makes sense to store the value of respective $\boldsymbol{\lambda}$ for each pair $\langle \gamma_1,\gamma_2 \rangle$ in the lookup table, so this calculation does not need to be carried out during training.
+The second step, described in \ref{eq:vec_transformation_lambda_to_q}, can be applied during training to determine the location of the subgoal $Q$ in output space using the value of $\boldsymbol{\lambda}$ that was looked up using the pair $\langle \gamma_1,\gamma_2 \rangle$ from the triangle $\triangle{ABC}$.
+
 \subsection{Implementation}
 The algorithm for obtaining clothoid parameters using a lookup table has been implemented in Python using the \texttt{numpy} library and the $k$-d tree implementation from \texttt{scipy}.
 A simple yet efficient mini-library named \texttt{clothoidlib} has been provided alongside the code submission at \texttt{research/clothoids/clothoidlib.py} for calculating clothoid parameters in just a few lines of code, as shown in \ref{lst:clothoidlib}. 
-Furthermore, an interactive tool was developed, allowing the user to draw clothoids in a two-dimensional plane. 
-The usage of this tool and the mini-library itself are documented in \ref{app:clothoidlib}.
+The na\"{i}ve algorithm from \ref{sec:setting_subgoals} proved to be a bottleneck in the pre-computation stage, so a more efficient version of that algorithm was devised.
+In this version, the distances between each pair of points $\langle P_i, P_j \rangle$ are calculated only once and furthermore the values of $\boldsymbol{\lambda}$ are computed in groups of identical $t_B$ values to avoid a considerable amount of duplicate computations.
+Details are provided in the source code comments.
 \begin{listing}[h]
 \begin{minted}{python}
 from clothoidlib import ClothoidCalculator
@@ -3215,6 +3410,9 @@ params = calculator.lookup_points(start, intermediate, goal)
 \caption{Example of how clothoid parameters can be calculated using \texttt{clothoidlib}. Here, \texttt{start} represents the point $C$, \texttt{intermediate} $B$, and \texttt{goal} $A$. The value stored in \texttt{params} is the named tuple $\langle \gamma_1, \gamma_2, \alpha, \beta, t_i, t_j \rangle$.}
 \label{lst:clothoidlib}
 \end{listing}
+
+Furthermore, an interactive tool was developed, allowing the user to draw clothoids in a two-dimensional plane, visualising as well the subgoal $Q$ on each clothoid. 
+The usage of this tool and the mini-library itself are documented in \ref{app:clothoidlib}.
 
 \section{Adaptive clothoid technique}
 \todo
