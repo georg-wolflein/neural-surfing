@@ -2,6 +2,7 @@ __*.tex
 #main.pdf
 figures/
 report-words
+/scratch*
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

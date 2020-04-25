@@ -2938,10 +2938,7 @@ A possible explanation for this could be the increased value of $\mu$ used for g
 
 In the previous chapter, we have analysed an example of the local minimum problem in great detail, using the concepts of weight and output spaces introduced in \ref{chap:neural_surfing_theory}.
 Furthermore, we found in the context survey that existing algorithms attempting to combat the local minimum problem tend to rely on stochasticity in some form or another.
-We will design 
-follow a more principled approach
-\todo
-
+We will attempt to design a technique that follows a more principled approach that attempts to construct smooth goal-connecting paths in output space rather than relying on a random search algorithm on the error-weight surface.
 
 \section{Clothoids}
 Consider a scenario in two-dimensional output space, as is shown in \ref{fig:clothoid_motivation_scenario}.
@@ -2968,9 +2965,9 @@ Consider a scenario in two-dimensional output space, as is shown in \ref{fig:clo
             \draw (A) -- (B) -- (C);
             \draw[dashed] (A) -- (C);
 
-            \fill (A) circle (2pt) node[below,align=center] {goal\\(or subgoal)};
-            \fill (B) circle (2pt) node[above,align=center] {candidate\\sample point};
-            \fill (C) circle (2pt) node[below,align=center] {current\\point};
+            \fill (A) circle (2pt) node[below,align=center] {$A$\\(goal)};
+            \fill (B) circle (2pt) node[above,align=center] {(candidate sample)\\$B$};
+            \fill (C) circle (2pt) node[below,align=center] {$C$\\(current)};
             \node[below] at (4,1) {ideal goal line};
 
             \pic[draw, "$\gamma_1$", angle eccentricity=1.5] {angle = C--B--A};
@@ -2980,8 +2977,8 @@ Consider a scenario in two-dimensional output space, as is shown in \ref{fig:clo
     \caption{A secenario in two-dimensional output space. Note that the ideal goal line need not be parallel to the $y_1$ axis.}
     \label{fig:clothoid_motivation_scenario}
 \end{figure}
-The current weight configuration produces a point $C$ in output space. 
-How do we evaluate the effectiveness of a candidate sample point $B$ in achieving the goal (or subgoal), $A$?
+The current weight configuration produces a point $C$. 
+How should we evaluate the effectiveness of a candidate sample point $B$ in achieving the goal (or subgoal), $A$?
 We would like to analyse the properties of a curve that originates at $C$, passes through $B$, and ends at $A$.
 This curve should undergo a linear decrease in curvature until reaching a curvature of zero at the goal.
 We call this type of curve \textit{clothoid}, and there can only be one clothoid that passes through all three points and has a curvature of zero at $A$.
@@ -3207,8 +3204,8 @@ In fact, this is equivalent to minimising \ref{eq:clothoid_construction_error} w
 The nearest neighbour can be found quite efficiently using a so-called $k$-d tree data structure with an average time complexity logarithmic to the number of points \cite{friedman1977}.
 Hence, using this technique, we can find the clothoid parameters for \ref{prob:clothoid_construction} in $\mathcal{O}(\log n)$ time\footnote{This is because we have $n^2$ points and $\mathcal{O}(\log{n^2})=\mathcal{O}(\log n)$.} on average.
 
-\subsection{Setting subgoals}
-\label{sec:setting_subgoals}
+\subsection{Subgoals}
+\label{sec:subgoal_computation}
 We have seen how to construct the unique clothoid touching our three points of interest: the starting point $C$, sample point $B$, and goal $A$. 
 For implementing the neural surfing technique, we still need a means of setting subgoals along this clothoid. 
 Naturally, such a subgoal $Q$ should be placed along the clothoid between $B$ and $A$ to ensure progress along the goal-connecting path.
@@ -3398,7 +3395,7 @@ The second step, described in \ref{eq:vec_transformation_lambda_to_q}, can be ap
 \subsection{Implementation}
 The algorithm for obtaining clothoid parameters using a lookup table has been implemented in Python using the \texttt{numpy} library and the $k$-d tree implementation from \texttt{scipy}.
 A simple yet efficient mini-library named \texttt{clothoidlib} has been provided alongside the code submission at \texttt{research/clothoids/clothoidlib.py} for calculating clothoid parameters in just a few lines of code, as shown in \ref{lst:clothoidlib}. 
-The na\"{i}ve algorithm from \ref{sec:setting_subgoals} proved to be a bottleneck in the pre-computation stage, so a more efficient version of that algorithm was devised.
+The na\"{i}ve algorithm from \ref{sec:subgoal_computation} proved to be a bottleneck in the pre-computation stage, so a more efficient version of that algorithm was devised.
 In this version, the distances between each pair of points $\langle P_i, P_j \rangle$ are calculated only once and furthermore the values of $\boldsymbol{\lambda}$ are computed in groups of identical $t_B$ values to avoid a considerable amount of duplicate computations.
 Details are provided in the source code comments.
 \begin{listing}[h]
