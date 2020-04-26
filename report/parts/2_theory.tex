@@ -2476,10 +2476,10 @@ To see this, consider for example the point $\vec{u}$ lying midway on the straig
         \frac{1-\phi(4)}{2} & \phi(2) & \phi(2)
     \end{bmatrix}\tran.
 \end{equation*}
-\begin{lemma}
-    \label{lmm:stripe_unrealisable_point}
+\begin{theorem}
+    \label{thm:stripe_unrealisable_point}
     The point $\vec{u}$ is strongly unrealisable.
-\end{lemma}
+\end{theorem}
 \begin{proof}
     We need to find a weight configuration
     $\vec{w}=\begin{bmatrix}
@@ -2587,7 +2587,7 @@ To see this, consider for example the point $\vec{u}$ lying midway on the straig
         \caption{Input space with hyperplanes at zero excitation (dashed), $\frac{1-e^{-16}}{2}$ activation (dotted) and $\phi(2)$ activation (solid) for two possible input configurations. It can be seen that although $\vec{x}_1$ always intersects with the dotted line, only one of the two other input points will intersect with the solid line.}
         \label{fig:stripe_unrealisable_example_hyperplanes}
     \end{figure}
-    \ref{lmm:stripe_unrealisable_point} proves the existence of one specific unrealisable point, but this methodology could be repeated for other points in order to prove that there is actually a larger unrealisable region consisting of more than that one point on the goal line.
+    \ref{thm:stripe_unrealisable_point} proves the existence of one specific unrealisable point, but this methodology could be repeated for other points in order to prove that there is actually a larger unrealisable region consisting of more than that one point on the goal line.
     Although this will not be carried in this report, it is an important aspect of the stripe problem to keep in mind.
     The intuition in this scenario with three outputs is that it will often be possible to satisfy two of the three output targets, but not the third. 
     \ref{fig:stripe_unrealisable_example_hyperplanes} illustrates this point by considering the hyperplanes of the target output values for the point $\vec{u}$ discussed above.

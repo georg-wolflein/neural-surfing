@@ -108,10 +108,38 @@ The third and fourth objectives pertaining to the neural framework were reflecte
 Furthermore, \ref{chap:generalising} provides an overview of how the neural surfing technique could be generalised to other applications, as was the goal of the fifth objective.
 
 \chapter{Conclusions}
-LMP is a difficult problem: analogy
+The local minimum problem as it relates to neural networks is a challenging issue that has been investigated for several decades.
+Intuitively, the hiking analogy that set the scene in \ref{sec:motivation} and was carried through this report, it is evident that there is no apparent simple solution to finding the global minimum of a mountainous landscape.
+A novel example of the local minimum problem was put forth and the claim that it exhibits suboptimal local minima was proved mathematically and demonstrated empirically.
+In doing so, its merits for analysing the local minimum problem were shown, especially with regard to visualising the weight space, output space, and error-weight surface requiring only two or three dimensions.
+The reasons why classical training algorithms such as BP and SA fail to find the global minimum in the context of the RBF stripe problem were evaluated.
+
+Furthermore, a methodological framework was developed that addresses the issue of neural training from a different perspective.
+This approach, `neural surfing theory', was used as a to design a candidate neural surfing algorithm.
+Although that particular algorithm was not able to find the global minimum in the RBF stripe problem, it was able to do so when setting the clothoids in excitation space.
+In this regard, the neural surfer was stronger than the conventional training regimes because they failed without manual subgoal setting.
+
+Finally, a software framework was implemented for comparing neural training techniques.
+Using this framework, the finding that the classical training algorithms converge to a suboptimal local minimum of the RBF stripe problem can be reproduced.
+The framework facilitates a fair real-time comparison of different training algorithms on a given neural problem by visualising default and user-specified metrics.
+Moreover, the framework is quite flexible in that the user may implement new custom neural problems and agents.
+Best practices in Python were followed and an extensive documentation is provided.
 
 \section{Future work}
 \label{sec:future_work}
-unrealisable regions
+The RBF stripe problem was demonstrated to be a powerful yet minimal example of the local minimum problem. 
+Future research into the local minimum problem could use this problem as a starting point.
+Furthermore, it could serve as a benchmark for evaluating whether new proposed neural training algorithms are able to find a global minimum in the presence of severely suboptimal local minima.
 
-use derivatives in neural surfing
+One useful aspect that could be investigated further is that of unrealisable regions in output space.
+In \ref{thm:stripe_unrealisable_point} it was shown that one specific point on the staight line from the initial point to the target in output space of the RBF stripe problem was strongly unrealisable.
+The proof of this theorem could potentially be adapted to encompass larger regions or even to provide a means of classifying every point in output space as being either realisable or unrealisable.
+This would allow the visualisation of all unrealisable regions in the three-dimensional output space and should provide some insights for devising a better neural surfing technique that is able to set the clothoids in output space instead of excitation space.
+
+Another improvement that could be made to the neural surfer is to decrease its computational complexity by relying on derivative information instead of sample points.
+Using the automatic differentiation features of popular machine learning frameworks such as TensorFlow or PyTorch, it is quite easy to find the partial derivatives of one variable with respect to another.
+The unique characteristic of a neural surfer using derivative information as compared to classical BP with gradient descent will be the following:
+in addition to using the derivative of the weights with respect to the loss, the neural surfer will consider the derivatives of the weights with respect to the outputs in an attempt to find a smooth goal-connecting path.
+
+To facilitate further research into the development of a neural surfer using clothoids, an open-source mini-library for efficient clothoid construction is provided in \ref{app:clothoidlib}.
+Furthermore, the neural framework can be used to evaluate the performance of candidate algorithms against the classical algorithms of BP, SA, and greedy probing.
