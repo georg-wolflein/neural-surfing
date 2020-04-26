@@ -89,8 +89,10 @@
 \pgfdeclarelayer{pre main}
 \begin{document}
 
+%TC:ignore
 \frontmatter
 \input{parts/0_preface.tex}
+%TC:endignore 
 
 \mainmatter
 
@@ -102,12 +104,14 @@
 
 \input{parts/4_end.tex}
 
+%TC:ignore
 \appendix
 \input{parts/5_appendix.tex}
 
 \addcontentsline{toc}{chapter}{\refname{}}
 \begin{refcontext}[sorting=nyt]
-\printbibliography
+    \printbibliography
 \end{refcontext}
+%TC:endignore 
 
 \end{document}
