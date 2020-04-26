@@ -3413,6 +3413,32 @@ Furthermore, an interactive tool was developed, allowing the user to draw clotho
 The usage of this tool and the mini-library itself are documented in \ref{app:clothoidlib}.
 
 \section{The adaptive clothoid technique}
+The main idea of the neural surfing technique that was investigated in this project lies in repeatedly executing small moves, so-called \textit{samples}\footnote{As such, this proposed technique is inherently derivative-free.}, in weight and output space and evaluating their quality based on their respective goal-connecting paths.
+Given the current point in output space, a sample point, and the goal, we will draw a clothoid that shall represent the goal-connecting path.
+Essentially, we pretend that we have travelled from our initial point along the clothoid to our sample point, and now must continue along the clothoid trajectory until the goal.
+We repeatedly sample new points and choose the point that creates a new clothoid that is most similar to the old one.
+That is why this technique is named \textit{adaptive clothoid technique}.
+
+The first realisation we must make based on the findings of \ref{sec:clothoids} is that two clothoids with the same start and end points (but different intermediate points) are most similar in terms of their curvature if their respective values of $\alpha+\beta$ are close.
+In fact, recall that in justifying \ref{eq:clothoid_alpha} we found that $\alpha+\beta=\theta$.
+We will use this fact to identify which sample point produces the best clothoid at each iteration of the algorithm.
+Each time we choose a new sample point, we will draw a new clothoid using the old sample point, new sample point, and goal.
+This clothoid will dictate a subgoal as per \ref{sec:subgoal_computation} which we will attempt to achieve by extending or shrinking the current weight configuration.
+For the next iteration, the new clothoid's $\theta$ will be used to asses the quality of the new sample points.
+As a result, the clothoid -- and thus the goal-connecting path -- will be able to adapt.
+
+Let us formalise these steps below.
+Note that in implementing the algorithm, instead of actually drawing clothoids that pass through a given triple of points, we will simply look up the clothoid parameters using the angles $\langle \gamma_1, \gamma_2 \rangle$ formed by these points.
+\begin{enumerate}
+    \item Record the starting point $\vec{s}$ in output space.
+    \item Make an initial move in weight space producing the sample point $\vec{p}$ in output space.
+    \item Draw an initial clothoid using the triple of initially known points, $\langle \vec{s}, \vec{p}, \vec{g} \rangle$ where $\vec{g}=\vec{y}$ is the goal.
+        Look up the associated value of $\theta$ and record it as $\theta_\text{old}$.
+    \item Employ a sampling technique such as in \ref{sec:greedy_probing}
+         \todo
+\end{enumerate}
+
+\subsection{Issues}
 \todo
 
 \section{Experimental results and analysis}
