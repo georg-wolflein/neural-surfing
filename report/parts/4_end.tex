@@ -1,6 +1,7 @@
-\chapter{Discussion and evaluation}
+\chapter{Evaluation and critical appraisal}
 
 \section{The local minimum problem}
+\label{sec:eval_local_minimum_problem}
 The RBF stripe problem of \ref{sec:stripe_problem} demonstrates the local minimum problem using a much simpler neural network architecture than what was analysed by \textcite{blum1989}. 
 \citeauthor{blum1989} allegedly proves the existence of local minima in learning a Boolean XOR mapping using a sigmoidal neural networks with two hidden units.
 Analysing his construction with the methodology of \ref{chap:neural_surfing_theory} would be quite difficult because the weight and output spaces cannot be visualised effectively.
@@ -27,35 +28,90 @@ In addition to this proof, \ref{fig:stripe_gradient_vector_field} provides an in
 The detailed analysis of the RBF stripe problem in \ref{sec:stripe_problem} makes a strong case for the potential of this problem for investigating the local minimum problem.
 It could act as a benchmark for validating the claim that a specific algorithm solves the local minimum problem, or at least finds near-optimal solutions -- a claim that has been made several times already as we have seen in the context survey \cite{kawaguchi2016,choi2008,hirasawa1998,lo2012,lo2017}.
 
-\section{Neural surfing theory}
-talk about weight and output space
-Evaluate generalisation potential proved in generalisation section
-\section{The proposed technique}
+A side-effect of the RBF stripe problem is that it provides an example of the ravine problem, too (see \ref{fig:gradient_descent_narrow_valley}).
+This was observed in \ref{sec:stripe_gradient_descent} where the progress of gradient descent in the local (and global) minimum valleys was very slow.
+Unlike the local minimum problem, there exist effective algorithms that provide solutions to this issue to varying degrees.
+One widely-used algorithm in industry, Adam, uses estimates of the mean and standard deviation of the past gradients to adapt the learning rate \cite{kingma2014}.
+Applied to the RBF stripe problem, this technique was able to converge to the local or global minimum much more quickly.
+Nonetheless, this problem could be used to devise new methods of tackling the ravine problem due to its favourable qualities for analysis.
 
+\section{Neural surfing}
+\label{sec:eval_neural_surfing}
+Conventionally, neural training is treated as an optimisation problem of the error-weight surface.
+As such, the BP algorithm is very popular but its reliance on derivative information becomes its greatest limitation with regard to the local minimum problem as was demonstrated empirically in \ref{sec:stripe_gradient_descent}.
+Even DFO techniques were shown to fail in this context (see \ref{sec:local_minimum_experiments_derivative_free}).
+As established in the context survey, these techniques use an element of stochasticity that allows suboptimal moves in an attempt to escape local minima.
+However, it was demonstrated experimentally that this is not enough to escape the local minima of the RBF stripe problem.
+
+The methodological framework presented in \ref{chap:neural_surfing_theory} defines and analyses the notions of weight and output spaces as well as the concept of goal-connecting paths in both spaces.
+It establishes a different perspective of neural training which was applied to the RBF stripe problem in \ref{sec:stripe_problem}, showing the usefulness of this perspective.
+A key finding is that the ideal goal-connecting path in output space must first allow an increase in error before reaching the global minimum.
+This ideal path was visualised in \ref{sec:stripe_ideal_goal_connecting_path}, providing an intuition of what is required to overcome the local minimum problem.
+
+Based on the concept of ideal goal-connecting paths, the feasibility of utilising subgoals in output space has been demonstrated as an effective means of overcoming the local minimum problem.
+This was shown empirically by applying the so-called `cheat'\footnote{As remarked in \ref{sec:cheating_technique}, the purpose of this technique was not to cheat in the sense of falsely claiming that the approach can solve the local minimum problem. Instead, it was developed as a means of imposing an artifical constraint so that one feature of the local minimum problem can be investigated at a time. In this case, it was used to demonstrate the feasibility of following a chain of subgoals.} technique, which was presented as part of the methodological framework in \ref{sec:cheating_technique}, to the conventional methods of training neural networks.
+The finding was quite suprising: even with just one subgoal, the conventional training techniques (BP, SA, and greedy probing) were able to escape the local minimum and find the global minimum (see \ref{sec:stripe_gradient_descent_subgoals,stripe_derivative_free_subgoals}).
+Of course, this was only possible with a conveniently placed subgoal and an adequate learning rate that allowed the algorithms to `jump' over the top of the radial basis function, but it does show the potential for following an approach that employs subgoals.
+Furthermore, as the number of subgoals along the ideal goal-connecting path was increased to around 100, the distances between these subgoals became so small that training proceeded quite smoothly.
+
+The aforementioned findings were used to design a possible neural surfing technique that takes advantage of the theory established above.
+This algorithm, explained in \ref{chap:neural_surfing}, attempted to generate smooth paths in output space by modelling the remaining goal-connecting path as a clothoid at each stage.
+The clothoids were used not only to evaluate the quality of sample points, but also to set subgoals along the goal-connecting path.
+
+However, this algorithm was ultimately not successful in escaping the local minima of the RBF stripe problem either.
+One significant problem that was encountered is that the clothoidal paths in output space would generate illegal subgoals.
+This issue was analysed, and it was proposed that an inverse sigmoidal mapping could be used to map the finite output space to an inifinite space, giving more room for the clothoids.
+However, the problem of setting subgoals in unrealisable regions still remained, and thus the final implementation of the neural surfer still was not able to find the global minimum.
+
+Nonetheless, a different version of that neural surfing algorithm that set the clothoids in excitation space instead of output space (but still trained used the corresponding subgoals in output space) was successful in finding the global minimum of the RBF stripe problem.
+Although this is still a simplification, it shows the potential of the neural surfing technique in overcoming the stripe problem.
+The advantage of the proposed algorithm is that it required no manual subgoal setting, unlike the other training regimes that were explained above.
+This clothoidal approach manages to automatically set subgoals in close proximity that even enabled it to `pull' itself over the RBF hump instead of jumping over it by chance.
+
+A drawback of the clothoidal approach is that it samples many different weight states before carrying out a move.
+As commented in \ref{sec:neural_training_issues}, this is a common problem of derivative-free techniques because each forward pass is roughly as computationally expensive as evaluating the derivative at the current point (which BP only needs to do once per epoch).
+In that regard, it might be possible in future to adapt the neural surfing technique to use derivative information instead of manual sampling.
+
+Apart from DFO techniques that employ some element of stochasitity like SA (which was shown nonetheless to fail on the RBF stripe problem),
+a common approach in practise is to perform the BP algorithm multiple times with different random initialisations in the hope that one of these lies in a global minimum basin.
+In the case of the RBF stripe problem, the chance of randomly initialising at a weight configuration where BP will converge to a global minimum is 50\%.
+This means that for this particular example of the local minimum problem, the random initialisation approach is feasible.
+However, in larger networks, the global minimum basin may well be a lot smaller.
+
+The advantage of the neural surfing approach in general is that it follows a more principled approach that does not rely on stochasitity but rather focuses on generating smooth trajectories in output space.
+While the adaptive clothoid technique which was provided as an example of neural surfing certainly has its limitations, the the underlying idea -- that is, developing an approach that uses information from both weight and output space to set subgoals -- is quite powerful.
+This is highlighted in \ref{chap:generalising} which outlines several applications that a successful neural surfing implementation could have, even outside of the domain of neural networks.
 
 \section{The neural framework}
-talk about framework itself
+\label{sec:eval_neural_framework}
+TODO (please ignore)
+% talk about framework itself
 
-\paragraph{Simulated annealing}
-\label{sec:eval_sim_annealing}
-More complex implementations of SA may combine the so-called downhill simplex algorithm \cite{nelder1965} with SA such as in \textcite[p. 444-455]{press1992}, thereby introducing three additional hyperparameters.
-In fact, \citeauthor{press1992} remark that ``there can be quite a lot of problem-dependent subtlety'' in choosing the hyperparameters, and that ``success or failure is quite often determined by the choice of annealing schedule'' \cite*[p. 452]{press1992}.
+% runtime
 
-Generic framework, so could not implement custom annealing schedules with restarts, etc.
-Furthermore, at what point is the algorithm `adjusted too much' to the problem?
+% say that all requirements were satisfied (with reference to the list in the chapter)
+% Compare with scipy.optimize and nevergrad; also explain that they do not specifically target neural networks
+% tries to solve a different problem than neural frameworks
+% target user
 
-\paragraph{The framework}
-Compare with scipy.optimize and nevergrad; also explain that they do not specifically target neural networks
+% \paragraph{Simulated anealing}
+% More complex implementations of SA may combine the so-called downhill simplex algorithm \cite{nelder1965} with SA such as in \textcite[p. 444-455]{press1992}, thereby introducing three additional hyperparameters.
+% In fact, \citeauthor{press1992} remark that ``there can be quite a lot of problem-dependent subtlety'' in choosing the hyperparameters, and that ``success or failure is quite often determined by the choice of annealing schedule'' \cite*[p. 452]{press1992}.
+
+% Generic framework, so could not implement custom annealing schedules with restarts, etc.
+% Furthermore, at what point is the algorithm `adjusted too much' to the problem?
 
 \section{Objectives}
 This project achieved all the objectives outlined in \ref{sec:objectives}. 
-For the first objective of contriving a minimalist version of the stripe problem, 
-
+The first objective was evaluated in \ref{sec:eval_local_minimum_problem} and the second in \ref{sec:eval_neural_surfing}.
+The third and fourth objectives pertaining to the neural framework were reflected upon in \ref{sec:eval_neural_framework}.
+Furthermore, \ref{chap:generalising} provides an overview of how the neural surfing technique could be generalised to other applications, as was the goal of the fifth objective.
 
 \chapter{Conclusions}
+LMP is a difficult problem: analogy
 
 \section{Future work}
+\label{sec:future_work}
 unrealisable regions
 
-
-\label{sec:future_work}
+use derivatives in neural surfing

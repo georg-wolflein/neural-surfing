@@ -769,6 +769,10 @@ When following the gradients with a specific step size, travel will becomes quit
 \end{figure}
 Furthermore, if the step size is too large, the algorithm might `jump' over the ravine which poses an issue if the ravine contains the global minimum.
 Per contra, DFO algorithms are not as sensitive to local noise, and their probing approach will facilitate more efficient progress along narrow valleys, although they will be more likely to accidentally jump over ravines if the step size is too large.
+The ravine problem is actually quite common on the error-weight surface. 
+It often arises when there are two competing samples and exhibits the zig-zag trajectory from \ref{fig:gradient_descent_narrow_valley}.
+This is because moving in one direction will decrease the error of one of the samples but increase the error of the other.
+So the algorithm will move back slightly, repeatedly causing the same issue vice-versa.
 
 \chapter{Neural surfing theory}
 \label{chap:neural_surfing_theory}
@@ -3438,14 +3442,18 @@ Note that in implementing the algorithm, instead of actually drawing clothoids t
     \item Employ a sampling technique such as in \ref{sec:greedy_probing}
 
 \end{enumerate}
+TODO
 
 \subsection{Issues}
+TODO
 
 
 \section{Experimental results and analysis}
+TODO
 
 
 \chapter{Generalising neural surfing}
+\label{chap:generalising}
 In this chapter we will consider how any neural surfing technique can be generalised to different neural network architectures and problems.
 For this purpose, we will define a `neural surfer' to be an algorithm that samples states in weight space $\mathcal{W}$ that are in the local neighbourhood, producing predictions in output space $\mathcal{O}$ and deciding which weight state to transition to based on the associated predictions.
 The motivation for this analysis is to demonstrate the potential for research in neural surfing algorithms: if a good neural surfer for the stripe problem is devised, it will have applications beyond that simple problem, and potentially even neural networks.
