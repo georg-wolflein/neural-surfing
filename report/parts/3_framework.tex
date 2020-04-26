@@ -35,7 +35,7 @@ The requirements specification in \ref{sec:requirements} makes it clear that the
         \draw[line] (visualisation.north) -- (metric.south) node[below right] {0..*} node[label] {plots};
         \draw[line] (experiment.east) -| (visualisation.south) node[below right] {0..*} node[label] {shows};   
     \end{tikzpicture}
-    \caption{High-level view of the relationships between components of the \texttt{nf} framework.}
+    \caption{High-level view of the relationships between components of the \texttt{nf} framework. The numbers at the arrow tips denote the number of entities involved on that side of the relationship.}
     \label{fig:nf_components}
 \end{figure}
 \ref{fig:nf_components} shows a high-level view of these components and their associations. 
@@ -64,7 +64,7 @@ The user would simply instantiate this class with a set of agents (each defined 
 \begin{minted}{python}
 agents = {
     "Agent A": AgentA(MyNeuralProblem()),
-    "Agent B": AgentB(MyNeualProblem())
+    "Agent B": AgentB(MyNeuralProblem())
 }
 
 experiment = Experiment(agents)
@@ -189,8 +189,8 @@ These are
 Both contain a scalar value per epoch.
 
 \paragraph{Demonstrations}
-To supplement the framework, three demonstration scripts were written located in the parent directory of the framework.
-These showcase how the framework can be used to set up and run experiments and are explained in \ref{app:framework_user_manual}.
+To supplement the framework, three demonstration scripts were written.
+They are located in the parent directory of the framework and showcase how the framework can be used to set up and run experiments (see \ref{app:framework_user_manual}).
 Furthermore, screenshots of the demonstrations in action are provided in the \texttt{framework/screenshots} folder of the code submission.
 
 \section{Documentation}

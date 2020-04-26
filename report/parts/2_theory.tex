@@ -161,10 +161,10 @@ Unlike $g_\text{step}$, these activation functions are differentiable which is a
 
 Rectified units do not suffer from the \textit{vanishing gradient effect} \cite{glorot2011}.
 This phenomenon occurs with sigmoid activation functions when they reach high saturation, i.e. when the input is significantly far from zero such that the gradient is almost horizontal.
-However, the vanishing gradient problem is usually not prevalant in shallow\footnote{Shallow networks refer to ANNs with few layers.} networks so the sigmoid function still remains popular \cite{neal1992}.
+However, the vanishing gradient problem is usually not prevalent in shallow\footnote{Shallow networks refer to ANNs with few layers.} networks so the sigmoid function still remains popular \cite{neal1992}.
 
 Particularly in deep neural networks, different neurons (grouped in \textit{layers}, see \ref{sec:multi_layer_perceptron}) often have different activation functions \cite{burkov2019}, but for the purposes of this report it is more convenient (in terms of notation) to have the activation function be the same for all neurons, so it does not need to be supplied as a parameter to the function describing the particular neural network.
-Much of the work in this report can easily be generalised to designs with multple activation functions.
+Much of the work in this report can easily be generalised to designs with multiple activation functions.
 This is because the algorithms explained in this report do not concern themselves with the specifics of the activation functions, as long as they are non-linear.
 
 \paragraph{ANNs as regression models}
@@ -412,7 +412,7 @@ This will allow us to examine the so-called decision boundary in input space whi
     Given a decision threshold $t$, we can use a regression model $R$ to solve any binary classification problem.
 \end{lemma}
 \begin{proof}
-    We are looking define an equivalent classification model $C$ that outputs $0$ if $R\left(\vec{x}\right)<t$ and $1$ otherwise. 
+    We are looking to define an equivalent classification model $C$ that outputs $0$ if $R\left(\vec{x}\right)<t$ and $1$ otherwise. 
     This can be achieved using the threshold activation function $g_\text{thres}$ from \ref{eq:thres_activation} in the form
     \begin{equation}
         C(\vec{x}) = g_\text{thres}\left(R\left(\vec{x}\right) - t\right).
@@ -452,7 +452,7 @@ This will allow us to examine the so-called decision boundary in input space whi
         \caption{The DAG representing a SLN with $m$ inputs and one output unit.}
         \label{fig:sln_m_in_1_out}
     \end{figure}
-    The equation of decision boundary can be obtained by setting the output equal to the decision threshold, so
+    The equation of the decision boundary can be obtained by setting the output equal to the decision threshold, so
     $t = S\left(\vec{x}\right)$
     for the input feature vector
     $\vec{x}= \begin{bmatrix}
@@ -544,7 +544,7 @@ Simulated annealing is of course derivative-free in nature.
 We also define some issues related to these methods more precisely as a means of setting the scene for the neural surfing technique later on.
 
 \textit{Training} with regard to neural networks refers to the process of altering a network's weights and biases with the goal of achieving an optimal configuration that reduces the error of the predictions, i.e. how far they are `off'. 
-This how the network facilitates \textit{learning} the input-output function from \ref{def:supervised_learning}.
+This is how the network facilitates \textit{learning} the input-output function from \ref{def:supervised_learning}.
 We will use a simple loss function that uses mean squared error for this purpose.
 \begin{definition}[Mean squared error]
     \label{def:mean_squared_error}
@@ -722,14 +722,14 @@ The probability of accepting a candidate sample point $\vec{\hat{p}}$ at the $i$
 for an energy coefficient $k\in \mathbb{R}$ \cite{rios2009}.
 This means that the SA algorithm will always accept a better location, but, with a certain probability, might take a suboptimal step.
 
-The temperature at the $i$ iteration is determined according to a \textit{cooling schedule}. 
+The temperature at the $i$th iteration is determined according to a \textit{cooling schedule}. 
 We will employ a simple approach as a proof of concept that calculates $T_i$ as the geometric sequence
 \begin{equation}
     T_i = \left(1 - c\right) T_{i-1} = \left(1 - c\right)^i T_0
 \end{equation}
 where $c$ is a cooling rate typically of the order of $10^{-1}$ or $10^{-2}$.
 Already, this simple SA algorithm has three hyperparameters: the energy coefficient $k$, the initial temperature $T_0$, and the cooling rate $c$. 
-More sophisticated implementations will require even more hyperparameters (such as the algorithm proposed by \textcite{press1992} which will be remarked upon in \ref{sec:eval_sim_annealing}) that makes it increasingly difficult to design SA in a generic fashion to suit the training of neural networks. 
+More sophisticated implementations will require even more hyperparameters (such as the algorithm proposed by \textcite{press1992}) that makes it increasingly difficult to design SA in a generic fashion to suit the training of neural networks. 
 
 \section{Issues and outlook}
 \label{sec:neural_training_issues}
@@ -738,7 +738,7 @@ With the knowledge of the previous sections, we are now able to appreciate more 
 Moreover, we can examine some of their issues of efficiency.
 
 \paragraph{Suboptimal local minima}
-It is clear that a prevalant problem these optimisation techniques face is that of suboptimal local minima (known simply as the `local minimum problem').
+It is clear that a prevalent problem these optimisation techniques face is that of suboptimal local minima (known simply as the `local minimum problem').
 \ref{fig:gradient_descent_local_minimum}, which was used to explain the process of gradient descent with BP, actually provides a simple example of said problem.
 In fact, this example is quite similar to the analogy to hiking in the mountains drawn in \ref{sec:motivation}: imagine the figure depicts the side-view of the mountain landscape, and you are at the position marked `local minimum'.
 Due to the fact that you cannot see behind the slight incline to the left, you would not know that there is a global minimum in that direction.
@@ -761,7 +761,7 @@ In that sense, the DFO algorithms will be slower.
 However, BP has other efficiency drawbacks as a result of relying solely on derivatives.
 Firstly, it is more sensitive to local `noise' in the loss function.
 For the second point, consider the direction of the gradients at the edges of ravines, or ``long, narrow valleys'' \cite{press1992}, in the cost surface.
-When following the gradients with a specific step size, travel will becomes quite slow because it will proceed almost at right angles, as shown in \ref{fig:gradient_descent_narrow_valley}.
+When following the gradients with a specific step size, travel will become quite slow because it will proceed almost at right angles, as shown in \ref{fig:gradient_descent_narrow_valley}.
 \begin{figure}
     \includegraphics[width=\textwidth]{press_steepest_gradient_descent.png}
     \caption{Contour plot of the method of steepest gradient descent in a long, narrow valley \cite[421]{press1992}. Travel proceeds in near right angles due to the gradients.}
@@ -891,7 +891,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
         \end{bmatrix}.
     \end{equation*}
 
-    Note that we use the term `weight-output mapping' to refer to the `weight-to-output-space mapping' which should be confused with the mapping from weight space to a particular output prediction. 
+    Note that we use the term `weight-output mapping' to refer to the `weight-to-output-space mapping' which should not be confused with the mapping from weight space to a particular output prediction. 
 \end{definition}
 
 \begin{theorem}
@@ -985,7 +985,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
     Hence $g(\alpha + \beta + b) = g(\alpha + b) + g(\beta + b)$.
 
     The only functions that satisfy $g$ are functions that satisfy Cauchy's functional equation\footnote{Cauchy's functional equation is $f(a+b)=f(a)+f(b)$. For $a,b \in \mathbb{Q}$, the only solutions are linear functions of the form $f(x) = cx$ for some $c \in \mathbb{Q}$ \cite{reem2017}.}, but these solutions only apply when $b=0$ and furthermore are linear, whereas the activation function $g$ is non-linear. 
-    We arrived at a contradiction, thus disproving our initial assumption that $h$ is a linear mapping, so it must be a non-linear mapping.
+    We arrived at a contradiction, thus disproving our initial assumption that $h$ is a linear mapping, so it must be a non-linear mapping (assuming a non-linear activation function).
 \end{proof}
 
 \begin{corollary}
@@ -993,7 +993,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
     For any SLN $S$, the function $h_S: \mathcal{W}_S \rightarrow \mathcal{O}_S$ is not a linear mapping.
 \end{corollary}
 \begin{proof}
-    We will generalise the results from Theorem \ref{thm:sln_one_output} to SLNs with multiple outputs.
+    We will generalise the results from \ref{thm:sln_one_output} to SLNs with multiple outputs.
     Let $S$ have $m$ inputs and $n$ outputs.
     We construct $n$ smaller SLNs, $S_1,S_2,\dots,S_n$ where each $S_i$ has all $m$ input units, but only the $i$th output unit. 
     The DAG representing $S_i$ will only contain links from the input nodes to output node $\hat{y}_i$ (and, of course, the associated bias term $b_i$) as depicted in \ref{fig:sln_m_in_n_out_construction}.
@@ -1049,7 +1049,7 @@ Note that linear mappings can exist between spaces of different dimensionalities
             S_n(\vec{x})
         \end{bmatrix}.
     \end{equation*}
-    By Theorem \ref{thm:sln_one_output}, each $S_i$ does not have a linear mapping from weight space to output space, so $S$ cannot have a linear mapping either.
+    By \ref{thm:sln_one_output}, each $S_i$ does not have a linear mapping from weight space to output space, so $S$ cannot have a linear mapping either.
 \end{proof}
 
 \begin{corollary}[Weight-output mapping in general]
@@ -1201,7 +1201,7 @@ Let us look at a couple of examples of unrealisable regions.
 \end{example}
 
 \begin{remark}
-    \ref{ex:unrealisable_trivial,ex:unrealisable_trivial} demonstrate that unrealisable regions can arise even in very simple scenarios, so it is vital to take this phenomenon into account when designing a path-finding technique in output space, such as the neural surfer.
+    \ref{ex:unrealisable_trivial,ex:unrealisable_trivial} demonstrates that unrealisable regions can arise even in very simple scenarios, so it is vital to take this phenomenon into account when designing a path-finding technique in output space, such as the neural surfer.
     Furthermore, one must also consider what happens if the target $\vec{y}$ lies in an unrealisable region (which means that $\vec{y}$ itself is unrealisable).
     In this case, the global minimum of the error-weight surface (using mean squared error) would be the weight configuration that produces the point closest to $\vec{y}$ (in terms of Euclidean distance) which is realisable.
 \end{remark}
@@ -1348,7 +1348,7 @@ The steps below explain the methodology of this technique, for $S$ subgoals (whe
     \item Let $i=0$. Starting at weight configuration $\vec{w}_i$, perform the particular neural network training technique until achieving a point $\vec{p}$ in output space where $\norm{\vec{p} - \vec{\hat{y}}_{i+1}} \leq (1-\mu) \norm{\vec{\hat{y}}_i - \vec{\hat{y}}_{i+1}}$, i.e. at least a fraction $\mu$ of the distance to the next subgoal is achieved.
     \item Repeat the previous step for $i=1, 2, \dots, S$.
 \end{enumerate}
-We will employ this technique in \ref{sec:stripe_gradient_descent_subgoals,sec:stripe_derivative_free_subgoals} to evaluate the feasability of the ideal goal line in a suboptimal local minimum setting using both gradient-based and derivative-free optimisation regimes.
+We will employ this technique later to evaluate the feasability of the ideal goal line in a suboptimal local minimum setting using both gradient-based and derivative-free optimisation regimes.
 
 \chapter{The local minimum problem}
 \label{chap:local_minimum_problem}
@@ -1359,7 +1359,7 @@ Now we can define the local minimum problem more accurately, contrive an example
 \section{The mathematics of local and global minima}
 In order to contrive and analyse an instance of the local minimum problem, we must formally define what is meant by `local' and `global' minima and identify the necessary and sufficient conditions that prove their existence.
 We will do this by returning to the running analogy of hiking in the mountains to provide some intuition.
-Let us begin with the global minimum, which is simply a point with an elevation lower than any other point.
+Let us begin with the global minimum, which is simply a point with an elevation lower than (or equal to) every other point.
 \begin{definition}[Global minimum]
     \label{def:global_minimum}
     The function $f: \mathbb{R}^n \rightarrow \mathbb{R}$ has a \textit{global minimum} at point
@@ -1605,7 +1605,7 @@ When used as the activation function, they exhibit some advantageous properties 
     \label{def:rbf}
     A radial basis function (RBF) is a smooth continuous real-valued\footnote{We define RBFs has having a scalar domain and range because this suffices for our purposes. In actual fact, RBFs are defined more generally to map between suitable vector spaces \cite{buhmann2000}.} function $\phi : \mathbb{R} \rightarrow \mathbb{R}$ that satisfies the property $\phi(x) = \phi(\norm{x})$ \cite{buhmann2000}. 
     %RBFs are commonly used as a kernel in support vector machines (SVMs) \cite{burkov2019}.
-    For RBFs to be useful activation functions, we three additional restrictions:
+    For RBFs to be useful activation functions, we will impose three additional conditions:
     \begin{enumerate*}[label=(\roman*)]
         \item $\phi(0)=1$;
         \item $\phi(x)$ is strictly decreasing for the domain $[0, \infty)$ when $\phi(x) \neq 0$; and
@@ -1949,7 +1949,7 @@ This will make some calculations later more convenient because it guarantees tha
                 domain=-3:3,
                 y domain=-3:3
             ] {(rbf(2*x) - rbf(2))^2 + (rbf(2*y) - rbf(2))^2 + (rbf(2*x + 2*y) - 1)^2};
-            \node[label={[align=left]360:{initial configuration}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
+            \node[label={[align=left]360:{initial\\configuration}},circle,fill,inner sep=2pt] at (1, 1, 1) {};
             \node[label={360:{goal}},circle,fill,inner sep=2pt] at (1, -1, 0) {};
             % \node[label={360:{$\vec{w}_S$}},circle,fill,inner sep=2pt] at (-1, 1, 0) {};
         \end{axis}
@@ -2073,7 +2073,7 @@ $\begin{bmatrix}
 \end{lemma}
 \begin{proof}
     We can find these critical points by setting $w_1=w_2$ in the Jacobian;
-    due to the symmetry of the Jacobian this results in both components becoming. 
+    due to the symmetry of the Jacobian this results in both components becoming equal. 
     Setting $\vec{J}_L=0$ with $w_1=w_2$, we obtain
     \begin{align*}
         -32 \left(e^{-16 w_1^2} - 1\right) w_1 e^{-16w_1^2}
@@ -2136,9 +2136,7 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
         &= q^2 - q + (w_1 + w_2) (2q - 1) \frac{\delta q}{\delta w_1} \\
         &= q^2 - q - 8q(w_1 + w_2)^2 (2q - 1).
     \end{align*}
-    Here, it can be shown that $\frac{\delta r}{\delta w_1}=\frac{\delta r}{\delta w_2}$.
-    The exact derivation is left as an exercise to the reader.
-
+    Here, it can be shown that $\frac{\delta r}{\delta w_1}=\frac{\delta r}{\delta w_2}$, although this derivation is left as an exercise to the reader.
     It remains to find the derivative of $s$,
     \begin{align*}
         s'(x)
@@ -2149,7 +2147,6 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
         &= e^{-8 x^2} - e^{-4-4x^2}
         - 8 x^2 \left(2 e^{-8 x^2} - e^{-4-4 x^2}\right).
     \end{align*}
-
     Calculating all the second derivatives of \ref{eq:stripe_jacobian_short}, we get
     \begin{align*}
         \frac{\delta^2 L}{\delta w_1^2}
@@ -2189,7 +2186,7 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
     \end{align}
 
     \paragraph{First critical point ($w_1=-1, w_2=1$)}
-    By Theorem \ref{thm:positive_definite_2_by_2}, $\vec{H}_L$ is positive definite if and only if $a>0$ and $ac-b^2>0$ when expressing the matrix in the form
+    By \ref{thm:positive_definite_2_by_2}, $\vec{H}_L$ is positive definite if and only if $a>0$ and $ac-b^2>0$ when expressing the matrix in the form
     $\vec{H}_L = \begin{bmatrix}
         a & b \\ b & c
     \end{bmatrix}$.
@@ -2218,7 +2215,7 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
 
     \paragraph{Second critical point ($w_1=1, w_2=-1$)}
     Notice that this point can be obtained simply by switching $w_1$ and $w_2$ from the previous critical point.
-    We have showed previously that $s'(-1)=s'(1)$ and furthermore we established earlier that $\frac{\delta r}{\delta w_1} =\frac{\delta r}{\delta w_2}$.
+    We have shown previously that $s'(-1)=s'(1)$ and furthermore we established earlier that $\frac{\delta r}{\delta w_1} =\frac{\delta r}{\delta w_2}$.
     Hence the Hessian from \ref{eq:stripe_hessian} will be positive definite too, thus proving that the second critical point is a local minimum.
 
     \paragraph{Third critical point ($w_1=w_2=0$)}
@@ -2234,7 +2231,7 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
         a &= -16s'(w_1) - 16 \frac{\delta r}{\delta w_1} \\
         &= 16 e^{-4} - 16 \ngtr 0.
     \end{align*}
-    This violates the first condition of Theorem \ref{thm:positive_definite_2_by_2}, so this point is not a local minimum.
+    This violates the first condition of \ref{thm:positive_definite_2_by_2}, so this point is not a local minimum.
     
     \paragraph{Fourth critical point ($w_1=w_2\approx0.999916$)}
     Calculating the Hessian for $\vec{p}_4$ numerically, we obtain
@@ -2256,7 +2253,7 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
 In \ref{sec:stripe_critical_points} we identified five critical points on the error-weight surface for the stripe problem, and in \ref{sec:stripe_local_minima} we have shown that all but one of these points are local minima.
 Now we will determine which of these local minima are also global minima.
 \ref{fig:stripe_critical_points} shows the critical points which allows the hypothesis that if we have identified all local minima, then $\vec{p}_1$ and $\vec{p}_2$ should be the global minima.
-While we were not able to prove that the five critical points we identified are the only ones, we \textit{can} prove that $\vec{p}_1$ and $\vec{p}_2$ are in fact global minima because their loss values minimal.
+While we were not able to prove that the five critical points we identified are the only ones, we \textit{can} prove that $\vec{p}_1$ and $\vec{p}_2$ are in fact global minima because their loss values are minimal.
 \begin{figure}
     \centering
     \begin{tikzpicture}[
@@ -2309,7 +2306,7 @@ While we were not able to prove that the five critical points we identified are 
 \end{theorem}
 \begin{proof}
     The loss function $L(\vec{w})$ from \ref{eq:stripe_loss} is a sum of squared terms whose arguments are real-valued.
-    This means that if we can show that $L(\vec{w})=0$ for some $\vec{w}$, then we have proved, by \ref{def:global_minimum} that $L$ has a global minimum at $\vec{w}$.
+    This means that if we can show that $L(\vec{w})=0$ for some $\vec{w}$, then we have proven, by \ref{def:global_minimum} that $L$ has a global minimum at $\vec{w}$.
     Let us look at the value of the loss function at $\vec{p}_1$,
     \begin{align*}
         L(\vec{p}_1)
@@ -2401,7 +2398,7 @@ To see this, consider the vector field of the directions of the negative gradien
 When starting at a point with $w_1>0$, $w_2>0$ and following the arrows, one will end up at the suboptimal local minimum $\vec{p}_4$ eventually.
 On the other hand, when starting at a point $w_1<0$, $w_2>0$, it is easy to see that travel will converge to $\vec{p}_1$.
 The same logic can be applied to the other two points due to symmetry.
-Note that would be possible to formally prove this observation by considering the directions of the Jacobian in different regions of the plot. 
+Note that it would be possible to formally prove this observation by considering the directions of the Jacobian in different regions of the plot. 
 However, this proof would be very long and exceed the scope of this report. 
 Furthermore, the experimental evidence in \ref{sec:stripe_gradient_descent} verifies this claim empirically.
 
@@ -2632,7 +2629,7 @@ When considering $w_1$ and $w_2$ as the $x$ and $y$ axes of the Cartesian plane,
     It should not adversely affect the performance of gradient descent, so it is fair to use this technique to aid the speed of the experiments.
 }
 $\beta$ of the BP via gradient descent algorithm.
-For each trial, training was carried out for 10000 epochs. 
+For each trial, training was carried out for 10,000 epochs. 
 The hyperparameters had to be adjusted depending on the initial weight configuration in order to ensure convergence within the epoch limit.
 \begin{figure}
     \centering
@@ -2674,7 +2671,7 @@ In \ref{fig:stripe_gradient_descent_experiments}, the trajectories of each of th
 It is evident that each trial converges to the local minimum point in the quadrant of its initial weight configuration. 
 This means that trials 1-3 and 7-9 converge to a suboptimal local minimum (Q1 and Q3), whereas trials 4-6 and 10-12 converge to a global minimum (Q2 and Q4), thus empirically affirming the claim made in \ref{sec:stripe_gradient_descent_theory}.
 
-Even with a relatively large learning rate and despite the use of momentum, the fact that training requires around 10000 epochs to converge highlights one of the core issues of gradient descent.
+Even with a relatively large learning rate and despite the use of momentum, the fact that training requires around 10,000 epochs to converge highlights one of the core issues of gradient descent.
 As discussed in \ref{sec:neural_training_issues}, specifically \ref{fig:gradient_descent_narrow_valley}, the classical BP algorithm becomes quite slow in ``long, narrow valleys`` \cite[421]{press1992} due to the gradient alternating in near right-angle directions.
 Although the motivation of the stripe problem is to highlight another issue (that of suboptimal local minima), it is noteworthy that this example is quite potent in highlighting other issues as well.
 The error-weight surface in \ref{fig:stripe_error_surface_gaussian} shows examples of this phenomenon quite convincingly because the area marked in blue is a long, narrow valley.
@@ -2683,7 +2680,7 @@ The error-weight surface in \ref{fig:stripe_error_surface_gaussian} shows exampl
 \label{sec:local_minimum_experiments_derivative_free}
 Other techniques, namely greedy probing and simulated annealing have been evaluated in the context of the stripe problem, too.
 They parallel the findings of \ref{sec:stripe_gradient_descent} insofar as initial weight configurations in Q1 and Q3 converging to suboptimal local minima.
-In fact, the trajectories in weight space are quite similar to \ref{fig:stripe_gradient_descent_experiments} with the notable difference that training using these derivative-free techniques found the local or global minimum (depending on the quadrant of initialisation) requiring only around 100 epochs where BP required 100000. 
+In fact, the trajectories in weight space are quite similar to \ref{fig:stripe_gradient_descent_experiments} with the notable difference that training using these derivative-free techniques found the local or global minimum (depending on the quadrant of initialisation) requiring only around 100 epochs where BP required 100,000. 
 These findings can be reproduced using the framework (see \ref{chap:framework}).
 
 \subsection{Gradient descent with subgoals}
@@ -2759,7 +2756,7 @@ It can be seen in \ref{fig:stripe_gradient_descent_with_10_subgoals_output_space
 The training regime achieves the first four subgoals in weight space (see \ref{fig:stripe_gradient_descent_with_10_subgoals_weight_space}) perfectly, but just shy of achieving the fifth subgoal, $w_2$ is altered such that the subgoal can never be reached. 
 
 Notice that the goal line in weight space keeps the weight $w_1$ constant, whereas the actual trajectory violates this principle. 
-Upon achieving the third subgoal, the technique fails to simply continue to decreasing the value of $w_2$ such that it becomes negative. 
+Upon achieving the third subgoal, the technique fails to simply continue decreasing the value of $w_2$ such that it becomes negative. 
 This is due to the nature of the radial basis activation function. 
 As shown in \ref{fig:rbfs}, the RBF outputs its maximum value when the input is zero, and its output decreases as the absolute value of the input increases. 
 The gradient descent approach is almost at the maximum of the RBF when en route to achieving the fourth subgoal, but it does not know that the function would decrease again if it continued further.
@@ -2868,7 +2865,7 @@ In the case of the exhaustive sampling technique, \ref{sec:greedy_probing} expla
 So, for the stripe problem, the exhaustive sampling technique will generate 8 weight samples which means that a total of 24 forward passes must be carried out per epoch.
 Note that gradient descent must only perform one derivative calculation which is comparable in computational complexity to a forward pass (assuming the loss value itself is not calculated, only its derivative).
 The advantage of the random sampling technique is twofold: the user may specify the number of samples to calculate, and the directions are not as constrained in weight space.
-We chose a value of $s=6$ for the random sampling technique which means that it only requires 18 forward passes per epoch.
+A value of $s=6$ was chosen for the random sampling technique which means that it only requires 18 forward passes per epoch.
 However, in \ref{fig:stripe_greedy_probing_with_2_subgoals} it becomes apparent that there is a drawback: the random sampling technique needs more epochs to achieve the final goal.
 In this regard, gradient descent actually outperformed all of the tested derivative-free schemes because it requires fewer epochs and fewer forward passes per epoch.
 However, it must be noted that finding the optimal hyperparameters that actually allowed gradient descent to converge with only one subgoal was not easy and required a lot of trial and error, so these results are highly customised towards the stripe problem and will likely perform poorly in other settings.
@@ -2943,9 +2940,10 @@ A possible explanation for this could be the increased value of $\mu$ used for g
 
 In the previous chapter, we have analysed an example of the local minimum problem in great detail, using the concepts of weight and output spaces introduced in \ref{chap:neural_surfing_theory}.
 Furthermore, we found in the context survey that existing algorithms attempting to combat the local minimum problem tend to rely on stochasticity in some form or another.
-We will attempt to design a technique that follows a more principled approach that attempts to construct smooth goal-connecting paths in output space rather than relying on a random search algorithm on the error-weight surface.
+We will attempt to design a technique that follows a more principled approach and attempts to construct smooth goal-connecting paths in output space rather than relying on a random search algorithm on the error-weight surface.
 
 \section{Clothoids}
+\label{sec:clothoids}
 Consider a scenario in two-dimensional output space, as is shown in \ref{fig:clothoid_motivation_scenario}.
 \begin{figure}
     \centering
@@ -3357,7 +3355,7 @@ Furthermore, we shall introduce the vectors $\vec{a},\vec{b},\vec{c},\vec{q}$ in
 If $\vec{b'}$ and $\vec{c'}$ are parallel, then we trivially have
 $\vec{q'} = 2\vec{c'} - \vec{b'}$
 because all three points will lie on the same line.
-By extension, we can then given $\vec{q}$ in output space in terms of $\vec{c}$ and $\vec{b}$ as $\vec{q} = 2\vec{c} - \vec{b}$.
+By extension, we can then give $\vec{q}$ in output space in terms of $\vec{c}$ and $\vec{b}$ as $\vec{q} = 2\vec{c} - \vec{b}$.
 
 Otherwise, if $\vec{b'}$ and $\vec{c'}$ are not parallel, we can take advantage of the fact that they must be \textit{linearly independent} and thus are sufficient to define the two-dimensional plane that the clothoid lies in\footnote{A two-dimensional plane can be fully defined by two linearly independent basis vectors.}.
 For every point $\vec{p}$ on the plane of the clothoid there exists a unique $\lambda_b,\lambda_c \in \mathbb{R}$ such that $\vec{p} = \lambda_b \vec{b'} + \lambda_c \vec{c'}$. 
@@ -3382,7 +3380,7 @@ In fact, this will by given by
 
 Since we determined the value of $\boldsymbol{\lambda}$ that yields $\vec{q'}$ in the basis of $\vec{b'}$ and $\vec{c'}$, 
 we can now perform a \textit{change of basis} to the corresponding plane in output space.
-This is the two-dimensional plane\footnote{This plane is a subspace of the output space, as the latter may well be of higher dimensionality.} given by our three known points $A,B,C$ or equivalently by the basis vectors $\vec{b}$ and $\vec{c}$ which we will denoted by the matrix
+This is the two-dimensional plane\footnote{This plane is a subspace of the output space, as the latter may well be of higher dimensionality.} given by our three known points $A,B,C$ or equivalently by the basis vectors $\vec{b}$ and $\vec{c}$ which we will denote by the matrix
 $\vec{A} = \begin{bmatrix}
     \vec{b} & \vec{c}
 \end{bmatrix}$.
@@ -3463,7 +3461,7 @@ Up until now, in the context of the stripe problem, we have looked at a single-l
 However, what happens when we increase the number of layers?
 Recall that the definitions of weight and output space in \ref{sec:weight_and_output_spaces} are completely decoupled. 
 In fact, we proved in \ref{thm:sln_one_output} that there exists no linear mapping between these spaces for SLNs with one output unit which in \ref{col:weight_output_mlp} we generalised to arbitrary MLPs. 
-In a sense, the hidden layers are thus hidden behind an abstraction: the neural training technique itself has no knowledge whether or not the underlying network had hidden layers; indeed it not aware of the neural network's architecture at all because its only information is the generated prediction $\vec{\hat{y}}$ in output space $\mathcal{O}$ associated with each sample $\vec{w}$ in weight space $\mathcal{W}$.
+In a sense, the hidden layers are thus hidden behind an abstraction: the neural training technique itself has no knowledge whether or not the underlying network had hidden layers; indeed it is not aware of the neural network's architecture at all because its only information is the generated prediction $\vec{\hat{y}}$ in output space $\mathcal{O}$ associated with each sample $\vec{w}$ in weight space $\mathcal{W}$.
 Both  $\mathcal{W}$ and $\mathcal{O}$ can be of arbitrary dimensionality, and so the technique can be used for any MLP.
 
 
@@ -3474,7 +3472,7 @@ Yet in practice, we can also have multi-layer networks with multiple outputs.
 For example, multi-class classification tasks require $c$ output units for a one-hot-encoded problem with $c$ classes.
 
 Let us now show that any neural surfing technique could also train this type of network.
-The n\"{i}ve approach would be to perform a construction like in \ref{fig:sln_m_in_n_out_construction} that was used to prove \ref{col:weight_output_sln}.
+The na\"{i}ve approach would be to perform a construction like in \ref{fig:sln_m_in_n_out_construction} that was used to prove \ref{col:weight_output_sln}.
 However, especially for multi-class problems, it is often the case that the activation function on the last layer depends on other nodes in that layer.
 For example, the softmax activation function, defined for the $i$th output unit given that layer's excitation vector $\vec{z}$ as
 \begin{equation}
@@ -3492,10 +3490,10 @@ Notice that now we can apply the same reasoning as in the previous section claim
 \section{Potential field navigation}
 A common task in robotics is to smoothly navigate an obstacle course to reach a goal.
 We will consider this obstacle course in a two-dimensional space for simplicity.
-Assume that the robot knows the coordinates of the goal and that it has some number of distance sensors oriented at equidistant angles in the interval $[\frac{\pi}{2},\frac{\pi}{2}]$ relative to the current heading.
+Assume that the robot knows the coordinates of the goal and that it has some number of distance sensors oriented at equidistant angles in the interval $[-\frac{\pi}{2},\frac{\pi}{2}]$ relative to the current heading.
 
 To prevent the robot from crashing into obstacles and encourage smooth motion, a potential field is defined over the state space that should `repel' the robot from obstacles but `attract' it to the goal \cite[999--1000]{russell2010}.
-The obtacle potential is a function that decays exponentially with the distance to the nearest obstacle (measured by the distance sensor) that could be of a form similar to
+The obstacle potential is a function that decays exponentially with the distance to the nearest obstacle (measured by the distance sensor) that could be of a form similar to
 \begin{equation}
     O(d_i) = 
     \begin{cases} 

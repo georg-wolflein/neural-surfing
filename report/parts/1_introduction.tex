@@ -3,7 +3,7 @@
 This project is primarily a research-oriented project. 
 That is, it is a project investigating how research on the neural manifestation of a classical problem in numerical optimisation and heuristic search may be set up and progressed.
 More specifically, its main focus lies in contriving and investigating an example of the local minimum problem in neural networks\footnote{Throughout this report, the terms \textit{neural network} and \textit{artifical neural network} (ANN) are used interchangeably.} and designing a training regime that tackles this issue. 
-Of auxiliary importance is a software framework that should be developed to not only to compare different neural training techniques, but also to ensure that the main theoretical results obtained regarding the local minimum problem are empirically verified and reproducible.
+Of auxiliary importance is a software framework that should be developed not only to compare different neural training techniques, but also to ensure that the main theoretical results obtained regarding the local minimum problem are empirically verified and reproducible.
 
 \section{Motivation}
 \label{sec:motivation}
@@ -26,11 +26,11 @@ This method is called \textit{gradient ascent} (the gradient is just the slope).
 At some point, you will reach the highest point in the one-metre vicinity which means that you are at the top of a peak. 
 We call this a \textit{local optimum} because all points in the local neighbourhood are of lower elevation.
 If you are standing at the summit cross, then you are very lucky and have found the highest point of the mountain.
-In this case, your position marks the \textit{global optimum} because you are higher than all the other peaks this mountain has.
+In this case, your position marks the \textit{global optimum} because you are higher than all the other peaks of this mountain.
 
 How do you proceed once you are at a local optimum?
 When you have already reached it, your only option is to randomly move in any direction because you have no useful information.
-A more principled approach might be to throughout the process sometimes allow steps that go downwards in hopes of increasing the likelihood of finding a higher peak.
+A more principled approach might be to sometimes throughout the process allow steps that go downwards in hope of increasing the likelihood of finding a higher peak.
 This is essentially the idea behind \textit{simulated annealing} and related techniques.
 However, while this technique might find a better local optimum, it is still quite unlikely to find the global optimum.
 This is what we call the \textit{local optimum problem}.
@@ -38,18 +38,18 @@ This is what we call the \textit{local optimum problem}.
 Another point to consider is that if the summit did not have a cross, it would be impossible to know whether a given peak is actually the global optimum using only the local information.
 
 To relate this thought experiment to numerical optimisation problems, let us turn it upside down: instead of trying to locate the highest peak, the goal is now to find the deepest valley, i.e. the lowest point in the landscape. 
-The same logic still applies, except that not we think of an optimum as being a \textit{minimum} instead of a \textit{maximum}, and the technique is called \textit{gradient descent}.
-The reason for applying this transformation is that aim of a numerical optimisation problem is to minimise a \textit{cost function} for a set of parameters. 
-The surface of this function is like a mountainous landscape, and in finding its global minimum, we run into the aforementioned problem of local optima which we in this context is called the \textit{local minimum problem}.
+The same logic still applies, except that now we think of an optimum as being a \textit{minimum} instead of a \textit{maximum}, and the technique is called \textit{gradient descent}.
+The reason for applying this transformation is that the aim of a numerical optimisation problem is to minimise a \textit{cost function} for a set of parameters. 
+The surface of this function is like a mountainous landscape, and in finding its global minimum, we run into the aforementioned problem of local optima which in this context is called the \textit{local minimum problem}.
 
-This project will develop a technique that differs from gradient descent and simulated annealing (and other probabilistic techniques) by using a chain of intermediate targets (subgoals) along the cost surface to pull the process forwards analogous to a \textit{surfer} using a travelling wave to drive their motion. 
+This project will develop a technique that differs from gradient descent and simulated annealing (and other probabilistic techniques) by using a chain of intermediate targets (subgoals) along the cost surface to pull the process forward analogous to a \textit{surfer} using a travelling wave to drive their motion. 
 
 This report will begin with a context survey identifying not only the classical neural training algorithms, but also the efforts that have been made to deal with the local minimum problem and their limitations.
 The classical theory of neural networks is presented from the ground up in \ref{chap:neural_network_theory} which naturally leads to the analysis of popular neural training techniques in \ref{chap:neural_training}.
 In \ref{chap:neural_surfing_theory}, a different paradigm of viewing neural training -- `neural surfing theory' -- is introduced.
 \ref{chap:local_minimum_problem} provides a precise definition of the local minimum problem, thereafter facilitating the design of an instance of said problem which is then analysed from both viewpoints described in \ref{chap:neural_network_theory,chap:neural_surfing_theory}.
-The subsequent chapter lays out the neural surfing technique for undertaking the local minimum problem.
-Finally, an outlook is provided how this type of technique can be generalised to other problems before finally presenting the software framework and an evaluation of the project.
+The subsequent chapter lays out a neural surfing technique for attempting the local minimum problem.
+Finally, an outlook is provided how this type of technique can be generalised and applied to other problems before finally presenting the software framework and an evaluation of the project.
 
 \section{Context survey}
 \subsection{Neural training}
@@ -91,7 +91,7 @@ To achieve this, they rely on stochasticity in some form or another:
 \subsection{The local minimum problem}
 \label{sec:context_local_minimum_problem}
 The local minimum problem, which arises when an algorithm converges to a suboptimal local minimum with a comparatively high loss value, has been extensively studied as a phenomenon in optimisation problems.
-However, with regards to neural networks, there seems to be differing opinions on the severity of this issue. 
+However, with regards to neural networks, there seem to be differing opinions on the severity of this issue. 
 One frequently cited article claims that ``In practice, poor local minima are rarely a problem with large networks'' \cite{lecun2015}.
 This is underpinned in theory by other works which proved the nonexistence of suboptimal local minima, although they make varying assumptions on the structure of the underlying neural networks \cite{kawaguchi2016,nguyen2018,laurent2018}.
 On the other hand, a recent article asserts that ``The apparent scarcity of poor local minima has lead practitioners to develop the intuition that bad local minima \elide are practically non-existent'' \cite{goldblum2019}.
@@ -102,7 +102,7 @@ There have been various approaches attempting to overcome the local minimum prob
 \citeauthor{lo2012} followed a different approach through which the mean squared error function is modified in order to `convexify' the error-weight surface \cite*{lo2012,lo2017}.
 This is achieved using a ``risk-averting criterion'' that should decrease the likelihood of training samples being underrepresented, but the claim is only to find better local minima as opposed to global ones.
 
-The local minimum problems has been investigated here in St Andrews as well. 
+The local minimum problem has been investigated here in St Andrews as well. 
 One particularly promising approach seems to be setting subgoals on the goal path.
 However, setting these subgoals requires some finesse.
 \textcite{lewis1999} show that simply employing a linear chain of subgoals (such as in \textcite{gorse1997}) does not suffice in reliably finding the global minimum, but instead a non-linear chain of subgoals is required.
@@ -111,14 +111,14 @@ A technique of setting and achieving subgoals that does not rely on BP has been 
 \subsection{Implementation tools}
 This project will adopt Python as the main programming language.
 In both acedemia and industry, Python is the de facto standard programming language for machine learning. 
-A 2019 analysis on the world-leading software development platform \href{https://www.github.com/}{GitHub} found that Python is the most popular language for open source machine learning repositories \cite{elliott2019}.
+A 2019 analysis conducted on the world-leading software development platform \href{https://www.github.com/}{GitHub} found that Python is the most popular language for open source machine learning repositories \cite{elliott2019}.
 Python is a simple yet versatile language that natively supports different programming paradigms (imperative, functional, object-oriented, and more).
 It is often called an interpreted language\footnote{There is nuance associated with this statement, but Python certainly exhibits more traits of an interpreted than a compiled language.} because it is dynamically typed and performs automatic memory management (garbage collection) which generally facilitates shorter code than compiled languages such as C or Java, but also means that pure-Python implementations of data-intensive algorithms will usually not be as efficient.
 One of the most fundamental packages, \href{https://numpy.org/}{NumPy}, implements very efficient array manipulation operations that, although specified in Python, are carried out at a lower level for performance.
 
 NumPy is just one piece of Python's rich ecosystem of packages that are maintained by open-source contributers in the scientific and engineering community.
 The two main frameworks for machine learning are \href{https://www.tensorflow.org/}{TensorFlow} by Google and \href{https://www.pytorch.org/}{PyTorch} by Facebook. 
-At their core, both frameworks facilitate the computation of mathematical operations on tensors, offering support for hardware acceleration via \textit{graphics processing units} (GPUs) and providing parallelisation strategies for distributed computing which is especially potent in the context of machine learning where many operations fit the \textit{single instruction, multple data} (SIMD) pattern.
+At their core, both frameworks facilitate the computation of mathematical operations on tensors\footnote{Tensors are essentially a generalisation of scalars, vectors, and matrices. They can be thought of as representing a multi-dimensional array.}, offering support for hardware acceleration via \textit{graphics processing units} (GPUs) and providing parallelisation strategies for distributed computing which is especially potent in the context of machine learning where many operations fit the \textit{single instruction, multple data} (SIMD) pattern.
 A TensorFlow program is specified as a directed \textit{computational graph} where nodes represent operations and edges represent their inputs and outputs (data tensors) \cite{tensorflow2015whitepaper}.
 In the new TensorFlow 2, this graph does not need to be explicitly constructed anymore but is created on the fly which is known as \textit{eager execution}, thereby providing the user with a simpler API similar to NumPy.
 The slightly younger PyTorch framework provided dynamic computation graphs and a NumPy-like interface since its initial release in 2016, and more recently added support for static computational graphs.
@@ -133,7 +133,7 @@ TensorFlow 2 adopted Keras as part of its core library so that the abstractions 
 One should not overlook the concept of interactive notebooks made possible by Python's interpreted nature -- that is, mixing rich text (markdown), Python code, and its output. 
 Not only does this allow the programmer to make changes to the code without having to rerun the program, but it also provides a means of presenting Python code in a more engaging way than just comments.
 Any type of Python output, including data visualisations, can be presented in such notebooks which makes it attractive for machine learning.
-These notebooks can be created using the \href{https://jupyter.org/}{Jupyter} package or even run online in the with services such as \href{https://colab.research.google.com/}{Google Colab}. 
+These notebooks can be created using the \href{https://jupyter.org/}{Jupyter} package or even run online with services such as \href{https://colab.research.google.com/}{Google Colab}. 
 
 \section{Objectives}
 \label{sec:objectives}
@@ -183,7 +183,7 @@ At the same time, more agents were implemented, and some of the experiments from
 
 All code related to this project (including this report's \LaTeX{} markup itself) was maintained using the version control system Git in a single repository hosted on GitHub\footnote{The repository can be found at \href{https://github.com/georgw777/neural-surfing}{\texttt{https://github.com/georgw777/neural-surfing}}.}.
 This approach was undertaken for the reason of avoiding file and code duplication: the data files produced using the interactive notebooks could be used directly to generate the plots for the weekly notes as well as this report.
-Due to the fact there was only one developer, all commits were made to the \texttt{master} branch; adopting a more sophisticated model utilising feature branches or pull requests would cause more overhead than benefit in the single-developer scenario.
+Due to the fact that there was only one developer, all commits were made to the \texttt{master} branch; adopting a more sophisticated model utilising feature branches or pull requests would cause more overhead than benefit in the single-developer scenario.
 Furthermore, no continuous integration system with automated testing was employed because that, too, would be excessive for a research project of this scale. 
 
 \section{Ethics}
