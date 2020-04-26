@@ -3206,7 +3206,7 @@ The nearest neighbour can be found quite efficiently using a so-called $k$-d tre
 Hence, using this technique, we can find the clothoid parameters for \ref{prob:clothoid_construction} in $\mathcal{O}(\log n)$ time\footnote{This is because we have $n^2$ points and $\mathcal{O}(\log{n^2})=\mathcal{O}(\log n)$.} on average.
 
 \subsection{Subgoals}
-\label{sec:subgoal_computation}
+\label{sec:clothoid_subgoals}
 We have seen how to construct the unique clothoid touching our three points of interest: the starting point $C$, sample point $B$, and goal $A$. 
 For implementing the neural surfing technique, we still need a means of setting subgoals along this clothoid. 
 Naturally, such a subgoal $Q$ should be placed along the clothoid between $B$ and $A$ to ensure progress along the goal-connecting path.
@@ -3396,7 +3396,7 @@ The second step, described in \ref{eq:vec_transformation_lambda_to_q}, can be ap
 \subsection{Implementation}
 The algorithm for obtaining clothoid parameters using a lookup table has been implemented in Python using the \texttt{numpy} library and the $k$-d tree implementation from \texttt{scipy}.
 A simple yet efficient mini-library named \texttt{clothoidlib} has been provided alongside the code submission at \texttt{research/clothoids/clothoidlib.py} for calculating clothoid parameters in just a few lines of code, as shown in \ref{lst:clothoidlib}. 
-The na\"{i}ve algorithm from \ref{sec:subgoal_computation} proved to be a bottleneck in the pre-computation stage, so a more efficient version of that algorithm was devised.
+The na\"{i}ve algorithm from \ref{sec:clothoid_subgoals} proved to be a bottleneck in the pre-computation stage, so a more efficient version of that algorithm was devised.
 In this version, the distances between each pair of points $\langle P_i, P_j \rangle$ are calculated only once and furthermore the values of $\boldsymbol{\lambda}$ are computed in groups of identical $t_B$ values to avoid a considerable amount of duplicate computations.
 Details are provided in the source code comments.
 \begin{listing}[h]
@@ -3423,7 +3423,7 @@ The first realisation we must make based on the findings of \ref{sec:clothoids} 
 In fact, recall that in justifying \ref{eq:clothoid_alpha} we found that $\alpha+\beta=\theta$.
 We will use this fact to identify which sample point produces the best clothoid at each iteration of the algorithm.
 Each time we choose a new sample point, we will draw a new clothoid using the old sample point, new sample point, and goal.
-This clothoid will dictate a subgoal as per \ref{sec:subgoal_computation} which we will attempt to achieve by extending or shrinking the current weight configuration.
+This clothoid will dictate a subgoal as per \ref{sec:clothoid_subgoals} which we will attempt to achieve by extending or shrinking the current weight configuration.
 For the next iteration, the new clothoid's $\theta$ will be used to asses the quality of the new sample points.
 As a result, the clothoid -- and thus the goal-connecting path -- will be able to adapt.
 
