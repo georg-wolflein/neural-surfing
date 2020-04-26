@@ -1791,6 +1791,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
 \end{remark}
 
 \subsection{Formulating the problem}
+\label{sec:stripe_formulating}
 \ref{ex:sln_2_in_1_out_gaussian_hyperplanes} showed that a simple 2-1 network with radial basis activation constructs a scenario where the hyperplanes form a stripe that can be rotated by adjusting the weights.
 This means that we could easily contrive the stripe problem from \ref{fig:stripe_original_hyperplanes}.
 However, since we established that the hyperplanes will always remain parallel in our RBF network and since they rotate around the origin\footnote{More precisely, when changing $w_1$, the hyperplanes rotate around their respective $x_2$ intercepts, and similarly when altering $w_2$ the centre of rotation are the $x_1$-intercepts in input space.} when $b$ is fixed, we can create a much simplified version of the stripe problem using only four samples.
@@ -2098,7 +2099,7 @@ Analysing the graph from \ref{fig:stripe_error_surface_gaussian} does suggest so
 \label{sec:stripe_local_minima}
 \begin{lemma}
     \label{lmm:stripe_local_minima}
-    The local minima on the error-weight surface given by $L$ are $\vec{p}_1$, $\vec{p}_2$, $\vec{p}_3$.
+    The local minima on the error-weight surface given by $L$ are $\vec{p}_1$, $\vec{p}_2$, $\vec{p}_4$, and $\vec{p}_5$, but not $\vec{p}_3$..
 \end{lemma}
 \begin{proof}
     We have previously shown that $\vec{J}_L=\vec{0}$ for the three critical points $\vec{p}_1$, $\vec{p}_2$, and $\vec{p}_3$.

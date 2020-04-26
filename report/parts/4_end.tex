@@ -1,20 +1,40 @@
-\chapter{Discussion}
+\chapter{Discussion and evaluation}
 
-\section{Evaluation}
-Evaluation against objectives
+\section{The local minimum problem}
+The RBF stripe problem of \ref{sec:stripe_problem} demonstrates the local minimum problem using a much simpler neural network architecture than what was analysed by \textcite{blum1989}. 
+\citeauthor{blum1989} allegedly proves the existence of local minima in learning a Boolean XOR mapping using a sigmoidal neural networks with two hidden units.
+Analysing his construction with the methodology of \ref{chap:neural_surfing_theory} would be quite difficult because the weight and output spaces cannot be visualised effectively.
+For example, it would not be possible to depict the ideal goal-connecting path in a single plot like we were able to do in \ref{fig:stripe_ideal_goal_path}.
+This is because \citeauthor{blum1989}'s network architecture results in a six-dimensional weight space and a four-dimensional output space. 
 
-\paragraph{Error and weight space}
+The high dimensionality of the weight space makes the analysis of \citeauthor{blum1989}'s local minimum problem a very difficult endeavour, yet it has been studied extensively since its publication.
+In fact, \citeauthor{blum1989}'s proof for the existence of local minima in his 2-2-1 architecture has been shown to be erroneous \cite{hamey1998}. 
+Other analysis concludes that ``from each point in weight space a strictly decreasing path exists to a point with error zero'', i.e. a global minimum \cite*{sprinkhuizen1999}.
+% This of course does not invalidate the claim that following the direction of steepest descent can fail to converge to the global minimum. 
+Rencently it was shown that \citeauthor{blum1989}'s supposed local minima are in fact a collection of saddle points \cite{mizutani2010}.
 
-\paragraph{Stripe problem}
+Quite interestingly, the RBF stripe problem proposed in this project can be interpreted\footnote{More precisely, this Boolean function is obtained by applying the step activation function from \ref{eq:thres_activation} with a threshold of $0.5$ after the radial basis activation function.} as modelling the Boolean function
+\begin{equation}
+    \label{eq:xor}
+    y=\neg (x_1 \xor x_2)
+\end{equation}
+for $x_1,x_2,y\in \mathbb{B}$ as is evident\footnote{\ref{fig:stripe_hyperplanes} actually shows the negated XOR function for all four samples. In \ref{sec:stripe_formulating} we then established that the sample for $x_1=x_2=0$ can actually be discarded because its corresponding output is always $1$.} in \ref{fig:stripe_hyperplanes}.
+Notice that \ref{eq:xor} can be trivially converted to the XOR function studied by \citeauthor{blum1989} by inverting the intputs.
+The existence of two suboptimal local minima has been proved in \ref{col:stripe_suboptimal_local_minima}.
+This proof is much simpler than \citeauthor{blum1989}'s alleged proof and the refutations thereof because the error-weight surface is three-dimensional.
+In addition to this proof, \ref{fig:stripe_gradient_vector_field} provides an intuitive argument why gradient descent will converge to a local minimum under specific initial conditions.
 
-\paragraph{Generalisation}
+The detailed analysis of the RBF stripe problem in \ref{sec:stripe_problem} makes a strong case for the potential of this problem for investigating the local minimum problem.
+It could act as a benchmark for validating the claim that a specific algorithm solves the local minimum problem, or at least finds near-optimal solutions -- a claim that has been made several times already as we have seen in the context survey \cite{kawaguchi2016,choi2008,hirasawa1998,lo2012,lo2017}.
+
+\section{Neural surfing theory}
+talk about weight and output space
 Evaluate generalisation potential proved in generalisation section
+\section{The proposed technique}
 
-\section{Critical appraisal}
-\paragraph{Gradient descent}
 
-\paragraph{Greedy probing}
-Also talk about sampling techniques
+\section{The neural framework}
+talk about framework itself
 
 \paragraph{Simulated annealing}
 \label{sec:eval_sim_annealing}
@@ -27,7 +47,15 @@ Furthermore, at what point is the algorithm `adjusted too much' to the problem?
 \paragraph{The framework}
 Compare with scipy.optimize and nevergrad; also explain that they do not specifically target neural networks
 
-\section{Conclusions}
+\section{Objectives}
+This project achieved all the objectives outlined in \ref{sec:objectives}. 
+For the first objective of contriving a minimalist version of the stripe problem, 
+
+
+\chapter{Conclusions}
 
 \section{Future work}
+unrealisable regions
+
+
 \label{sec:future_work}
