@@ -80,6 +80,7 @@
 
 \makeatletter
 \AtBeginDocument{%
+    \let\oldref\ref%
     \renewcommand*{\ref}{\Cref}%
     \renewcommand{\contentsname}{Contents}%
     \renewcommand{\listfigurename}{List of figures}%
