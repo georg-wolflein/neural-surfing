@@ -177,6 +177,11 @@ In the case of the \texttt{Scatter2D} visualisation which provides a two-dimensi
 Most importantly, this module contains the eponymous class \texttt{Experiment} which is responsible for coordinating all the aforementioned components.
 When running the experiment, this class uses a form of round-robin scheduling whereby each agent is run for a specific number epochs at a time parameterised by \texttt{epoch\_batch\_size} before moving on to the next agent.
 Once each agent had their turn, the collected metrics are aggregated and sent to update the front end in real time.
+This round-robin approach was chosen in favour of letting the agents train in parallel because
+\begin{enumerate*}[label=(\roman*)]
+    \item running multiple training algorithms in parallel is very computationally expensive, especially for problems with large datasets; and
+    \item it would require a mechanism to synchronise the iterations between agents in order to ensure a fair comparison based on epochs, which will likely cause some agents repeatedly have to wait for the others.
+\end{enumerate*}
 
 There are two specific considerations that were made with regards to the collection and aggregation of metrics. 
 Firstly, a mechanism was developed that determines the minimal set of metrics that are necessary for the visualisations, and computes only these (instead of all) in order to speed up training.
