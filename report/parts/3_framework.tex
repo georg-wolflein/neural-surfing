@@ -2,6 +2,7 @@
 \label{chap:framework}
 
 \section{Design}
+\label{sec:neural_framework_design}
 The requirements specification in \ref{sec:requirements} makes it clear that the framework must be made up of the following components:
 \begin{enumerate}
     \item an interface to specify a neural \textit{problem} (as a labelled dataset with an initial weight configuration);
@@ -79,6 +80,7 @@ experiment.run_server([
 \end{listing}
 
 \section{Implementation}
+\label{sec:framework_implementation}
 The top-level package that constitutes this framework is named \texttt{nf} which is short for ``neural framework''.
 The framework code is provided in three main modules inside the \texttt{nf} package, which will be explained below.
 The main base classes are implemented in the respective \texttt{\_\_init\_\_.py} files so that they can be conveniently loaded using for example the syntax

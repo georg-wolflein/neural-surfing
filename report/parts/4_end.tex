@@ -67,11 +67,14 @@ This issue was analysed, and it was proposed that an inverse sigmoidal mapping c
 However, the problem of setting subgoals in unrealisable regions still remained, and thus the final implementation of the neural surfer still was not able to find the global minimum.
 
 Nonetheless, a different version of the neural surfing algorithm that set the clothoids in excitation space instead of output space (but still trained using the corresponding subgoals in output space) was successful in finding the global minimum of the RBF stripe problem.
-Although this is still a simplification, it shows the potential of the neural surfing technique in overcoming the stripe problem.
-The advantage of the proposed algorithm is that it required no manual subgoal setting, unlike the other training regimes that were explained above.
-This clothoidal approach manages to automatically set subgoals in close proximity that even enabled it to `pull' itself over the RBF hump instead of jumping over it by chance.
+This simplification actually constitutes a significant limitation of this implementation because in the RBF stripe problem, the radial basis activation functions are what create the local minima.
+In sigmoidal neural networks, it would be a lot less apprehensive to set the clothoids in excitation space because the sigmoid is a strictly increasing function.
 
-A drawback of the clothoidal approach is that it samples many different weight states before carrying out a move.
+However, it can still be argued that the clothoidal implementation highlights the potential of neural surfing in overcoming the stripe problem because the subgoals themselves are set in output space.
+The advantage of the proposed algorithm is that unlike the other training regimes it required no manual subgoal setting.
+The clothoidal approach manages to automatically set subgoals in close proximity that even enabled it to `pull' itself over the RBF hump instead of jumping over it by chance.
+
+A drawback of the implementation is that it samples many different weight states before carrying out a move.
 As commented in \ref{sec:neural_training_issues}, this is a common problem of derivative-free techniques because each forward pass is roughly as computationally expensive as evaluating the derivative at the current point (which BP only needs to do once per epoch).
 In that regard, it might be possible in future to adapt this paritcular neural surfing implementation to use derivative information instead of manual sampling.
 On the other hand, the fact that the clothoidal approach found the global minimum within very few iterations shows that it does not suffer from the ravine problem like gradient descent with BP.
@@ -88,21 +91,27 @@ This is highlighted in \ref{chap:generalising} which outlines several applicatio
 
 \section{The neural framework}
 \label{sec:eval_neural_framework}
-talk about framework itself
+All the requirements for the neural framework listed in \ref{sec:requirements} were satisfied, as was explained in \ref{sec:neural_framework_design} and depicted in \ref{fig:nf_components}.
+The framework itself, \texttt{nf}, is quite different to popular neural network frameworks such as Keras, or more broad machine learning frameworks like TensorFlow and PyTorch, because it tries to solve an orthogonal problem.
+Its target user is not a person trying to train a neural network on a dataset, but rather someone who is designing a neural training algorithm.
+As such, it facilitates the comparison of custom training algorithms on set neural problem by providing real-time visualisations.
 
-runtime
+The framework is quite flexible: the user may specify custom agents, problems, metrics, and visualisations. 
+Yet quite a few implementations of these components have been provided alongside the framework.
+The RBF stripe problem is one of the default problem implementations, and a variety of well-known training algorithms have been implemented.
+As a result, the findings from this report with regard to the failure of classical training regimes on the RBF stripe problem can be independently verified by reproducing the experiment with the framework\footnote{The experiment itself is provided in the \texttt{demo\_stripe\_problem.py} script.}. 
 
-say that all requirements were satisfied (with reference to the list in the chapter)
-Compare with scipy.optimize and nevergrad; also explain that they do not specifically target neural networks
-tries to solve a different problem than neural frameworks
-target user
-
-\paragraph{Simulated anealing}
+The supplied gradient descent agent uses the standard Keras implementation which is widely-used in industry to enable a fair comparison.
+On the other hand, there exist numerous different versions of the simulated annealing algorithm in literature.
+The SA implementation in the framework is a more basic version in order to keep the agent generic.
 More complex implementations of SA may combine the so-called downhill simplex algorithm \cite{nelder1965} with SA such as in \textcite[p. 444-455]{press1992}, thereby introducing three additional hyperparameters.
 In fact, \citeauthor{press1992} remark that ``there can be quite a lot of problem-dependent subtlety'' in choosing the hyperparameters, and that ``success or failure is quite often determined by the choice of annealing schedule'' \cite*[p. 452]{press1992}.
+Since \texttt{nf} should be a generic framework, support for custom annealing schedules with features such as restarts was not implemented.
+Moreover, if one were to design a custom annealing schedule which succeeds on the RBF stripe problem, that schedule will likely fail on other problems.
 
-Generic framework, so could not implement custom annealing schedules with restarts, etc.
-Furthermore, at what point is the algorithm `adjusted too much' to the problem?
+The framework follows best practices in Python as detailed in \ref{sec:framework_implementation}.
+This also facilitated the automatic generation of an extensive documentation that is provided alongside the framework. 
+Furthermore, the demonstration scripts give starter code for running custom experiments.
 
 \section{Objectives}
 This project achieved all the objectives outlined in \ref{sec:objectives}. 
