@@ -111,6 +111,7 @@ which are depicted in \ref{fig:activation_functions}.
 \begin{figure}
     \centering
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}
             \begin{axis}[
                 x=0.75cm,
@@ -120,7 +121,8 @@ which are depicted in \ref{fig:activation_functions}.
                 ylabel={$g_\text{sig}(x)$}, ylabel style={anchor=south},
                 ymin=0, ymax=1,
                 xmin=-3, xmax=3,
-                enlargelimits,
+                enlarge x limits,
+                enlarge y limits = upper,
                 samples=100,
                 xtick={-3,...,3},
                 ytick={0, 0.5, 1},
@@ -133,6 +135,7 @@ which are depicted in \ref{fig:activation_functions}.
     \end{subfigure}
     \hspace*{\fill}
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}
             \begin{axis}[
                 x=2.25cm,
@@ -142,7 +145,8 @@ which are depicted in \ref{fig:activation_functions}.
                 ylabel={$g_{\text{ReLU}}(x)$}, ylabel style={anchor=south},
                 ymin=0, ymax=1,
                 xmin=-1, xmax=1,
-                enlargelimits,
+                enlarge x limits,
+                enlarge y limits = upper,
                 samples=100,
                 xtick={-1, -0.5, 0, 0.5, 1},
                 ytick={0, 0.5, 1},
@@ -184,40 +188,39 @@ This is what we call a \textit{fully-connected feedforward} architecture.
 SLN architectures will always form a \textit{directed acyclic graph} (DAG) because there are no intra-layer or backwards connections.
 
 \begin{figure}
-    \begin{center}
-        \begin{tikzpicture}
-            [
-                neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
-            ]
-            \node [neuron] (x1) at (0,0) {$x_1$};
-            \node [neuron] (x2) at (0,-2) {$x_2$};
-            \node [neuron] (x3) at (0,-4) {$x_3$};
-            \node [neuron] (n1) at (3,1)  {$\hat{y}_1$};
-            \node [neuron] (n2) at (3,-1) {$\hat{y}_2$};
-            \node [neuron] (n3) at (3,-3) {$\hat{y}_3$};
-            \node [neuron] (n4) at (3,-5) {$\hat{y}_4$};
-            \node (b1) at (3, 2) {$b_1$};
-            \node (b2) at (3, 0) {$b_2$};
-            \node (b3) at (3, -2) {$b_3$};
-            \node (b4) at (3, -4) {$b_4$};
-            \draw[->] (x1) -- (n1);
-            \draw[->] (x1) -- (n2);
-            \draw[->] (x1) -- (n3);
-            \draw[->] (x1) -- (n4);
-            \draw[->] (x2) -- (n1);
-            \draw[->] (x2) -- (n2);
-            \draw[->] (x2) -- (n3);
-            \draw[->] (x2) -- (n4);
-            \draw[->] (x3) -- (n1);
-            \draw[->] (x3) -- (n2);
-            \draw[->] (x3) -- (n3);
-            \draw[->] (x3) -- (n4);
-            \draw[->] (b1) -- (n1);
-            \draw[->] (b2) -- (n2);
-            \draw[->] (b3) -- (n3);
-            \draw[->] (b4) -- (n4);
-        \end{tikzpicture}
-    \end{center}
+    \centering
+    \begin{tikzpicture}
+        [
+            neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+        ]
+        \node [neuron] (x1) at (0,0) {$x_1$};
+        \node [neuron] (x2) at (0,-2) {$x_2$};
+        \node [neuron] (x3) at (0,-4) {$x_3$};
+        \node [neuron] (n1) at (3,1)  {$\hat{y}_1$};
+        \node [neuron] (n2) at (3,-1) {$\hat{y}_2$};
+        \node [neuron] (n3) at (3,-3) {$\hat{y}_3$};
+        \node [neuron] (n4) at (3,-5) {$\hat{y}_4$};
+        \node (b1) at (3, 2) {$b_1$};
+        \node (b2) at (3, 0) {$b_2$};
+        \node (b3) at (3, -2) {$b_3$};
+        \node (b4) at (3, -4) {$b_4$};
+        \draw[->] (x1) -- (n1);
+        \draw[->] (x1) -- (n2);
+        \draw[->] (x1) -- (n3);
+        \draw[->] (x1) -- (n4);
+        \draw[->] (x2) -- (n1);
+        \draw[->] (x2) -- (n2);
+        \draw[->] (x2) -- (n3);
+        \draw[->] (x2) -- (n4);
+        \draw[->] (x3) -- (n1);
+        \draw[->] (x3) -- (n2);
+        \draw[->] (x3) -- (n3);
+        \draw[->] (x3) -- (n4);
+        \draw[->] (b1) -- (n1);
+        \draw[->] (b2) -- (n2);
+        \draw[->] (b3) -- (n3);
+        \draw[->] (b4) -- (n4);
+    \end{tikzpicture}
     \caption{A single-layer perceptron with three input and four output neurons.}
     \label{fig:single_layer_perceptron}
 \end{figure}
@@ -326,65 +329,64 @@ The graph representing this type of network consists of connecting the outputs o
 The layers between the input and output layers are referred to as \textit{hidden} layers.
 
 \begin{figure}
-    \begin{center}
-        \begin{tikzpicture}
-            [
-                neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
-            ]
-            \node [neuron] (x1) at (0,0) {$x_1$};
-            \node [neuron] (x2) at (0,-2) {$x_2$};
-            \node [neuron] (x3) at (0,-4) {$x_3$};
-            \node [neuron] (h11) at (3,1) {};
-            \node [neuron] (h12) at (3,-1) {};
-            \node [neuron] (h13) at (3,-3) {};
-            \node [neuron] (h14) at (3,-5) {};
-            \node [neuron] (h21) at (6,-1) {};
-            \node [neuron] (h22) at (6,-3) {};
-            \node [neuron] (y) at (9, -2) {$\hat{y}$};
-            \node (b11) at (3, 2) {$b_{1,1}$};
-            \node (b12) at (3, 0) {$b_{1,2}$};
-            \node (b13) at (3, -2) {$b_{1,3}$};
-            \node (b14) at (3, -4) {$b_{1,4}$};
-            \node (b21) at (6, 0) {$b_{2,1}$};
-            \node (b22) at (6, -2) {$b_{2,2}$};
-            \node (b3) at (9, -1) {$b_{3,1}$};
-            \draw[->] (x1) -- (h11);
-            \draw[->] (x1) -- (h12);
-            \draw[->] (x1) -- (h13);
-            \draw[->] (x1) -- (h14);
-            \draw[->] (x2) -- (h11);
-            \draw[->] (x2) -- (h12);
-            \draw[->] (x2) -- (h13);
-            \draw[->] (x2) -- (h14);
-            \draw[->] (x3) -- (h11);
-            \draw[->] (x3) -- (h12);
-            \draw[->] (x3) -- (h13);
-            \draw[->] (x3) -- (h14);
-            \draw[->] (h11) -- (h21);
-            \draw[->] (h11) -- (h22);
-            \draw[->] (h12) -- (h21);
-            \draw[->] (h12) -- (h22);
-            \draw[->] (h13) -- (h21);
-            \draw[->] (h13) -- (h22);
-            \draw[->] (h14) -- (h21);
-            \draw[->] (h14) -- (h22);
-            \draw[->] (b11) -- (h11);
-            \draw[->] (b12) -- (h12);
-            \draw[->] (b13) -- (h13);
-            \draw[->] (b14) -- (h14);
-            \draw[->] (b21) -- (h21);
-            \draw[->] (b22) -- (h22);
-            \draw[->] (b3) -- (y);
-            \draw[->] (h21) -- (y);
-            \draw[->] (h22) -- (y);
-            \draw[dashed] (-1,3) rectangle (1,-6);
-            \draw[dashed] (2,3) rectangle (7,-6);
-            \draw[dashed] (8,3) rectangle (10,-6);
-            \node[below] (input) at (0,3) {Input layer};
-            \node[below] (hidden) at (4.5,3) {Hidden layers};
-            \node[below] (output) at (9,3) {Output layer};
-        \end{tikzpicture}
-    \end{center}
+    \centering
+    \begin{tikzpicture}
+        [
+            neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+        ]
+        \node [neuron] (x1) at (0,0) {$x_1$};
+        \node [neuron] (x2) at (0,-2) {$x_2$};
+        \node [neuron] (x3) at (0,-4) {$x_3$};
+        \node [neuron] (h11) at (3,1) {};
+        \node [neuron] (h12) at (3,-1) {};
+        \node [neuron] (h13) at (3,-3) {};
+        \node [neuron] (h14) at (3,-5) {};
+        \node [neuron] (h21) at (6,-1) {};
+        \node [neuron] (h22) at (6,-3) {};
+        \node [neuron] (y) at (9, -2) {$\hat{y}$};
+        \node (b11) at (3, 2) {$b_{1,1}$};
+        \node (b12) at (3, 0) {$b_{1,2}$};
+        \node (b13) at (3, -2) {$b_{1,3}$};
+        \node (b14) at (3, -4) {$b_{1,4}$};
+        \node (b21) at (6, 0) {$b_{2,1}$};
+        \node (b22) at (6, -2) {$b_{2,2}$};
+        \node (b3) at (9, -1) {$b_{3,1}$};
+        \draw[->] (x1) -- (h11);
+        \draw[->] (x1) -- (h12);
+        \draw[->] (x1) -- (h13);
+        \draw[->] (x1) -- (h14);
+        \draw[->] (x2) -- (h11);
+        \draw[->] (x2) -- (h12);
+        \draw[->] (x2) -- (h13);
+        \draw[->] (x2) -- (h14);
+        \draw[->] (x3) -- (h11);
+        \draw[->] (x3) -- (h12);
+        \draw[->] (x3) -- (h13);
+        \draw[->] (x3) -- (h14);
+        \draw[->] (h11) -- (h21);
+        \draw[->] (h11) -- (h22);
+        \draw[->] (h12) -- (h21);
+        \draw[->] (h12) -- (h22);
+        \draw[->] (h13) -- (h21);
+        \draw[->] (h13) -- (h22);
+        \draw[->] (h14) -- (h21);
+        \draw[->] (h14) -- (h22);
+        \draw[->] (b11) -- (h11);
+        \draw[->] (b12) -- (h12);
+        \draw[->] (b13) -- (h13);
+        \draw[->] (b14) -- (h14);
+        \draw[->] (b21) -- (h21);
+        \draw[->] (b22) -- (h22);
+        \draw[->] (b3) -- (y);
+        \draw[->] (h21) -- (y);
+        \draw[->] (h22) -- (y);
+        \draw[dashed] (-1,3) rectangle (1,-6);
+        \draw[dashed] (2,3) rectangle (7,-6);
+        \draw[dashed] (8,3) rectangle (10,-6);
+        \node[below] (input) at (0,3) {Input layer};
+        \node[below] (hidden) at (4.5,3) {Hidden layers};
+        \node[below] (output) at (9,3) {Output layer};
+    \end{tikzpicture}
     \caption{A multi-layer perceptron with three inputs and two hidden layers.}
     \label{fig:multi_layer_perceptron}
 \end{figure}
@@ -432,23 +434,22 @@ This will allow us to examine the so-called decision boundary in input space whi
     Consider a single-layer MLP $M$ with $m$ inputs. 
     By \ref{def:mlp}, this is equivalent to SLN $S$ with $m$ inputs and one output as shown in \ref{fig:sln_m_in_1_out}. 
     \begin{figure}
-        \begin{center}
-            \begin{tikzpicture}
-                [
-                    neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
-                ]
-                \node [neuron] (x1)  at (0,0) {$x_1$};
-                \node [neuron] (x2) at (0,-2) {$x_2$};
-                \node (dots) at (0,-3) {$\vdots$};
-                \node [neuron] (xm) at (0,-4) {$x_m$};
-                \node [neuron] (y) at (4,-2) {$\hat{y}$};
-                \node (b) at (4, -1) {$b$};
-                \draw[->] (x1) -- (y) node[midway, above, sloped] {$w_1$};
-                \draw[->] (x2) -- (y) node[midway, above, sloped] {$w_2$};
-                \draw[->] (xm) -- (y) node[midway, above, sloped] {$w_m$};
-                \draw[->] (b) -- (y);
-            \end{tikzpicture}
-        \end{center}
+        \centering
+        \begin{tikzpicture}
+            [
+                neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+            ]
+            \node [neuron] (x1)  at (0,0) {$x_1$};
+            \node [neuron] (x2) at (0,-2) {$x_2$};
+            \node (dots) at (0,-3) {$\vdots$};
+            \node [neuron] (xm) at (0,-4) {$x_m$};
+            \node [neuron] (y) at (4,-2) {$\hat{y}$};
+            \node (b) at (4, -1) {$b$};
+            \draw[->] (x1) -- (y) node[midway, above, sloped] {$w_1$};
+            \draw[->] (x2) -- (y) node[midway, above, sloped] {$w_2$};
+            \draw[->] (xm) -- (y) node[midway, above, sloped] {$w_m$};
+            \draw[->] (b) -- (y);
+        \end{tikzpicture}
         \caption{The DAG representing a SLN with $m$ inputs and one output unit.}
         \label{fig:sln_m_in_1_out}
     \end{figure}
@@ -480,21 +481,20 @@ This will allow us to examine the so-called decision boundary in input space whi
     \label{ex:sln_2_in_1_out_sigmoid_hyperplane}
     Let us consider a MLP $M$ with only one layer and two inputs, as depicted in \ref{fig:sln_2_in_1_out}.
     \begin{figure}
-        \begin{center}
-            \begin{tikzpicture}
-                [
-                    neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
-                ]
-                \node [neuron] (x1) at (0,0) {$x_1$};
-                \node [neuron] (x2) at (0,-2) {$x_2$};
-                \node [neuron] (y) at (3,-1)  {$\hat{y}$};
-                \node (b) at (3, 0) {$b$};
-                \draw[->] (x1) -- (y) node[above,midway,sloped] {$w_1$};
-                \draw[->] (x2) -- (y) node[above,midway,sloped] {$w_2$};
-                \draw[->] (b) -- (y);
-                \draw[->] (b) -- (y);
-            \end{tikzpicture}
-        \end{center}
+        \centering
+        \begin{tikzpicture}
+            [
+                neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+            ]
+            \node [neuron] (x1) at (0,0) {$x_1$};
+            \node [neuron] (x2) at (0,-2) {$x_2$};
+            \node [neuron] (y) at (3,-1)  {$\hat{y}$};
+            \node (b) at (3, 0) {$b$};
+            \draw[->] (x1) -- (y) node[above,midway,sloped] {$w_1$};
+            \draw[->] (x2) -- (y) node[above,midway,sloped] {$w_2$};
+            \draw[->] (b) -- (y);
+            \draw[->] (b) -- (y);
+        \end{tikzpicture}
         \caption{A simple MLP with one layer and two inputs (equivalently, a SLN with two inputs and one ouput).}
         \label{fig:sln_2_in_1_out}
     \end{figure}
@@ -998,37 +998,36 @@ Note that linear mappings can exist between spaces of different dimensionalities
     We construct $n$ smaller SLNs, $S_1,S_2,\dots,S_n$ where each $S_i$ has all $m$ input units, but only the $i$th output unit. 
     The DAG representing $S_i$ will only contain links from the input nodes to output node $\hat{y}_i$ (and, of course, the associated bias term $b_i$) as depicted in \ref{fig:sln_m_in_n_out_construction}.
     \begin{figure}
-        \begin{center}
-            \begin{tikzpicture}
-                [
-                    neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
-                ]
-                
-                \node [neuron] (x1)  at (0,0) {$x_1$};
-                \node [neuron] (x2) at (0,-2) {$x_2$};
-                \node (dots) at (0,-3) {$\vdots$};
-                \node [neuron] (xm) at (0,-4) {$x_m$};
-                \node [neuron,red] (y1) at (4,1) {$\hat{y}_1$};
-                \node [neuron,green] (y2) at (4,-2) {$\hat{y}_2$};
-                \node [neuron,blue] (yn) at (4,-5) {$\hat{y}_n$};
-                \node [red] (b1) at (4, 2) {$b_1$};
-                \node [green] (b2) at (4, -1) {$b_2$};
-                \node [blue] (bn) at (4, -4) {$b_n$};
-                \node (dots) at (4,-3.25) {$\vdots$};
-                \draw[->,red] (x1) -- (y1);
-                \draw[->,red] (x2) -- (y1);
-                \draw[->,red] (xm) -- (y1);
-                \draw[->,red] (b1) -- (y1);
-                \draw[->,green] (x1) -- (y2);
-                \draw[->,green] (x2) -- (y2);
-                \draw[->,green] (xm) -- (y2);
-                \draw[->,green] (b2) -- (y2);
-                \draw[->,blue] (x1) -- (yn);
-                \draw[->,blue] (x2) -- (yn);
-                \draw[->,blue] (xm) -- (yn);
-                \draw[->,blue] (bn) -- (yn);
-            \end{tikzpicture}
-        \end{center}
+        \centering
+        \begin{tikzpicture}
+            [
+                neuron/.style = {draw, circle, minimum size=25pt, inner sep=0pt, outer sep=0pt},
+            ]
+            
+            \node [neuron] (x1)  at (0,0) {$x_1$};
+            \node [neuron] (x2) at (0,-2) {$x_2$};
+            \node (dots) at (0,-3) {$\vdots$};
+            \node [neuron] (xm) at (0,-4) {$x_m$};
+            \node [neuron,red] (y1) at (4,1) {$\hat{y}_1$};
+            \node [neuron,green] (y2) at (4,-2) {$\hat{y}_2$};
+            \node [neuron,blue] (yn) at (4,-5) {$\hat{y}_n$};
+            \node [red] (b1) at (4, 2) {$b_1$};
+            \node [green] (b2) at (4, -1) {$b_2$};
+            \node [blue] (bn) at (4, -4) {$b_n$};
+            \node (dots) at (4,-3.25) {$\vdots$};
+            \draw[->,red] (x1) -- (y1);
+            \draw[->,red] (x2) -- (y1);
+            \draw[->,red] (xm) -- (y1);
+            \draw[->,red] (b1) -- (y1);
+            \draw[->,green] (x1) -- (y2);
+            \draw[->,green] (x2) -- (y2);
+            \draw[->,green] (xm) -- (y2);
+            \draw[->,green] (b2) -- (y2);
+            \draw[->,blue] (x1) -- (yn);
+            \draw[->,blue] (x2) -- (yn);
+            \draw[->,blue] (xm) -- (yn);
+            \draw[->,blue] (bn) -- (yn);
+        \end{tikzpicture}
         \caption{The DAGs representing the constructions of $n$ SLNs with one output from a SLN with $m$ inputs and $n$ outputs. Each color represents one of the constructed smaller SLNs.}
         \label{fig:sln_m_in_n_out_construction}
     \end{figure}
@@ -1541,6 +1540,7 @@ The hidden layer is required because without it, the sigmoid activation function
 \begin{figure}
     \centering
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}
             \begin{axis}[
                 x=1cm,
@@ -1567,6 +1567,7 @@ The hidden layer is required because without it, the sigmoid activation function
     \end{subfigure}
     \hspace*{\fill}
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}
             \begin{axis}[
                 x=1cm,
@@ -1710,6 +1711,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
 
     \begin{figure}
         \begin{subfigure}[b]{0.45\textwidth}
+            \centering
             \begin{tikzpicture}[
                 declare function={
                     hminus(\x)= -\x - sqrt(-ln(0.5));
@@ -1739,6 +1741,7 @@ On the other hand, for the bump function, we have $\phi(x)=0$ and $\frac{d\phi}{
         \end{subfigure}
         \hspace*{\fill}
         \begin{subfigure}[b]{0.55\textwidth}
+            \centering
             \begin{tikzpicture}
                 \begin{axis}[
                     scale only axis,
@@ -1804,6 +1807,7 @@ However, since we established that the hyperplanes will always remain parallel i
 \begin{figure}
     \centering
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}[
             declare function={
                 hminus(\x)= -\x - sqrt(-ln(0.5));
@@ -1833,6 +1837,7 @@ However, since we established that the hyperplanes will always remain parallel i
     \end{subfigure}
     \hspace*{\fill}
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}[
             declare function={
                 hminus(\x)= \x + sqrt(-ln(0.5));
@@ -2418,6 +2423,7 @@ which we proved in \ref{thm:stripe_global_minima} is a global minimum.
 \begin{figure}
     \centering
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}
             \begin{axis}[
                 scale only axis,
@@ -2437,6 +2443,7 @@ which we proved in \ref{thm:stripe_global_minima} is a global minimum.
     \end{subfigure}
     \hspace*{\fill}
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}[
             declare function={
                 rbf(\x)= exp(-\x^2);
@@ -2517,6 +2524,7 @@ To see this, consider for example the point $\vec{u}$ lying midway on the straig
     \begin{figure}
         \centering
         \begin{subfigure}{.45\textwidth}
+            \centering
             \begin{tikzpicture}[
                 declare function={
                     hminus(\x,\v,\w)= (-2-\x*\v) / \w;
@@ -2550,6 +2558,7 @@ To see this, consider for example the point $\vec{u}$ lying midway on the straig
         \end{subfigure}
         \hspace*{\fill}
         \begin{subfigure}{.45\textwidth}
+            \centering
             \begin{tikzpicture}[
                 declare function={
                     hminus(\x,\v,\w)= (-2-\x*\v) / \w;
@@ -2690,6 +2699,7 @@ After empirically verifying in \ref{sec:stripe_gradient_descent} that the classi
 \begin{figure}
     \centering
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}[
             declare function={
                 rbf(\x)= exp(-\x^2);
@@ -2714,6 +2724,7 @@ After empirically verifying in \ref{sec:stripe_gradient_descent} that the classi
     \end{subfigure}
     \hspace*{\fill}
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}[
             declare function={
                 rbf(\x)= exp(-\x^2);
@@ -2766,6 +2777,7 @@ Furthermore, the gradient of the RBF is flat when the input is zero ($\phi'(0)=0
 \begin{figure}
     \centering
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}[
             declare function={
                 rbf(\x)= exp(-\x^2);
@@ -2790,6 +2802,7 @@ Furthermore, the gradient of the RBF is flat when the input is zero ($\phi'(0)=0
     \end{subfigure}
     \hspace*{\fill}
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}[
             declare function={
                 rbf(\x)= exp(-\x^2);
@@ -2877,6 +2890,7 @@ An alternative cost function was also tested for the greedy probing approach, ca
     \pgfplotslegendfromname{leg:stripe_greedy_probing_with_2_subgoals}
     \tikzexternalenable
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}[
             declare function={
                 rbf(\x)= exp(-\x^2);
@@ -2904,6 +2918,7 @@ An alternative cost function was also tested for the greedy probing approach, ca
     \end{subfigure}
     \hspace*{\fill}
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}[
             declare function={
                 rbf(\x)= exp(-\x^2);
@@ -3222,6 +3237,7 @@ Hence we will ensure that $Q$ is as far away from $B$ as $C$ is.
 In other words, we need to find $Q$ on the clothoid between $B$ and $A$ such that $\overline{BC}$ and $\overline{BQ}$ are congruent\footnote{Two line segments are congruent if they have the same length. We will henceforth use the notation $\overline{BC} \cong \overline{BQ}$.} as depicted in \ref{fig:clothoid_segment_with_subgoal_output_space}.
 \begin{figure}
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}
             \begin{axis}[
                 scale only axis,
@@ -3282,6 +3298,7 @@ In other words, we need to find $Q$ on the clothoid between $B$ and $A$ such tha
     \end{subfigure}
     \hspace*{\fill}
     \begin{subfigure}{.45\textwidth}
+        \centering
         \begin{tikzpicture}
             \begin{axis}[
                 scale only axis,
