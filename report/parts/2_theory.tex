@@ -3924,7 +3924,119 @@ The above inequality was derived from \ref{fig:clothoid_segment} by considering 
 More intuitively, the fraction $\frac{t_B}{t_C}$ can be thought of as the remaining turn to travel as a fraction of $\theta$ (recall that $\theta$ is related to $t_C$ in \ref{eq:clothoid_theta}).
 
 \section{Experimental results and analysis}
+The initial version of the adaptive clothoid technique failed to find the global minimum in output space.
+Two main reasons for this failure were identified:
+\begin{enumerate}
+    \item 
+        Each output prediction $\hat{y}_i$ must be in the interval $(0, 1]$ because that is the range of the radial basis function.
+        This constrains the output space a hypercube of side length $1$, and any point outside that hypercube will be strongly unrealisable by \ref{def:unrealisable_point}.
+        The clothoids that are drawn in output space may not obey this constraint.
+    \item
+        As a result, it is quite possible that a specific candidate clothoid sets a subgoal that is strongly unrealisable.
+        This will cause training to fail. 
+\end{enumerate}
+To circumvent this issue, it was decided to set the clothoids in \textit{excitation} space rather than output space.
+The excitation space has the same dimensionality as the output space, but has an infinite range along each axis.
+At each stage, the clothoids are set in excitation space to obtain the subgoal, but this subgoal $\vec{q}$ is used in output space as the intermediate target.
 
+With this approach, the adaptive clothoid technique was able to reach the global minimum.
+\ref{fig:adaptive_clothoid_weight_space} shows the travel in weight space.
+\begin{figure}
+    \centering
+    \begin{tikzpicture}
+        \begin{axis}[
+            scale only axis,
+            width = 0.4\textwidth,
+            xlabel = {$w_1$},
+            ylabel = {$w_2$},
+            legend entries = {ideal,actual},
+            legend pos = south east
+        ]
+            \addplot+[black,mark=none] coordinates {(1, 1) (1, -1)};
+            \addplot+[red,mark=x] table {../research/data/report/stripe_problem_adaptive_clothoid_weights.dat};
+            \node[circle,fill,inner sep=1.5pt,pin=-170:{$\vec{w}_0$}] at (1, 1) {};
+            \node[circle,fill,inner sep=1.5pt,pin=170:{$\vec{w}_S$}] at (1, -1) {};
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Trajectory of the adaptive clothoid technique in weight space.}
+    \label{fig:adaptive_clothoid_weight_space}
+\end{figure}
+The technique required only 18 iterations to reach the weight configuration
+$\vec{w}_{18}=\begin{bmatrix}
+    1.0004 & -0.9971
+\end{bmatrix}\tran$
+which is indeed very close to the target
+$\vec{w}_S=\begin{bmatrix}
+    1 & -1 
+\end{bmatrix}\tran$.
+Further training will gradually bring it closer, but at this point we can already say that the algorithm converged to the global minimum.
+In \ref{fig:adaptive_clothoid_excitation_output_space} it can be seen that the trajectory in output space is indeed quite close to the ideal goal-connecting path established in \ref{sec:stripe_ideal_goal_connecting_path}.
+\begin{figure}
+    \centering
+    \makebox[\textwidth][c]{%
+        \tikzexternaldisable
+        \pgfplotslegendfromname{leg:adaptive_clothoid_excitation_output}
+        \tikzexternalenable
+    }
+    \begin{subfigure}{\textwidth}
+        \centering
+        \begin{tikzpicture}[
+            declare function={
+                rbf(\x)= exp(-\x^2);
+            }
+        ]
+            \begin{axis}[
+                scale only axis,
+                width = 0.7\textwidth,
+                xlabel = {$z_1$},
+                ylabel = {$z_2$},
+                zlabel = {$z_3$},
+                enlargelimits,
+                legend entries = {ideal,actual},
+                legend columns=-1,
+                legend to name=leg:adaptive_clothoid_excitation_output
+            ]
+                \addplot3+[black,mark=none,domain=-1:1,samples=2,samples y=0] ({(2*x + 2*1)}, {(2)}, {(2*x + 0*1)});
+                \addplot3+[red,mark=x] table {../research/data/report/stripe_problem_adaptive_clothoid_excitations.dat};
+                \node[circle,fill,inner sep=1.5pt,pin=130:{initial}] at (4, 2, 2) {};
+                \node[circle,fill,inner sep=1.5pt,pin=90:{final}] at (0, 2, -2) {};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Excitation space.}
+        \label{fig:adaptive_clothoid_excitation_space}
+    \end{subfigure}
+    \begin{subfigure}{\textwidth}
+        \centering
+        \begin{tikzpicture}[
+            declare function={
+                rbf(\x)= exp(-\x^2);
+            }
+        ]
+            \begin{axis}[
+                scale only axis,
+                width = 0.7\textwidth,
+                xlabel = {$\hat{y}_1$},
+                ylabel = {$\hat{y}_2$},
+                zlabel = {$\hat{y}_3$},
+                xmin=0,xmax=1,
+                ymin=0,ymax=1,
+                zmin=0,zmax=1,
+                enlargelimits
+            ]
+                \addplot3+[black,mark=none,domain=-1:1,samples=50,samples y=0] ({rbf(2*x + 2*1)}, {rbf(2)}, {rbf(2*x + 0*1)});
+                \addplot3+[red,mark=x] table {../research/data/report/stripe_problem_adaptive_clothoid_outputs.dat};
+                \node[circle,fill,inner sep=1.5pt,pin=10:{$\vec{\hat{y}}_0$}] at ({rbf(4)}, {rbf(2)}) {};
+                \node[circle,fill,inner sep=1.5pt,pin=80:{$\vec{y}$}] at (1, {rbf(2)}) {};
+            \end{axis}
+        \end{tikzpicture}
+        \caption{Output space.}
+        \label{fig:adaptive_clothoid_output_space}
+    \end{subfigure}
+    \caption{Progress in excitation and output space of the adaptive clothoid technique applied to the RBF stripe problem.}
+    \label{fig:adaptive_clothoid_excitation_output_space}
+\end{figure}
+While the algorithm employs the simplification of using the excitation space, the fact that the subgoals are still used as targets in output space demonstrates the potential of the adaptive clothoid technique.
+Unlike BP, SA, and greedy probing that required at least one manual subgoal to be set in output space, this technique required none.
 
 \chapter{Generalising neural surfing}
 \label{chap:generalising}
