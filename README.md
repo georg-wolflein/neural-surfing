@@ -2,7 +2,7 @@
 
 My senior honours project at the University of St Andrews. 
 
-The report is available [here](report/report.pdf).
+The report is available at [`report/report.pdf`](report/report.pdf), and can be viewed online [here](https://docs.google.com/viewer?url=https://github.com/georgw777/neural-surfing/raw/master/report/report.pdf).
 
 ## Abstract
 Gradient methods based on backpropagation are widely used in training multilayer feedforward neural networks. 
