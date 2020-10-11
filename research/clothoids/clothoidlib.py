@@ -67,7 +67,7 @@ def angle_between(v1: np.ndarray, v2: np.ndarray) -> np.ndarray:
     v2 /= np.linalg.norm(v2, axis=-1, keepdims=True)
     v1 = np.expand_dims(v1, axis=-2)
     v2 = np.expand_dims(v2, axis=-1)
-    return np.arccos(np.matmul(v1, v2)).reshape(v1.shape[:-2])
+    return np.arccos(np.clip(np.matmul(v1, v2), -1., 1.)).reshape(v1.shape[:-2])
 
 def compute_clothoid_table(t_samples: np.ndarray) -> ClothoidParameters:
     """Calculate the clothoid parameter table for a given set of samples for t.
